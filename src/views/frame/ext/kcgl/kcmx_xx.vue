@@ -215,7 +215,7 @@
 
             for (let i=0; i<rksl; i++) {
 
-                dataNew = await TLogic.netLoad_kcmxrk(kgyId, rklb, data);
+                dataNew = await TLogic.netLoad_kcmxrk_upd(kgyId, rklb, data);
                 dataListNew.push(dataNew);
             }
 

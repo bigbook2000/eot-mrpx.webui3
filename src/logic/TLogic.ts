@@ -613,7 +613,7 @@ export default {
 	 * @param data 
 	 * @returns 
 	 */
-	async netLoad_kcmxrk(kgyId: number, rklb: string, data: any): Promise<any> {
+	async netLoad_kcmxrk_upd(kgyId: number, rklb: string, data: any): Promise<any> {
 
 		const kcbh = await this.netLoad_RecordString_kcbh(data["f_cpdy_id"], data["f_cpbm"]);
 
@@ -630,7 +630,7 @@ export default {
 				"v_kgy_id": kgyId,
 				"v_cpsl": data["f_cpsl"],
 				"v_cpdj": data["f_cpdj"],
-				"v_cpzj": data["f_cpdj"],
+				"v_cpzj": data["f_cpzj"],
 				"v_hwck": data["f_hwck"],
 				"v_beizhu": data["f_beizhu"]
 		});

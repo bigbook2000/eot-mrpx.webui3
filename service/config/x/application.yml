@@ -1,0 +1,17 @@
+server:
+  port: 56910
+
+web:
+  # Web UI 文件路径
+  wwwPath: D:/hjx/prj/eot-cms/src/web-ui
+
+spring:
+  resources:
+    static-locations: file:${web.wwwPath}
+
+  servlet:
+    multipart:
+      # 上传文件总的最大值
+      max-request-size: 100MB
+      # 单个文件的最大值
+      max-file-size: 100MB

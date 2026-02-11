@@ -1,0 +1,17 @@
+root:
+  mode: debug
+  port: 56909
+  timeout: 200
+  recv_max: 16384
+  send_max: 16384
+  thread_max: 32
+  token: 123568
+
+log:
+  date_default: 30
+  date_debug: 10
+  date_db: 30
+  date_ctrl: 30
+  date_recv: 10
+  date_pack: 15
+

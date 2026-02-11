@@ -1,0 +1,22 @@
+root:
+  slow_time: 10000
+
+source:
+  default:
+    url: jdbc:mysql://localhost:31306/eomrpdb?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&rewriteBatchedStatements=true
+    username: eomrpuser
+    password: eomrp#2025Y
+    max_active: 2
+    initial_size: 5
+    min_idle: 5
+    max_wait: 60000
+
+  data:
+    url: jdbc:mysql://localhost:31306/eomrpdb?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&rewriteBatchedStatements=true
+    username: eomrpuser
+    password: eomrp#2025Y
+    max_active: 2
+    initial_size: 5
+    min_idle: 5
+    max_wait: 60000
+

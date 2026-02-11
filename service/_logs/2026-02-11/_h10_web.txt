@@ -1,0 +1,233 @@
+10:01:15 <____1> BWebSource___35 [---------------------] 数据源[default] jdbc:mysql://localhost:31306/eomrpdb?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&rewriteBatchedStatements=true
+10:01:15 <____1> BWebSource___35 [---------------------] 数据源[data] jdbc:mysql://localhost:31306/eomrpdb?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&rewriteBatchedStatements=true
+10:01:15 <____1> BWebSource___35 [---------------------] 数据源[framework] jdbc:mysql://localhost:31306/eomrpdb?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&rewriteBatchedStatements=true
+10:01:15 <____1> BWebSource___70 [---------------------]  select * from eox_permit where _update_flag>0  order by f_name
+10:11:31 <___42> BWebSource___70 [---------------------]  select eox_user.*, '' as f_login_psw, eox_dept.f_name as f_dept_id_s from eox_user, eox_dept where eox_user.f_dept_id = eox_dept.f_dept_id and eox_user.f_login_id = 'bbbb' and eox_user.f_login_psw = '6da6897bab3a8c75d225232a21dce1c3' and eox_user.f_status > 0 and eox_user._update_flag > 0 and eox_dept._update_flag > 0
+10:11:31 <___42> BWebSource___70 [---------------------]  select f_permits from eox_role where _update_flag>0 and f_role_id in (1,3,5,6,7,8)
+10:11:31 <___41> BWebSource___70 [---------------------]  select 0 as _d, '' as _s, eox_flow_type.* from eox_flow_type where _update_flag>0
+10:11:31 <___41> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /framework/flow/type/list
+10:11:31 <___43> BWebSource___70 [---------------------]  select 0 as _d, '' as _s, eox_flow_point.* from eox_flow_point where _update_flag>0  order by f_flow_type_id,f_order
+10:11:31 <___43> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /framework/flow/point/list
+10:18:02 <___47> BWebSource___70 [---------------------]  select eox_user.f_user_id,eox_user.f_login_id,eox_user.f_name, eox_user.f_dept_id,eox_dept.f_name as f_dept_id_s from eox_user, eox_dept where eox_user.f_dept_id = eox_dept.f_dept_id and eox_user._update_flag > 0 and eox_dept._update_flag > 0 order by eox_user.f_dept_id,eox_user.f_name
+10:18:02 <___47> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /framework/user/dic
+10:18:02 <___38> BWebSource___70 [---------------------]  select * from tcpdl where _update_flag>0
+10:18:02 <___38> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:18:02 <___42> BWebSource___70 [---------------------]  select * from tcpxl where _update_flag>0  order by f_cpdl_id
+10:18:02 <___42> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:18:02 <___44> BWebSource___50 [---------------------] select count(*) from tkcmx,tcpdy,tcpdl,tcpxl where tkcmx._update_flag>0 and f_kcbz>0 and tkcmx.f_cpdy_id=tcpdy.f_cpdy_id and tcpdy.f_cpxl_id=tcpxl.f_cpxl_id and tcpdl.f_cpdl_id=tcpxl.f_cpdl_id        ORDER BY `f_kcmx_id` DESC
+10:18:02 <___44> BWebSource___70 [---------------------]  select tcpdy.*,tkcmx.*, tcpdl.f_cpdl_id,tcpdl.f_dlbm,tcpdl.f_dlmc, tcpxl.f_cpxl_id,tcpxl.f_xlbm,tcpxl.f_xlmc from tkcmx,tcpdy,tcpdl,tcpxl where tkcmx._update_flag>0 and f_kcbz>0 and tkcmx.f_cpdy_id=tcpdy.f_cpdy_id and tcpdy.f_cpxl_id=tcpxl.f_cpxl_id and tcpdl.f_cpdl_id=tcpxl.f_cpdl_id        ORDER BY `f_kcmx_id` DESC LIMIT 0,20
+10:18:02 <___44> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:18:36 <___39> BWebSource___70 [---------------------]  select f_kcmx_id as t_kcmx_id from tkcmx where f_kcmxrk_id=194
+10:18:36 <___39> BWebSource___98 [---------------------]  update tkcmx set f_hwck=0, f_cpdj=0.02, f_cpsl=29, f_pksj='2026-02-11 10:18:36', f_beizhu='', _update_time='2026-02-11 10:18:36' where f_kcmx_id = 158;
+10:18:36 <___39> BWebSource___70 [---------------------]  select sum(f_cpsl) as t_cpsl, sum(f_cpsl*f_cpdj) as t_cpzj from tkcmx where f_cpdy_id=37
+10:18:36 <___39> BWebSource___98 [---------------------]  update tcpdy set f_kcsl=89.000000,f_kczj=1.780000000000 where f_cpdy_id=37
+10:18:36 <___39> BWebSource___70 [---------------------]  select tcpdy.*,tkcmx.*, tcpdl.f_cpdl_id,tcpdl.f_dlbm,tcpdl.f_dlmc, tcpxl.f_cpxl_id,tcpxl.f_xlbm,tcpxl.f_xlmc from tkcmx,tcpdy,tcpdl,tcpxl where f_kcmx_id=158 and tkcmx.f_cpdy_id=tcpdy.f_cpdy_id and tcpdy.f_cpxl_id=tcpxl.f_cpxl_id and tcpdl.f_cpdl_id=tcpxl.f_cpdl_id
+10:18:36 <___39> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:18:36 <___43> BWebSource___98 [---------------------]  update tcpdy set f_seek=f_seek+1 where f_cpdy_id=37
+10:18:36 <___43> BWebSource___70 [---------------------]  select f_seek from tcpdy where f_cpdy_id=37
+10:18:36 <___43> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:18:36 <___40> BWebSource__112 [---------------------]  insert into tkcmxrk( f_kcbh, f_cpdy_id, f_rklb, f_rkd_id, f_rkcp_id, f_kgy_id, f_cpsl, f_cpdj, f_cpzj, f_hwck, f_rksj, f_rkbz, f_beizhu, _update_time, _update_flag) values ( '240001000102000107', 37, 'KF', 0, 0, 7, 1, 0.02, #v_cpzj, 0, '2026-02-11 10:18:36', 0, '', '2026-02-11 10:18:36', 1);
+10:18:36 <___40> BWebSource__130 [---------------------] java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:120)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.executeInternal(ClientPreparedStatement.java:953)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.executeUpdateInternal(ClientPreparedStatement.java:1092)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.executeUpdateInternal(ClientPreparedStatement.java:1040)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.executeLargeUpdate(ClientPreparedStatement.java:1348)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.executeUpdate(ClientPreparedStatement.java:1025)
+	at com.zaxxer.hikari.pool.ProxyPreparedStatement.executeUpdate(ProxyPreparedStatement.java:61)
+	at com.zaxxer.hikari.pool.HikariProxyPreparedStatement.executeUpdate(HikariProxyPreparedStatement.java)
+	at com.eoelink.cloud.iot.logic.CDBWebSource.exec_insert_inner_(CDBWebSource.java:116)
+	at com.eoelink.cloud.net.db.cls_eotsql_db.exec_insert_(cls_eotsql_db.java:201)
+	at com.eoelink.cloud.net.db.cls_eotsql.script_inc_(cls_eotsql.java:477)
+	at com.eoelink.cloud.net.db.cls_eotsql.script_obj_(cls_eotsql.java:508)
+	at com.eoelink.cloud.net.db.cls_eotsql.script_iff_(cls_eotsql.java:371)
+	at com.eoelink.cloud.net.db.cls_eotsql.script_obj_(cls_eotsql.java:522)
+	at com.eoelink.cloud.net.db.cls_eotsql.script_obj_(cls_eotsql.java:526)
+	at com.eoelink.cloud.net.db.cls_eotsql.script_(cls_eotsql.java:590)
+	at com.eoelink.cloud.web.common.cls_web_global.script_inner_(cls_web_global.java:84)
+	at com.eoelink.cloud.web.common.cls_web_global.script_(cls_web_global.java:101)
+	at com.eoelink.cloud.web.framework.controller_common.proc(controller_common.java:104)
+	at com.eoelink.cloud.web.framework.controller_common$$FastClassBySpringCGLIB$$fe678b45.invoke(<generated>)
+	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:779)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:750)
+	at org.springframework.aop.aspectj.MethodInvocationProceedingJoinPoint.proceed(MethodInvocationProceedingJoinPoint.java:89)
+	at com.eoelink.cloud.web.common.cls_permit_aspect.aroundPermitCheck(cls_permit_aspect.java:107)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.springframework.aop.aspectj.AbstractAspectJAdvice.invokeAdviceMethodWithGivenArgs(AbstractAspectJAdvice.java:634)
+	at org.springframework.aop.aspectj.AbstractAspectJAdvice.invokeAdviceMethod(AbstractAspectJAdvice.java:624)
+	at org.springframework.aop.aspectj.AspectJAroundAdvice.invoke(AspectJAroundAdvice.java:72)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:175)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:750)
+	at org.springframework.aop.interceptor.ExposeInvocationInterceptor.invoke(ExposeInvocationInterceptor.java:97)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:750)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:692)
+	at com.eoelink.cloud.web.framework.controller_common$$EnhancerBySpringCGLIB$$4482adfe.proc(<generated>)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:197)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:141)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:106)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:894)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:808)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1063)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:963)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:909)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:681)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:764)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:228)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:163)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:190)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:163)
+	at com.eoelink.cloud.iot.CHttpFilter.doFilter(CHttpFilter.java:45)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:190)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:163)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:190)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:163)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:190)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:163)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:190)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:163)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:202)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:97)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:542)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:143)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:78)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:357)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:382)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:65)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:893)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1723)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Unknown Source)
+
+10:18:36 <___40> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:21:03 <___46> BWebSource___70 [---------------------]  select eox_user.f_user_id,eox_user.f_login_id,eox_user.f_name, eox_user.f_dept_id,eox_dept.f_name as f_dept_id_s from eox_user, eox_dept where eox_user.f_dept_id = eox_dept.f_dept_id and eox_user._update_flag > 0 and eox_dept._update_flag > 0 order by eox_user.f_dept_id,eox_user.f_name
+10:21:03 <___46> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /framework/user/dic
+10:21:03 <___42> BWebSource___70 [---------------------]  select * from tcpdl where _update_flag>0
+10:21:03 <___42> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:21:03 <___44> BWebSource___70 [---------------------]  select * from tcpxl where _update_flag>0  order by f_cpdl_id
+10:21:03 <___44> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:21:03 <___41> BWebSource___50 [---------------------] select count(*) from tkcmx,tcpdy,tcpdl,tcpxl where tkcmx._update_flag>0 and f_kcbz>0 and tkcmx.f_cpdy_id=tcpdy.f_cpdy_id and tcpdy.f_cpxl_id=tcpxl.f_cpxl_id and tcpdl.f_cpdl_id=tcpxl.f_cpdl_id        ORDER BY `f_kcmx_id` DESC
+10:21:03 <___41> BWebSource___70 [---------------------]  select tcpdy.*,tkcmx.*, tcpdl.f_cpdl_id,tcpdl.f_dlbm,tcpdl.f_dlmc, tcpxl.f_cpxl_id,tcpxl.f_xlbm,tcpxl.f_xlmc from tkcmx,tcpdy,tcpdl,tcpxl where tkcmx._update_flag>0 and f_kcbz>0 and tkcmx.f_cpdy_id=tcpdy.f_cpdy_id and tcpdy.f_cpxl_id=tcpxl.f_cpxl_id and tcpdl.f_cpdl_id=tcpxl.f_cpdl_id        ORDER BY `f_kcmx_id` DESC LIMIT 0,20
+10:21:03 <___41> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:22:56 <___40> BWebSource___70 [---------------------]  select * from eox_setting where _update_flag>0;
+10:22:56 <___47> BWebSource___70 [---------------------]  select ta.*, tb.f_name as f_menu_pid_s from eox_menu as ta, eox_menu as tb where ta.f_menu_pid = tb.f_menu_id and ta._update_flag > 0 order by ta.f_level, ta.f_menu_pid, ta.f_order;
+10:23:01 <___44> BWebSource___70 [---------------------]  select eox_user.*, '' as f_login_psw, eox_dept.f_name as f_dept_id_s from eox_user, eox_dept where eox_user.f_dept_id = eox_dept.f_dept_id and eox_user.f_login_id = 'bbbb' and eox_user.f_login_psw = '6da6897bab3a8c75d225232a21dce1c3' and eox_user.f_status > 0 and eox_user._update_flag > 0 and eox_dept._update_flag > 0
+10:23:01 <___44> BWebSource___70 [---------------------]  select f_permits from eox_role where _update_flag>0 and f_role_id in (1,3,5,6,7,8)
+10:23:01 <___39> BWebSource___70 [---------------------]  select 0 as _d, '' as _s, eox_flow_type.* from eox_flow_type where _update_flag>0
+10:23:01 <___39> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /framework/flow/type/list
+10:23:01 <___40> BWebSource___70 [---------------------]  select 0 as _d, '' as _s, eox_flow_point.* from eox_flow_point where _update_flag>0  order by f_flow_type_id,f_order
+10:23:01 <___40> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /framework/flow/point/list
+10:23:06 <___47> BWebSource___70 [---------------------]  select eox_user.f_user_id,eox_user.f_login_id,eox_user.f_name, eox_user.f_dept_id,eox_dept.f_name as f_dept_id_s from eox_user, eox_dept where eox_user.f_dept_id = eox_dept.f_dept_id and eox_user._update_flag > 0 and eox_dept._update_flag > 0 order by eox_user.f_dept_id,eox_user.f_name
+10:23:06 <___47> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /framework/user/dic
+10:23:06 <___38> BWebSource___70 [---------------------]  select * from tcpdl where _update_flag>0
+10:23:06 <___38> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:23:06 <___42> BWebSource___70 [---------------------]  select * from tcpxl where _update_flag>0  order by f_cpdl_id
+10:23:06 <___42> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:23:06 <___44> BWebSource___50 [---------------------] select count(*) from tkcmx,tcpdy,tcpdl,tcpxl where tkcmx._update_flag>0 and f_kcbz>0 and tkcmx.f_cpdy_id=tcpdy.f_cpdy_id and tcpdy.f_cpxl_id=tcpxl.f_cpxl_id and tcpdl.f_cpdl_id=tcpxl.f_cpdl_id        ORDER BY `f_kcmx_id` DESC
+10:23:06 <___44> BWebSource___70 [---------------------]  select tcpdy.*,tkcmx.*, tcpdl.f_cpdl_id,tcpdl.f_dlbm,tcpdl.f_dlmc, tcpxl.f_cpxl_id,tcpxl.f_xlbm,tcpxl.f_xlmc from tkcmx,tcpdy,tcpdl,tcpxl where tkcmx._update_flag>0 and f_kcbz>0 and tkcmx.f_cpdy_id=tcpdy.f_cpdy_id and tcpdy.f_cpxl_id=tcpxl.f_cpxl_id and tcpdl.f_cpdl_id=tcpxl.f_cpdl_id        ORDER BY `f_kcmx_id` DESC LIMIT 0,20
+10:23:06 <___44> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:23:19 <___39> BWebSource___70 [---------------------]  select f_kcmx_id as t_kcmx_id from tkcmx where f_kcmxrk_id=194
+10:23:19 <___39> BWebSource___98 [---------------------]  update tkcmx set f_hwck=0, f_cpdj=0.02, f_cpsl=28, f_pksj='2026-02-11 10:23:19', f_beizhu='', _update_time='2026-02-11 10:23:19' where f_kcmx_id = 158;
+10:23:19 <___39> BWebSource___70 [---------------------]  select sum(f_cpsl) as t_cpsl, sum(f_cpsl*f_cpdj) as t_cpzj from tkcmx where f_cpdy_id=37
+10:23:19 <___39> BWebSource___98 [---------------------]  update tcpdy set f_kcsl=88.000000,f_kczj=1.760000000000 where f_cpdy_id=37
+10:23:19 <___39> BWebSource___70 [---------------------]  select tcpdy.*,tkcmx.*, tcpdl.f_cpdl_id,tcpdl.f_dlbm,tcpdl.f_dlmc, tcpxl.f_cpxl_id,tcpxl.f_xlbm,tcpxl.f_xlmc from tkcmx,tcpdy,tcpdl,tcpxl where f_kcmx_id=158 and tkcmx.f_cpdy_id=tcpdy.f_cpdy_id and tcpdy.f_cpxl_id=tcpxl.f_cpxl_id and tcpdl.f_cpdl_id=tcpxl.f_cpdl_id
+10:23:19 <___39> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:23:19 <___43> BWebSource___98 [---------------------]  update tcpdy set f_seek=f_seek+1 where f_cpdy_id=37
+10:23:19 <___43> BWebSource___70 [---------------------]  select f_seek from tcpdy where f_cpdy_id=37
+10:23:19 <___43> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:23:19 <___40> BWebSource__112 [---------------------]  insert into tkcmxrk( f_kcbh, f_cpdy_id, f_rklb, f_rkd_id, f_rkcp_id, f_kgy_id, f_cpsl, f_cpdj, f_cpzj, f_hwck, f_rksj, f_rkbz, f_beizhu, _update_time, _update_flag) values ( '240001000102000108', 37, 'KF', 0, 0, 7, 1, 0.02, 0.02, 0, '2026-02-11 10:23:19', 0, '', '2026-02-11 10:23:19', 1);
+10:23:19 <___40> BWebSource___70 [---------------------]  select tkcmxrk.*,tcpdy.* from tkcmxrk,tcpdy where f_kcmxrk_id=202 and tkcmxrk.f_cpdy_id=tcpdy.f_cpdy_id
+10:23:19 <___40> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:23:19 <___45> BWebSource___70 [---------------------]  select f_kcmx_id as t_kcmx_id from tkcmx where f_kcmxrk_id=202
+10:23:19 <___45> BWebSource__112 [---------------------]  insert into tkcmx( f_kcbh, f_kcmxrk_id, f_kcmxck_id, f_cpdy_id, f_jyzt, f_jyyg_id, f_hwck, f_rksj, f_pksj, f_cpdj, f_cpsl, f_kcbz, f_kgy_id, f_beizhu, _update_time, _update_flag) values ( '240001000102000108', 202, 0, 37, 0, 0, 0, '2026-02-11 10:23:19', '2026-02-11 10:23:19', 0.02, 1, 1, 7, '', '2026-02-11 10:23:19', 1);
+10:23:19 <___45> BWebSource___98 [---------------------]  update tkcmxrk set f_rkbz=1 where f_kcmxrk_id = 202;
+10:23:19 <___45> BWebSource___70 [---------------------]  select sum(f_cpsl) as t_cpsl, sum(f_cpsl*f_cpdj) as t_cpzj from tkcmx where f_cpdy_id=37
+10:23:19 <___45> BWebSource___98 [---------------------]  update tcpdy set f_kcsl=89.000000,f_kczj=1.780000000000 where f_cpdy_id=37
+10:23:19 <___45> BWebSource___70 [---------------------]  select tcpdy.*,tkcmx.*, tcpdl.f_cpdl_id,tcpdl.f_dlbm,tcpdl.f_dlmc, tcpxl.f_cpxl_id,tcpxl.f_xlbm,tcpxl.f_xlmc from tkcmx,tcpdy,tcpdl,tcpxl where f_kcmx_id=166 and tkcmx.f_cpdy_id=tcpdy.f_cpdy_id and tcpdy.f_cpxl_id=tcpxl.f_cpxl_id and tcpdl.f_cpdl_id=tcpxl.f_cpdl_id
+10:23:19 <___45> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:23:29 <___46> BWebSource___50 [---------------------] select count(*) from tkcmx,tcpdy,tcpdl,tcpxl where tkcmx._update_flag>0 and f_kcbz>0 and tkcmx.f_cpdy_id=tcpdy.f_cpdy_id and tcpdy.f_cpxl_id=tcpxl.f_cpxl_id and tcpdl.f_cpdl_id=tcpxl.f_cpdl_id        ORDER BY `f_kcmx_id` DESC
+10:23:29 <___46> BWebSource___70 [---------------------]  select tcpdy.*,tkcmx.*, tcpdl.f_cpdl_id,tcpdl.f_dlbm,tcpdl.f_dlmc, tcpxl.f_cpxl_id,tcpxl.f_xlbm,tcpxl.f_xlmc from tkcmx,tcpdy,tcpdl,tcpxl where tkcmx._update_flag>0 and f_kcbz>0 and tkcmx.f_cpdy_id=tcpdy.f_cpdy_id and tcpdy.f_cpxl_id=tcpxl.f_cpxl_id and tcpdl.f_cpdl_id=tcpxl.f_cpdl_id        ORDER BY `f_kcmx_id` DESC LIMIT 0,20
+10:23:29 <___46> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:24:48 <___44> BWebSource___70 [---------------------]  select eox_user.f_user_id,eox_user.f_login_id,eox_user.f_name, eox_user.f_dept_id,eox_dept.f_name as f_dept_id_s from eox_user, eox_dept where eox_user.f_dept_id = eox_dept.f_dept_id and eox_user._update_flag > 0 and eox_dept._update_flag > 0 order by eox_user.f_dept_id,eox_user.f_name
+10:24:48 <___44> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /framework/user/dic
+10:24:48 <___39> BWebSource___70 [---------------------]  select * from tcpdl where _update_flag>0
+10:24:48 <___39> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:24:48 <___43> BWebSource___70 [---------------------]  select * from tcpxl where _update_flag>0  order by f_cpdl_id
+10:24:48 <___43> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:24:48 <___40> BWebSource___50 [---------------------] select count(*) from tkcmx,tcpdy,tcpdl,tcpxl where tkcmx._update_flag>0 and f_kcbz>0 and tkcmx.f_cpdy_id=tcpdy.f_cpdy_id and tcpdy.f_cpxl_id=tcpxl.f_cpxl_id and tcpdl.f_cpdl_id=tcpxl.f_cpdl_id        ORDER BY `f_kcmx_id` DESC
+10:24:48 <___40> BWebSource___70 [---------------------]  select tcpdy.*,tkcmx.*, tcpdl.f_cpdl_id,tcpdl.f_dlbm,tcpdl.f_dlmc, tcpxl.f_cpxl_id,tcpxl.f_xlbm,tcpxl.f_xlmc from tkcmx,tcpdy,tcpdl,tcpxl where tkcmx._update_flag>0 and f_kcbz>0 and tkcmx.f_cpdy_id=tcpdy.f_cpdy_id and tcpdy.f_cpxl_id=tcpxl.f_cpxl_id and tcpdl.f_cpdl_id=tcpxl.f_cpdl_id        ORDER BY `f_kcmx_id` DESC LIMIT 0,20
+10:24:48 <___40> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:30:42 <___46> BWebSource___70 [---------------------]  select eox_user.f_user_id,eox_user.f_login_id,eox_user.f_name, eox_user.f_dept_id,eox_dept.f_name as f_dept_id_s from eox_user, eox_dept where eox_user.f_dept_id = eox_dept.f_dept_id and eox_user._update_flag > 0 and eox_dept._update_flag > 0 order by eox_user.f_dept_id,eox_user.f_name
+10:30:42 <___46> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /framework/user/dic
+10:30:42 <___42> BWebSource___70 [---------------------]  select * from tcpdl where _update_flag>0
+10:30:42 <___42> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:30:42 <___44> BWebSource___70 [---------------------]  select * from tcpxl where _update_flag>0  order by f_cpdl_id
+10:30:42 <___44> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:30:42 <___41> BWebSource___50 [---------------------] select count(*) from tkcmx,tcpdy,tcpdl,tcpxl where tkcmx._update_flag>0 and f_kcbz>0 and tkcmx.f_cpdy_id=tcpdy.f_cpdy_id and tcpdy.f_cpxl_id=tcpxl.f_cpxl_id and tcpdl.f_cpdl_id=tcpxl.f_cpdl_id        ORDER BY `f_kcmx_id` DESC
+10:30:42 <___41> BWebSource___70 [---------------------]  select tcpdy.*,tkcmx.*, tcpdl.f_cpdl_id,tcpdl.f_dlbm,tcpdl.f_dlmc, tcpxl.f_cpxl_id,tcpxl.f_xlbm,tcpxl.f_xlmc from tkcmx,tcpdy,tcpdl,tcpxl where tkcmx._update_flag>0 and f_kcbz>0 and tkcmx.f_cpdy_id=tcpdy.f_cpdy_id and tcpdy.f_cpxl_id=tcpxl.f_cpxl_id and tcpdl.f_cpdl_id=tcpxl.f_cpdl_id        ORDER BY `f_kcmx_id` DESC LIMIT 0,20
+10:30:42 <___41> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:30:48 <___43> BWebSource___70 [---------------------]  select * from eox_setting where _update_flag>0;
+10:30:48 <___45> BWebSource___70 [---------------------]  select ta.*, tb.f_name as f_menu_pid_s from eox_menu as ta, eox_menu as tb where ta.f_menu_pid = tb.f_menu_id and ta._update_flag > 0 order by ta.f_level, ta.f_menu_pid, ta.f_order;
+10:30:53 <___42> BWebSource___70 [---------------------]  select eox_user.*, '' as f_login_psw, eox_dept.f_name as f_dept_id_s from eox_user, eox_dept where eox_user.f_dept_id = eox_dept.f_dept_id and eox_user.f_login_id = 'bbbb' and eox_user.f_login_psw = '6da6897bab3a8c75d225232a21dce1c3' and eox_user.f_status > 0 and eox_user._update_flag > 0 and eox_dept._update_flag > 0
+10:30:53 <___42> BWebSource___70 [---------------------]  select f_permits from eox_role where _update_flag>0 and f_role_id in (1,3,5,6,7,8)
+10:30:53 <___41> BWebSource___70 [---------------------]  select 0 as _d, '' as _s, eox_flow_type.* from eox_flow_type where _update_flag>0
+10:30:53 <___41> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /framework/flow/type/list
+10:30:53 <___43> BWebSource___70 [---------------------]  select 0 as _d, '' as _s, eox_flow_point.* from eox_flow_point where _update_flag>0  order by f_flow_type_id,f_order
+10:30:53 <___43> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /framework/flow/point/list
+10:31:07 <___45> BWebSource___70 [---------------------]  select eox_user.f_user_id,eox_user.f_login_id,eox_user.f_name, eox_user.f_dept_id,eox_dept.f_name as f_dept_id_s from eox_user, eox_dept where eox_user.f_dept_id = eox_dept.f_dept_id and eox_user._update_flag > 0 and eox_dept._update_flag > 0 order by eox_user.f_dept_id,eox_user.f_name
+10:31:07 <___45> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /framework/user/dic
+10:31:07 <___46> BWebSource___70 [---------------------]  select * from tcpdl where _update_flag>0
+10:31:07 <___46> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:31:07 <___38> BWebSource___70 [---------------------]  select * from tcpxl where _update_flag>0  order by f_cpdl_id
+10:31:07 <___38> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:31:07 <___42> BWebSource___50 [---------------------] select count(*) from tkcmx,tcpdy,tcpdl,tcpxl where tkcmx._update_flag>0 and f_kcbz>0 and tkcmx.f_cpdy_id=tcpdy.f_cpdy_id and tcpdy.f_cpxl_id=tcpxl.f_cpxl_id and tcpdl.f_cpdl_id=tcpxl.f_cpdl_id        ORDER BY `f_kcmx_id` DESC
+10:31:07 <___42> BWebSource___70 [---------------------]  select tcpdy.*,tkcmx.*, tcpdl.f_cpdl_id,tcpdl.f_dlbm,tcpdl.f_dlmc, tcpxl.f_cpxl_id,tcpxl.f_xlbm,tcpxl.f_xlmc from tkcmx,tcpdy,tcpdl,tcpxl where tkcmx._update_flag>0 and f_kcbz>0 and tkcmx.f_cpdy_id=tcpdy.f_cpdy_id and tcpdy.f_cpxl_id=tcpxl.f_cpxl_id and tcpdl.f_cpdl_id=tcpxl.f_cpdl_id        ORDER BY `f_kcmx_id` DESC LIMIT 0,20
+10:31:07 <___42> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:31:46 <___41> BWebSource__112 [---------------------]  insert into tkcmxck( f_kcmx_id, f_cklb, f_ckd_id, f_kgy_id, f_cksl, f_ckdj, f_ckzj, f_wlgs_id, f_wldh, f_cksj, f_ckbz, f_beizhu, _update_time, _update_flag) values ( 166, 'KH', 0, 7, 1, 0, 0, 0, '', '2026-02-11 10:31:46', 1, '', '2026-02-11 10:31:46', 1)
+10:31:46 <___41> BWebSource___98 [---------------------]  update tkcmx set f_kcmxck_id=21,f_kcbz=0,_update_time='2026-02-11 10:31:46' where f_kcmx_id = 166
+10:31:46 <___41> BWebSource___70 [---------------------]  select tkcmx.*,tkcmxck.*,tcpdy.* from tkcmxck,tkcmx,tcpdy where tkcmxck._update_flag>0 and tkcmxck.f_kcmx_id=tkcmx.f_kcmx_id and tkcmx.f_cpdy_id=tcpdy.f_cpdy_id and tkcmxck.f_kcmxck_id=21
+10:31:46 <___41> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:31:46 <___39> BWebSource__112 [---------------------]  insert into tkcmxck( f_kcmx_id, f_cklb, f_ckd_id, f_kgy_id, f_cksl, f_ckdj, f_ckzj, f_wlgs_id, f_wldh, f_cksj, f_ckbz, f_beizhu, _update_time, _update_flag) values ( 158, 'KH', 0, 7, 1, 0, 0, 0, '', '2026-02-11 10:31:46', 1, '', '2026-02-11 10:31:46', 1)
+10:31:46 <___39> BWebSource___98 [---------------------]  update tkcmx set f_kcmxck_id=22,f_kcbz=0,_update_time='2026-02-11 10:31:46' where f_kcmx_id = 158
+10:31:46 <___39> BWebSource___70 [---------------------]  select tkcmx.*,tkcmxck.*,tcpdy.* from tkcmxck,tkcmx,tcpdy where tkcmxck._update_flag>0 and tkcmxck.f_kcmx_id=tkcmx.f_kcmx_id and tkcmx.f_cpdy_id=tcpdy.f_cpdy_id and tkcmxck.f_kcmxck_id=22
+10:31:46 <___39> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:31:46 <___43> BWebSource___98 [---------------------]  update tcpdy set f_seek=f_seek+1 where f_cpdy_id=37
+10:31:46 <___43> BWebSource___70 [---------------------]  select f_seek from tcpdy where f_cpdy_id=37
+10:31:46 <___43> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:31:46 <___40> BWebSource__112 [---------------------]  insert into tkcmxrk( f_kcbh, f_cpdy_id, f_rklb, f_rkd_id, f_rkcp_id, f_kgy_id, f_cpsl, f_cpdj, f_cpzj, f_hwck, f_rksj, f_rkbz, f_beizhu, _update_time, _update_flag) values ( '240001000102000109', 37, 'KH', 0, 0, 7, 29, 0.020000000000000004, 0.5800000000000001, 0, '2026-02-11 10:31:46', 0, '', '2026-02-11 10:31:46', 1);
+10:31:46 <___40> BWebSource___70 [---------------------]  select tkcmxrk.*,tcpdy.* from tkcmxrk,tcpdy where f_kcmxrk_id=203 and tkcmxrk.f_cpdy_id=tcpdy.f_cpdy_id
+10:31:46 <___40> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:31:46 <___45> BWebSource___70 [---------------------]  select f_kcmx_id as t_kcmx_id from tkcmx where f_kcmxrk_id=203
+10:31:46 <___45> BWebSource__112 [---------------------]  insert into tkcmx( f_kcbh, f_kcmxrk_id, f_kcmxck_id, f_cpdy_id, f_jyzt, f_jyyg_id, f_hwck, f_rksj, f_pksj, f_cpdj, f_cpsl, f_kcbz, f_kgy_id, f_beizhu, _update_time, _update_flag) values ( '240001000102000109', 203, 0, 37, 0, 0, 0, '2026-02-11 10:31:46', '2026-02-11 10:31:46', 0.020000000000000004, 29, 1, 7, '', '2026-02-11 10:31:46', 1);
+10:31:46 <___45> BWebSource___98 [---------------------]  update tkcmxrk set f_rkbz=1 where f_kcmxrk_id = 203;
+10:31:46 <___45> BWebSource___70 [---------------------]  select sum(f_cpsl) as t_cpsl, sum(f_cpsl*f_cpdj) as t_cpzj from tkcmx where f_cpdy_id=37
+10:31:46 <___45> BWebSource___98 [---------------------]  update tcpdy set f_kcsl=118.000000,f_kczj=2.360000000000 where f_cpdy_id=37
+10:31:46 <___45> BWebSource___70 [---------------------]  select tcpdy.*,tkcmx.*, tcpdl.f_cpdl_id,tcpdl.f_dlbm,tcpdl.f_dlmc, tcpxl.f_cpxl_id,tcpxl.f_xlbm,tcpxl.f_xlmc from tkcmx,tcpdy,tcpdl,tcpxl where f_kcmx_id=167 and tkcmx.f_cpdy_id=tcpdy.f_cpdy_id and tcpdy.f_cpxl_id=tcpxl.f_cpxl_id and tcpdl.f_cpdl_id=tcpxl.f_cpdl_id
+10:31:46 <___45> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
+10:31:46 <___47> BWebSource___50 [---------------------] select count(*) from tkcmx,tcpdy,tcpdl,tcpxl where tkcmx._update_flag>0 and f_kcbz>0 and tkcmx.f_cpdy_id=tcpdy.f_cpdy_id and tcpdy.f_cpxl_id=tcpxl.f_cpxl_id and tcpdl.f_cpdl_id=tcpxl.f_cpdl_id        ORDER BY `f_kcmx_id` DESC
+10:31:46 <___47> BWebSource___70 [---------------------]  select tcpdy.*,tkcmx.*, tcpdl.f_cpdl_id,tcpdl.f_dlbm,tcpdl.f_dlmc, tcpxl.f_cpxl_id,tcpxl.f_xlbm,tcpxl.f_xlmc from tkcmx,tcpdy,tcpdl,tcpxl where tkcmx._update_flag>0 and f_kcbz>0 and tkcmx.f_cpdy_id=tcpdy.f_cpdy_id and tcpdy.f_cpxl_id=tcpxl.f_cpxl_id and tcpdl.f_cpdl_id=tcpxl.f_cpdl_id        ORDER BY `f_kcmx_id` DESC LIMIT 0,20
+10:31:46 <___47> XXXCLogWeb___27 [---------------------] [127.0.0.1] URL: /common/proc
