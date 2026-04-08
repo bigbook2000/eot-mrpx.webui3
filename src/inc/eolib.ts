@@ -518,10 +518,15 @@ export default {
 	 * @param list2 
 	 * @param field1 
 	 * @param field2 
+	 * @param data0 默认值
 	 */
-	list_merge(list1: any[], list2: any[], field1: string, field2: string) {
+	list_merge(list1: any[], list2: any[], field1: string, field2: string, data0?: any) {
 
 		for (let d1 of list1) {
+
+			// 提供一个默认值
+			if (data0 != undefined) Object.assign(d1, data0);
+
 			for (let d2 of list2) {
 				if (d2[field2] == d1[field1]) {
 					Object.assign(d1, d2);

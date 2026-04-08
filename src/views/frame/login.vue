@@ -95,6 +95,9 @@ import eoflow from "@/inc/eoflow";
         // 获取权限
         let permits = TGlobal.userData["f_permits"];
         TGlobal.userData["f_permits"] = "";
+        
+        let role = TGlobal.userData["f_role"];
+        TGlobal.userData.role_list = role.split(",").filter((item: any) => item != "");
         TGlobal.permitString = permits;
 
         // 初始化流程

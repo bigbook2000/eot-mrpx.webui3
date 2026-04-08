@@ -22,13 +22,14 @@ export default {
 	
 	codeTypes: {
 		"采购入库": "CG",
-		"采购退货": "CT",
-		"生产加工": "SC",
+		"采购退货": "CT",		
 		"销售退货": "XT",
-		"盘库整理": "KZ",
 		"销售订单": "XS",
 
-		"库存明细": "KM",
+		"生产加工": "SC",
+
+		"盘库整理": "KZ",
+		
 		"库存拆分": "KF",
 		"库存合并": "KH",
 	} as Record<string, string>,
@@ -98,7 +99,7 @@ export default {
 	
 
 	/**
-	 * 检查菜单权限
+	 * 检查权限
 	 * @param {*} permit 
 	 */
 	checkPermit(permit: string): boolean {
@@ -107,6 +108,32 @@ export default {
 		return (TGlobal.permitString.indexOf("," + permit + ",") >= 0);
 	},
 
+	/**
+	 * 检查角色
+	 * @param roleList 
+	 * @returns 
+	 */
+	checkRoleList(roleList: any[]): boolean {
+
+		if (roleList.length == 0) {
+			return true;
+		}
+
+		let list = TGlobal.userData["role_list"];
+		for (let d1 of roleList) {			
+			for (let d2 of list) {
+				if (d1 == d2) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	},
+	checkRoleString(roleStr: string): boolean {
+		let list = roleStr.split(",");
+		return this.checkRoleList(list);
+	},
 
 
 	/**
@@ -605,54 +632,69 @@ export default {
 		//console.log(editFields);
 		return editFields;
 	},
+	
+	/**
+	 * 更新库存明细
+	 * @param data 更新的库存明细数据
+	 */
+	async netLoad_kcmx_upd(data: any): Promise<any|undefined> {
+
+		const ret = await eocore.proc(    
+			"p_kcmx_upd", {
+				"v_kcmx_id": data["f_kcmx_id"],
+				"v_cpdy_id": data["f_cpdy_id"],
+				"v_kcbh": data["f_kcbh"],
+				"v_rklb": data["f_rklb"],
+				"v_rksj": data["f_rksj"],
+				"v_cklb": data["f_cklb"],
+				"v_cksj": data["f_cksj"],
+				"v_hwck": data["f_hwck"],
+				"v_pksj": data["f_pksj"],
+				"v_kcdj": data["f_kcdj"],
+				"v_kcsl": data["f_kcsl"],
+				"v_kcbz": data["f_kcbz"],
+				"v_kgy_id": data["f_kgy_id"],
+				"v_jyzt": data["f_jyzt"],
+				"v_jyyg_id": data["f_jyyg_id"],
+				"v_beizhu": data["f_beizhu"]
+		});		
+        return eocore.check_net_object(ret);
+	},
 
 	/**
-	 * 入库
-	 * @param kgyId 库管员
-	 * @param rklb 入库类别
+	 * 拆分库存明细
+	 * @param kgyId 
 	 * @param data 
-	 * @returns 
+	 * @param kcsl2 拆分出的数量
 	 */
-	async netLoad_kcmxrk_upd(kgyId: number, rklb: string, data: any): Promise<any> {
+	async netLoad_kcmx_cf(kgyId: number, data: any, kcsl2: number): Promise<any|undefined> {
 
-		const kcbh = await this.netLoad_RecordString_kcbh(data["f_cpdy_id"], data["f_cpbm"]);
+		const kcsl = data["f_kcsl"];
+		const kcsl1 = kcsl - kcsl2;
 
-		// 先创建入库明细
-        let ret = await eocore.proc(
-			"p_kcmxrk_upd", {
-				"v_kcmxrk_id": 0,
-				"v_kcbh": kcbh,
-				"v_kcbz": 1, // 0表示未进入库存，1表示已经进入库存
-				"v_cpdy_id": data["f_cpdy_id"],
-				"v_rklb": rklb,
-				"v_rkd_id": 0, // 直接盘库新增
-				"v_rkcp_id": 0,
-				"v_kgy_id": kgyId,
-				"v_cpsl": data["f_cpsl"],
-				"v_cpdj": data["f_cpdj"],
-				"v_cpzj": data["f_cpzj"],
-				"v_hwck": data["f_hwck"],
-				"v_beizhu": data["f_beizhu"]
-		});
+		const dts = eolib.datetime_2_string(new Date(), true);
 
-		const rkmxData = eocore.check_net_object(ret);
-		if (rkmxData == undefined) return undefined;
+        let data1 = Object.assign({}, data);
+        data1["f_kcsl"] = kcsl1;
+		data1["f_pksj"] = dts;
+		data1["f_kgy_id"] = kgyId;
 
-		// 再创建库存明细
-		ret = await eocore.proc(
-			"p_kcmx_upd", {
-				"v_kcbh": kcbh,
-				"v_kcmxrk_id": rkmxData["f_kcmxrk_id"],
-				"v_cpdy_id": data["f_cpdy_id"],
-				"v_jyzt": 0,
-				"v_hwck": data["f_hwck"],
-				"v_cpdj": data["f_cpdj"],
-				"v_cpsl": data["f_cpsl"],
-				"v_yxbz": 1,
-				"v_kgy_id": kgyId,
-				"v_beizhu": data["f_beizhu"]
-		});
-		return eocore.check_net_object(ret);
-	},
-	
+        let dataNew1 = await this.netLoad_kcmx_upd(data1);
+        if (dataNew1 == undefined) return undefined;
+
+		let data2 = Object.assign({}, data);
+		data2["f_kcmx_id"] = 0;
+        data2["f_kcsl"] = kcsl2;
+		data2["f_pksj"] = dts;
+		data2["f_kcbh"] = await this.netLoad_RecordString_kcbh(data["f_cpdy_id"], data["f_cpbm"]);
+
+        let dataNew2 = await this.netLoad_kcmx_upd(data2);
+        if (dataNew2 == undefined) return undefined;
+
+		return { 
+			data: data,
+			dataNew1: dataNew1, 
+			dataNew2: dataNew2 
+		};
+	}
 }

@@ -81,6 +81,7 @@
     import TLogic from "@/logic/TLogic"
 
     import type { TabPaneName, TabsPaneContext } from "element-plus"
+import eolib from "@/inc/eolib"
 
     var x_main_title = ref("");
     var x_user_name = ref("");
@@ -132,13 +133,13 @@
 
         var menuList = new Array<any>();
         let menuListAll = new Array<any>();
-
+        
         let lastMenu = undefined;
         for (let d of TGlobal.menuList) {
 
             if (d["f_type"] != "menu") continue;
-
-            if (!TLogic.checkPermit(d["f_permit"])) continue;
+            // 通过角色判断
+            if (!TLogic.checkRoleList(d.role_list)) continue;
 
             let menuPid = d['f_menu_pid'];
             if (menuPid == 1) {
@@ -167,7 +168,7 @@
                 }
 
                 if (lastMenu == undefined) {
-                    console.log('未找到菜单' + d['name']);
+                    console.log('未找到菜单', d);
                     continue;
                 }
 

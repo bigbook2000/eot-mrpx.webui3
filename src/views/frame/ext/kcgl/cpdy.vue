@@ -315,20 +315,21 @@ export default { name: "ext_kcgl_cpdy" }
         const cpxlId = eocore.to_int(node?.["f_cpxl_id"] || 0);
  
         let cpdyData = {
-            f_cpdy_id: 0,
-            f_cpdl_id: cpdlId,
-            f_cpxl_id: cpxlId,
-            f_cpdl_id_s: "", // 大类名称
-            f_cplb_id_s: "", // 小类名称
-            f_cpbm: "",   // 产品编码
-            f_cpmc: "",     // 产品名称
-            f_cpgg: "",     // 产品规格
-            f_cpcc: "",     // 产品尺寸
-            f_cpdw: "",     // 产品单位
-            f_cpjg: 0,      // 产品价格
-            f_cpzt: 1,      // 产品状态（1:启用，0:禁用）
-            f_cpms: "",      // 产品描述
-            f_cjsj: eolib.datetime_2_string(new Date()),
+            "f_cpdy_id": 0,
+            "f_cpdl_id": cpdlId,
+            "f_cpxl_id": cpxlId,
+            "f_cpdl_id_s": "", // 大类名称
+            "f_cplb_id_s": "", // 小类名称
+            "f_cpbm": "",   // 产品编码
+            "f_cpmc": "",     // 产品名称
+            "f_cpgg": "",     // 产品规格
+            "f_cpcc": "",     // 产品尺寸
+            "f_cpdw": "",     // 产品单位
+            "f_bzsl": 1,      // 产品数量
+            "f_cpjg": 0,      // 产品价格
+            "f_cpzt": 1,      // 产品状态（1:启用，0:禁用）
+            "f_cpms": "",      // 产品描述
+            "f_cjsj": eolib.datetime_2_string(new Date()),
         };
         
         v_cpdy_xx.value?.show_dialog(cpdyData, m_cplb_list);

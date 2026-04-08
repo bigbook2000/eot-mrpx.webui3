@@ -21,16 +21,7 @@
             <div class="cell eo_w100">
                 <div class="label_n">角色</div>
                 <div class="input">
-                    <el-select v-model="x_point_data['f_role_d']"
-                        multiple
-                        placeholder="请选择角色"
-                        style="width:100%">
-                    <el-option
-                        v-for="item in x_role_list"
-                        :key="item['f_role_id']"
-                        :label="item['f_name']"
-                        :value="item['f_role_id']" />
-                    </el-select>
+                    <role_input ref="v_role_input" v-model="x_point_data['f_role']" />
                 </div>
             </div>
             <div class="cell eo_w100">
@@ -53,6 +44,8 @@
     import type {cfunc_boolean} from "@/inc/eotypes";
 
     import vdialog from "@/logic/common/vdialog.vue"
+    import role_input from "@/views/platform/role_input.vue"
+
     type t_dialog = InstanceType<typeof vdialog>;
     const v_dialog = ref<t_dialog>();
 
@@ -60,19 +53,9 @@
         (e: "close", cancel: boolean, data: any, cb: cfunc_boolean): void
     }>()
 
-    const x_role_list = ref<any[]>([]);
-
     var x_point_data: any = reactive({});
 
-    const netLoad_role_list = async () => {
-
-        let ret: any = await eocore.post("/framework/role/list", [{}]);
-        let list = eocore.check_net_array(ret);
-        if (list != undefined) x_role_list.value = list;
-    }
-
     onMounted(() => {
-        netLoad_role_list();
     });
 
     const show_dialog = (data: any) => {
@@ -92,14 +75,6 @@
         emits("close", cancel, x_point_data, (result: boolean) => {
             cb(result);
         });
-    }
-
-    const onDialogClose_deptlist = (cancel: boolean, data: any, cb: cfunc_boolean) => {
-        if (cancel) {
-            cb(true); return;
-        }
-
-        cb(true);
     }
 
     defineExpose({

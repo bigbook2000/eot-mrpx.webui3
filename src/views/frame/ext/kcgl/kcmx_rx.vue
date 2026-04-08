@@ -1,7 +1,7 @@
 <template>
     <!-- 并库编辑对话框 -->
     <vdialog ref="v_dialog"
-        width="1000px" title="并库编辑"
+        width="1000px" title="库存编辑"
         @open="onDialogOpen"
         @close="onDialogClose">
         <div class="eo_form">
@@ -21,9 +21,9 @@
                 </div>
             </div>
             <div class="cell eo_w4">
-                <div class="label_n">占用状态</div>
+                <div class="label_n">调拨状态</div>
                 <div class="input">
-                    <vdic style="width:100%" dic="占用状态" :all="false" field="value"
+                    <vdic style="width:100%" dic="调拨状态" :all="false" field="value"
                         v-model="x_data_kcmx['f_jyzt']" :disabled="true" />
                 </div>
             </div>
@@ -50,14 +50,14 @@
             <div class="cell eo_w2">
                 <div class="label_n">包装数量</div>
                 <div class="input">
-                    <el-input-number v-model="x_data_kcmx['f_cpsl']" style="width:100%"
+                    <el-input-number v-model="x_data_kcmx['f_kcsl']" style="width:100%"
                         :min="0" :max="999999" :step="1" />
                 </div>
             </div>
             <div class="cell eo_w2">
                 <div class="label_n">成本单价</div>
                 <div class="input">
-                    <el-input-number v-model="x_data_kcmx['f_cpdj']" style="width:100%"
+                    <el-input-number v-model="x_data_kcmx['f_kcdj']" style="width:100%"
                         :min="0" :max="999999" :precision="3" :step="1" />
                 </div>
             </div>

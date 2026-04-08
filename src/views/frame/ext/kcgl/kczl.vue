@@ -29,9 +29,9 @@
                         </div>
                     </div>                    
                     <div class="cell eo_w200p">
-                        <div class="label_n">占用状态</div>
+                        <div class="label_n">调拨状态</div>
                         <div class="input">
-                            <vdic style="width:100%" dic="占用状态" :all="true" field="value"
+                            <vdic style="width:100%" dic="调拨状态" :all="true" field="value"
                                 v-model="x_query_jyzt" />
                         </div>
                     </div>
@@ -53,10 +53,10 @@
                             <div class="cell">
                                 <vbuttonk type="primary" class="input_w" permit="" 
                                     @click="onButtonClick_Add_kcmx">新增</vbuttonk>
-                                <vbuttonk type="default" class="input_w" permit="" 
+                                <vbuttonk type="danger" class="input_w" permit="" 
                                     @click="onButtonClick_Del_kcmx">移除</vbuttonk>
                                 <vbuttonk type="default" class="input_w" permit="" 
-                                    @click="onButtonClick_Upd_kcjy">占用</vbuttonk>
+                                    @click="onButtonClick_Upd_kcjy">调拨</vbuttonk>
                                 <vbuttonk type="default" class="input_w" permit="" 
                                     @click="onButtonClick_Upd_kccf">拆库</vbuttonk>
                                 <vbuttonk type="default" class="input_w" permit="" 
@@ -79,21 +79,22 @@
                             @row-click="onTableRowClick_kcmx"
                             @sort-change="onTableSortChange">                            
                             
-                            <el-table-column prop="f_jyzt_s" label="占用" width="120">
+                            <el-table-column prop="f_jyzt_s" label="调拨" width="120">
                                 <template #default="scope">
                                     <div v-if="scope.row.f_jyzt==0">-</div>
                                     <div v-else>{{ scope.row.f_jyzt_s+'-'+scope.row.f_jyyg_id_s }}</div>
                                 </template>
                             </el-table-column>
                             <el-table-column prop="f_kcbh" label="批次" width="200" />
-                            <el-table-column prop="f_cpmc" label="产品名称" width="200" show-overflow-tooltip sortable />
-                            <el-table-column prop="f_cpdj_s" label="单价" width="120" align="right" sortable />
                             <el-table-column prop="f_rksj_s" label="入库时间" width="160" sortable />
-                            <el-table-column prop="f_cpsl" label="包装数量" width="100" />
+                            <el-table-column prop="f_cpmc" label="产品名称" width="200" show-overflow-tooltip sortable />
+                            <el-table-column prop="f_kcdj_s" label="单价" width="120" align="right" sortable />                            
+                            <el-table-column prop="f_kcsl" label="数量" width="100" />
                             <el-table-column prop="f_cpgg" label="规格" width="180" show-overflow-tooltip />
                             <el-table-column prop="f_cpcc" label="尺寸" width="160" show-overflow-tooltip />
                             <el-table-column prop="f_cpdw" label="单位" width="100" show-overflow-tooltip />
                             
+                            <el-table-column prop="f_pksj_s" label="盘库时间" width="160" />
                             <el-table-column prop="f_cpbm" label="产品编码" width="160" sortable />
                             <el-table-column prop="f_dlmc" label="大类" width="120" show-overflow-tooltip />
                             <el-table-column prop="f_xlmc" label="小类" width="140" show-overflow-tooltip />
@@ -320,16 +321,15 @@ export default { name: "ext_kcgl_kczl" }
      * @param data 表格行数据
      */
     const onTableItem_kcmx = (data: any) => {
-        // 占用状态显示
-        data["f_jyzt_s"] = eodic.get_dic_label("占用状态", data["f_jyzt"]);
+        // 调拨状态显示
+        data["f_jyzt_s"] = eodic.get_dic_label("调拨状态", data["f_jyzt"]);
         
         // 日期格式化
-        if (data["f_rksj"]) {
-            data["f_rksj_s"] = eolib.datetime_2_short(data["f_rksj"], true);
-        }
+        data["f_rksj_s"] = eolib.datetime_2_short(data["f_rksj"], true);
+        data["f_pksj_s"] = eolib.datetime_2_short(data["f_pksj"], true);
 
         // 价格格式化
-        data["f_cpdj_s"] = eolib.fixed_num(data["f_cpdj"], 3);
+        data["f_kcdj_s"] = eolib.fixed_num(data["f_kcdj"], 3);
         
         // 仓库显示
         data["f_hwck_s"] = eodic.get_dic_label("产品仓库", data["f_hwck"]);
@@ -384,27 +384,30 @@ export default { name: "ext_kcgl_kczl" }
      */
     const onButtonClick_Add_kcmx = async () => {
 
-        const dts = eolib.datetime_2_string(new Date(), true);
+        const rklb = TLogic.codeTypes["盘库整理"];
+        
         let kcmxData = {
             "f_kcmx_id": 0,
-            "f_kcbh": "",
-            "f_kcmxrk_id": 0, // 入库明细ID
-            "f_kcmxck_id": 0, // 出库明细ID
             "f_cpdy_id": 0,        // 产品定义ID
+            "f_kcbh": "",
+            "f_rklb": rklb, // 入库类别
+            "f_rksj": "1970-01-01 00:00:00",
+            "f_rksj_s": "",
+            "f_cklb": "", // 出库类别            
+            "f_cksj": "1970-01-01 00:00:00",
+            "f_cksj_s": "",
             "f_cpmc": "",          // 产品名称
             "f_cpbm": "",          // 产品编码
-            "f_jyzt": 0,           // 占用状态（0:正常）
-            "f_jyyg_id": 0,         // 占用员工ID
+            "f_jyzt": 0,           // 调拨状态（0:正常）
+            "f_jyyg_id": 0,         // 调拨员工ID
             "f_hwck": 0,           // 仓库
-            "f_cpsl": 1.0,         // 数量
-            "f_cpsl_s": "1.0",         // 数量
-            "f_cpdj": 0.0,         // 单价
-            "f_cpdj_s": "0.00",        // 价格
-            "f_rksj": dts,
-            "f_rksj_s": dts,
+            "f_kcsl": 1.0,         // 数量
+            "f_kcsl_s": "1.0",         // 数量
+            "f_kcdj": 0.0,         // 单价
+            "f_kcdj_s": "0.00",        // 价格            
+            "f_kcbz": 1,           // 有效标志
             "f_pksj": "1970-01-01 00:00:00",
-            "f_pksj_s": "",
-            "f_yxbz": 1,           // 有效标志
+            "f_pksj_s": "",            
             "f_kgy_id": TGlobal.userData["f_user_id"],
             "f_kgy_id_s": TGlobal.userData["f_name"],
             "f_beizhu": ""         // 备注
@@ -418,11 +421,11 @@ export default { name: "ext_kcgl_kczl" }
      */
     const onButtonClick_Del_kcmx = async () => {
 
-        const sel = v_table_kcmx.value?.get_select_data(true);
-        if (sel == undefined) return;
+        const data = v_table_kcmx.value?.get_select_data(true);
+        if (data == undefined) return;
 
         // 二次确认
-        let ret = await eocore.show_confirm("是否移除库存货物 " + sel["f_kcbh"] + "？一旦操作将造成不可预知的错误");
+        let ret = await eocore.show_confirm("是否移除库存货物 " + data["f_kcbh"] + "？一旦操作将造成不可预知的错误");
         if (!ret) return;
         
         // await v_table_kcmx.value?.remove_data_proc_select("p_kcmx_del", async (data: any) => {
@@ -431,27 +434,19 @@ export default { name: "ext_kcgl_kczl" }
         //     };
         // });
 
-        const kgyId = TGlobal.userData["f_user_id"];
-        const kcmxId = sel["f_kcmx_id"];
-        const cklb = TLogic.codeTypes["盘库整理"];
+        const dts = eolib.datetime_2_string(new Date(), true);
+        
+        data["f_kgy_id"] = TGlobal.userData["f_user_id"];
+        data["f_cklb"] = TLogic.codeTypes["盘库整理"];
+        data["f_cksj"] = dts;
+        data["f_pksj"] = dts;
+        data["f_kcbz"] = 0;
         
         // 直接出库
-        ret = await eocore.proc(
-            "p_kcmxck_upd", {
-                "v_kcmx_id": kcmxId,
-                "v_cklb": cklb,
-                "v_ckd_id": 0, // 直接盘库新增
-                "v_kgy_id": kgyId,
-                "v_cpsl": 1.0,
-                "v_cpdj": sel["f_cpdj"],
-                "v_cpzj": sel["f_cpdj"],
-                "v_wlgs_id": 0,
-                "v_wldh": "",
-                "v_beizhu": sel["f_beizhu"]
-        });
-
-        const data = eocore.check_net_object(ret);
-        if (data == undefined) return;
+        x_show_loading.value = true;
+        const dataNew = await TLogic.netLoad_kcmx_upd(data);
+        x_show_loading.value = false;        
+        if (dataNew == undefined) return;
 
         v_table_kcmx.value?.remove_data(data, "");
     }
@@ -486,17 +481,22 @@ export default { name: "ext_kcgl_kczl" }
     }
 
     /**
-     * 库存借用或归还（多个）
+     * 库存调拨（多个）
      */
     const onButtonClick_Upd_kcjy = () => {
         let kcmxList = v_table_kcmx.value?.get_check_list();
         if (kcmxList == undefined) return;
+
+        if (eocore.check_empty(kcmxList)) {
+            eocore.show_info("请勾选要调拨的库存");
+            return;
+        }
         
         v_kcjy_xx.value?.showDialog(kcmxList, undefined);
     }
 
     /**
-     * 货物占用
+     * 调拨记录
      */
     const onDialogClose_kcjy_xx = async (cancel: boolean, data0: any, cb: cfunc_boolean) => {
         if (cancel) { 
@@ -516,14 +516,14 @@ export default { name: "ext_kcgl_kczl" }
         let kcmxData = v_table_kcmx.value?.get_select_data(true);
         if (kcmxData == undefined) return;
 
-        const cpsl = eocore.to_int(kcmxData["f_cpsl"]);
-        if (cpsl <= 1) {
+        const kcsl = eocore.to_int(kcmxData["f_kcsl"]);
+        if (kcsl <= 1) {
             eocore.show_info("包装数量不足，无法拆分");
             return;
         }
 
-        kcmxData["f_cpsl1"] = cpsl - 1;
-        kcmxData["f_cpsl2"] = 1;
+        kcmxData["f_kcsl1"] = kcsl - 1;
+        kcmxData["f_kcsl2"] = 1;
         
         v_kccf_xx.value?.showDialog(kcmxData);
     }
@@ -533,56 +533,32 @@ export default { name: "ext_kcgl_kczl" }
             cb(true); return;
         }
 
-        const cpsl = eocore.to_int(data0["f_cpsl"]);
-        const cpsl2 = eocore.to_int(data0["f_cpsl2"]);
-        if (cpsl2 <= 0) {
+        const kcsl = eocore.to_int(data0["f_kcsl"]);
+        const kcsl2 = eocore.to_int(data0["f_kcsl2"]);
+        if (kcsl2 <= 0) {
             eocore.show_info("请输入分出数量");
             cb(false); return;
         }
 
-        if (cpsl2 >= cpsl || cpsl2 < 1) {
+        if (kcsl2 >= kcsl || kcsl2 < 1) {
             eocore.show_info("请输入正确的分出数量");
             cb(false); return;
         }
 
-        const cpsl1 = cpsl - cpsl2;
-        const cpdj = data0["f_cpdj"];
-
-        // 修改原有数量
-        const ret = await eocore.proc(
-            "p_kcmx_upd", {
-                "v_kcbh": data0["f_kcbh"],
-                "v_kcmxrk_id": data0["f_kcmxrk_id"],
-                "v_cpdy_id": data0["f_cpdy_id"],
-                "v_jyzt": data0["f_jyzt"],
-                "v_hwck": data0["f_hwck"],
-                "v_cpdj": cpdj,
-                "v_cpsl": cpsl1,
-                "v_yxbz": data0["f_yxbz"],
-                "v_kgy_id": data0["f_kgy_id"],
-                "v_beizhu": data0["f_beizhu"]
-        });
-        let dataNew = eocore.check_net_object(ret);
-        if (dataNew == undefined) return;
+        const kgyId = TGlobal.userData["f_user_id"];
+        x_show_loading.value = true;
+        const retData = await TLogic.netLoad_kcmx_cf(kgyId, data0, kcsl2);
+        x_show_loading.value = false;
+        if (retData == undefined) return;
 
         // 更新数据表原有记录
-        v_table_kcmx.value?.update_data(dataNew, -1, false, false);
-
-        const kgyId = TGlobal.userData["f_user_id"];
-        const rklb = TLogic.codeTypes["库存拆分"];
-
-        let data2 = Object.assign({}, data0);
-        data2["f_cpsl"] = cpsl2;
-        data2["f_cpzj"] = cpdj * cpsl2;
-
-        dataNew = await TLogic.netLoad_kcmxrk_upd(kgyId, rklb, data2);
-        if (dataNew == undefined) return;
+        v_table_kcmx.value?.update_data(retData.dataNew1, -1, false, false);
         
         // 显示拆分后的数据
-        v_kcmx_rx.value?.showDialog(dataNew);
+        v_kcmx_rx.value?.showDialog(retData.dataNew2);
 
         // 添加到数据表
-        v_table_kcmx.value?.update_data(dataNew, -1, true, true);
+        v_table_kcmx.value?.update_data(retData.dataNew2, -1, true, true);
 
         cb(true);
     }
@@ -595,17 +571,17 @@ export default { name: "ext_kcgl_kczl" }
         if (kcmxList == undefined) return;
         if (eocore.check_empty(kcmxList)) return;
 
-        let data = kcmxList[0];
+        let data0 = kcmxList[0];
 
-        let cpzj = 0.0;
-        let cpsl = 0;
+        let kczj = 0.0;
+        let kcsl = 0;
 
         // 合并库存，需要产品定义一致
-        let cpdyId = data["f_cpdy_id"];
+        let cpdyId = data0["f_cpdy_id"];
         for (let d of kcmxList) {
 
-            cpzj += d["f_cpdj"] * d["f_cpsl"];
-            cpsl += d["f_cpsl"];
+            kczj += d["f_kcdj"] * d["f_kcsl"];
+            kcsl += d["f_kcsl"];
 
             if (cpdyId != d["f_cpdy_id"]) {
                 eocore.show_info("请选择产品定义一致的库存进行合并");
@@ -613,47 +589,46 @@ export default { name: "ext_kcgl_kczl" }
             }
         }
 
-        if (cpsl <= 0) {
-            eocore.show_info("产品数量必须大于零");
+        if (kcsl <= 0) {
+            eocore.show_info("库存数量必须大于零");
             return;
         }
 
         //console.log(kcmxList, cpzj, cpsl);
 
         // 二次确认
-        let ret = await eocore.show_confirm("确信要将 " + cpsl + " 个 " + data["f_cpmc"] + " 合并吗？");
+        let ret = await eocore.show_confirm("确信要将 " + kcsl + " 个 " + data0["f_cpmc"] + " 合并吗？");
         if (!ret) return;
 
         let dataNew;
         let cklb = TLogic.codeTypes["库存合并"];
-        let kgyId = TGlobal.userData["f_user_id"];        
-        
-        for (let d of kcmxList) {
-            ret = await eocore.proc(
-                "p_kcmxck_upd", {
-                    "v_kcmxck_id": 0,
-                    "v_kcmx_id": d["f_kcmx_id"],
-                    "v_cklb": cklb,
-                    "v_ckd_id": 0,
-                    "v_kgy_id": kgyId,
-                    "v_cksl": 1.0,
-                    "v_ckdj": 0.0,
-                    "v_ckzj": 0.0,
-                    "v_wlgs_id": 0,
-                    "v_wldh": "",
-                    "v_beizhu": d["f_beizhu"]
-            });
-            dataNew = eocore.check_net_object(ret);
+        let kgyId = TGlobal.userData["f_user_id"];
+
+        const dts = eolib.datetime_2_string(new Date(), true);
+
+        let i;        
+        for (i=1; i<kcmxList.length; i++) {
+            const data = kcmxList[i];
+
+            data["f_cklb"] = cklb;
+            data["f_cksj"] = dts;
+            data["f_pksj"] = dts;
+            data["f_kcbz"] = 0;
+            data["f_kgy_id"] = kgyId;
+
+            data["f_kcdj"] = kczj / kcsl;
+            data["f_kcsl"] = kcsl;            
+
+            dataNew = await TLogic.netLoad_kcmx_upd(data);
             if (dataNew == undefined) return;
         }
+        
+        data0["f_kgy_id"] = kgyId;
+        data0["f_pksj"] = dts;
+        data0["f_kcsl"] = kcsl;
+        data0["f_kcdj"] = kczj / kcsl;
 
-        let data2 = Object.assign({}, data);
-        data2["f_cpzj"] = cpzj;
-        data2["f_cpsl"] = cpsl;
-        data2["f_cpdj"] = cpzj / cpsl;
-
-        // 创建一个新的
-        dataNew = await TLogic.netLoad_kcmxrk_upd(kgyId, cklb, data2);
+        dataNew = await TLogic.netLoad_kcmx_upd(data0);
         if (dataNew == undefined) return;
         
         v_kcmx_rx.value?.showDialog(dataNew);

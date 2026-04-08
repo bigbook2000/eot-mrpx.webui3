@@ -183,8 +183,8 @@ export default { name: "ext_kcgl_ckjl" }
         x_show_loading.value = show;
     }
     const onTableItem_rkjl = (data: any) => {
-                // 占用状态
-        data["f_jyzt_s"] = eodic.get_dic_label("占用状态", data["f_jyzt"]);
+                // 调拨状态
+        data["f_jyzt_s"] = eodic.get_dic_label("调拨状态", data["f_jyzt"]);
 
         // 日期格式化
         data["f_jysj_s"] = eolib.datetime_2_short(data["f_jysj"]);

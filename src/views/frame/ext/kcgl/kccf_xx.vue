@@ -26,16 +26,16 @@
             </div>
             
             <div class="cell eo_w2">
-                <div class="label_n">包装数量</div>
+                <div class="label_n">原有数量</div>
                 <div class="input">
-                    <el-input-number v-model="x_data_kcmx['f_cpsl']" style="width:100%"
+                    <el-input-number v-model="x_data_kcmx['f_kcsl']" style="width:100%"
                         :min="0" :max="999999" :step="1" :disabled="true" />
                 </div>
             </div>
             <div class="cell eo_w2">
                 <div class="label_n">分出数量</div>
                 <div class="input">
-                    <el-input-number v-model="x_data_kcmx['f_cpsl2']" style="width:100%"
+                    <el-input-number v-model="x_data_kcmx['f_kcsl2']" style="width:100%"
                         :min="0" :max="999999" :step="1" />
                 </div>
             </div>

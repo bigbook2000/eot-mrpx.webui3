@@ -23,6 +23,7 @@
                 <vtable ref="v_table_menu" 
                     name="菜单"
                     id-field="f_menu_id" 
+                    @item="onTableItem_menu"
                     @loading="onTableLoading_menu">
                     <el-table-column prop="f_name" label="名称" width="160" />
                     <el-table-column prop="f_menu_pid_s" label="上级" width="160" />
@@ -30,16 +31,14 @@
                     <el-table-column prop="f_order" label="顺序" width="80" />
                     <el-table-column prop="f_type" label="类型" width="100" />
                     <el-table-column prop="f_path" label="路径" width="180" />
-                    <el-table-column prop="f_permit" label="权限" width="180" />
+                    <el-table-column prop="f_role_s" label="角色" width="180" />
                     <el-table-column prop="f_icon" label="图标" width="160" />
                     <el-table-column prop="f_status" label="状态" width="80" />
                     <el-table-column />
                 </vtable>
             </div>
         </div>
-        <vformd ref="v_formd_menu" title="菜单信息" 
-            :form-types="x_form_types_menu"
-            @close="onFormdClose_menu"/>
+        <menu_info ref="v_menu_info" @close="onDialogClose_menuinfo"/>
     </div>
 </template>
 
@@ -63,38 +62,22 @@ export default { name: "platform_menu" }
     import vtable from "@/logic/common/vtable.vue"
     import vformd from "@/logic/common/vformd.vue"
     
+    import menu_info from "@/views/platform/menu_info.vue"
+
+    const v_menu_info = ref<InstanceType<typeof menu_info>>();
 
     type t_table = InstanceType<typeof vtable>;
-
     const v_table_menu = ref<t_table>();
-    const v_formd_menu = ref();
-
+    
     var x_show_loading = ref(false);
 
-    var x_form_types_menu = ref<cform_options[]>([]);
+    let m_role_list: any[];
 
     onMounted(async () => {
-
-        x_show_loading.value = true;
-        let ret: any = await eocore.post("/framework/permit/list", [{}]);
-        x_show_loading.value = false;
-
-        let list = eocore.check_net_array(ret);
-        if (list == undefined) list = [];
-
-        let permitDic = eodic.list_2_dic(list, "f_permit_id", "f_name", true);
-        //console.log(permitDic)
         
-        x_form_types_menu.value = [
-            {type: "input", name: "f_name", span: 2, label: "名称"},
-            {type: "list", name: "f_menu_pid", span: 2, label: "上级", list: []},
-            {type: "number", name: "f_order", span: 2, label: "顺序", precision: 0, step: 1, min: 1, max: 9999},
-            {type: "input", name: "f_type", span: 2, label: "类型"},
-            {type: "input", name: "f_path", span: 100, label: "路径"},
-            {type: "list_s", name: "f_permit", span: 2, label: "权限", list: permitDic},
-            {type: "input", name: "f_icon", span: 2, label: "图标"},
-            {type: "switch", name: "f_status", span: 2, label: "状态"}
-        ];
+        let ret: any = await eocore.post("/framework/role/list", [{}]);
+        let list = eocore.check_net_array(ret);
+        if (list != undefined) m_role_list = list;
 
         v_table_menu.value!.load_list_net("/framework/menu/list", {});
     });
@@ -107,13 +90,19 @@ export default { name: "platform_menu" }
         // 下拉选择项使用 value-label字段
         dicList.unshift({
             value: 1,
-            label: "-"
+            label: "-",
+            level: 0
         });
         return dicList;
     }
 
     const onTableLoading_menu = (show: boolean) => {
         x_show_loading.value = show;
+    }
+    const onTableItem_menu = (data: any) => {
+        let rd = TLogic.getRoleInfo(m_role_list, data["f_role"]);
+        data["f_role_s"] = rd["roleStr"];
+        data["f_role_d"] = rd["roleIds"];
     }
 
     const onButtonClick_Load = () => {
@@ -122,7 +111,7 @@ export default { name: "platform_menu" }
 
     const onButtonClick_Add = () => {
 
-        v_formd_menu.value.show_dialog({
+        v_menu_info.value?.show_dialog({
             "f_menu_id": 0,
             "f_menu_pid": 1,
             "f_name": "",            
@@ -130,11 +119,11 @@ export default { name: "platform_menu" }
             "f_order": 1,
             "f_type": "menu",
             "f_path": "",
-            "f_permit": "",
+            "f_role": "",
             "f_icon": "",
             "f_status": 1
         });
-        v_formd_menu.value.update_list("f_menu_pid", updateMenuPidList());
+        v_menu_info.value?.update_list("f_menu_pid", updateMenuPidList());
     }
 
     const onButtonClick_Upd = () => {
@@ -142,8 +131,8 @@ export default { name: "platform_menu" }
         let data = v_table_menu.value!.get_select_data();
         //console.log(data);
 
-        v_formd_menu.value.show_dialog(data);
-        v_formd_menu.value.update_list("f_menu_pid", updateMenuPidList());
+        v_menu_info.value?.show_dialog(data);
+        v_menu_info.value?.update_list("f_menu_pid", updateMenuPidList());
     }
 
     const onButtonClick_Del = () => {
@@ -154,7 +143,7 @@ export default { name: "platform_menu" }
         });
     }
 
-    const onFormdClose_menu = async (cancel: boolean, data: any, cb: cfunc_boolean): Promise<void> => {
+    const onDialogClose_menuinfo = async (cancel: boolean, data: any, cb: cfunc_boolean): Promise<void> => {
 
         if (cancel) {
             cb(true); return;
@@ -164,9 +153,6 @@ export default { name: "platform_menu" }
             eocore.show_error("名称不能输入为空");
             cb(false); return;
         }
-
-        // 设置空权限
-        if (data["f_permit"] == "-") data["f_permit"] = "";
 
         // 菜单分为2级
         if (data["f_menu_pid"] == 1)

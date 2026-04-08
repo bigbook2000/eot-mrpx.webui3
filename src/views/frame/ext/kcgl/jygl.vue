@@ -51,9 +51,9 @@
                     </div>
 
                     <div class="cell eo_w200p">
-                        <div class="label_n">借用状态</div>
+                        <div class="label_n">调拨状态</div>
                         <div class="input">
-                            <vdic style="width:100%" dic="占用状态" :all="true" field="value"
+                            <vdic style="width:100%" dic="调拨状态" :all="true" field="value"
                                 v-model="x_query_jyzt" />
                         </div>
                     </div>
@@ -200,8 +200,8 @@ export default { name: "ext_kcgl_jygl" }
         x_show_loading.value = show;
     }
     const onTableItem_kcjy = (data: any) => {
-                // 占用状态
-        data["f_jyzt_s"] = eodic.get_dic_label("占用状态", data["f_jyzt"]);
+        // 调拨状态
+        data["f_jyzt_s"] = eodic.get_dic_label("调拨状态", data["f_jyzt"]);
 
         // 日期格式化
         data["f_jysj_s"] = eolib.datetime_2_short(data["f_jysj"]);

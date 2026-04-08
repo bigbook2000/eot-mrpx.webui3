@@ -123,8 +123,8 @@ export default { name: "platform_my" }
 
         x_show_loading.value = true;
         let ret: any = await eocore.post("/framework/user/password", [{
-            "user_id": TGlobal.userData["user_id"],
-            "login_id": TGlobal.userData["login_id"],
+            "user_id": TGlobal.userData["f_user_id"],
+            "login_id": TGlobal.userData["f_login_id"],
             "login_psw_old": loginPswOld,
             "login_psw_new": loginPswNew
         }])

@@ -9,10 +9,11 @@ EOMRPX智能制造管理平台Web前端页面开源代码。提供了完整的�
 
 #### 安装教程
 
-1.  安装jre 1.8
-2.  安装MySQL 8.0数据库，导入db目录下数据库初始脚本
+1.  安装jre 1.8，安装MySQL 8.0数据库
+2.  导入db目录下数据库初始脚本
 3.  启动service目录下java服务，java -jar EOTCMService-1.0.1.jar
 4.  使用vscode等编程工具，打开源输入npm run dev启动调试，也可以直接npm run build进行编译发布
+1.  测试账号root: aaaa
 
 #### 使用说明
 

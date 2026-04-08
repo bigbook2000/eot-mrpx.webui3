@@ -130,10 +130,10 @@
         let list1 = eocore.check_net_array(ret);
         if (list1 == undefined) return;
 
-        const ids = list1.map(x => x["f_kcmxrk_id"]).join(",");
+        const ids = list1.filter(x => x["f_kcmxrk_id"] > 0).map(x => x["f_kcmxrk_id"]).join(",");
         if (ids.length > 0) {
 
-            ret = await eocore.proc("p_kcmxrk_kc", {
+            ret = await eocore.proc("p_kcmx_ids", {
                 "v_kcmxrk_ids": ids
             });
         

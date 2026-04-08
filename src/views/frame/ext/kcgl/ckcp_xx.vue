@@ -233,13 +233,12 @@
         let ret = await eocore.proc(
             "p_kcmxck_upd", {
                 "v_kcmxck_id": data["f_kcmxck_id"],
-                "v_kcmx_id": data["f_kcmx_id"],
+                "v_kcmxrk_id": data["f_kcmxrk_id"],
                 "v_cklb": data["f_cklb"],
                 "v_ckd_id": data["f_ckd_id"],
                 "v_kgy_id": data["f_kgy_id"],
                 "v_cksl": 1.0,
                 "v_ckdj": data["f_ckdj"],
-                "v_ckzj": data["f_ckdj"],
                 "v_wlgs_id": data["f_wlgs_id"],
                 "v_wldh": data["f_wldh"],
                 "v_beizhu": data["f_beizhu"]

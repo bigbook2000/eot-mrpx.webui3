@@ -53,6 +53,7 @@
                                 <div class="eo_form">
                                     <div class="cell">
                                         <vbuttonk type="primary" class="input_w" permit="" 
+                                            v-show="x_flow_status_button['新建']"
                                             @click="onButtonClick_Add_cgd">新建采购</vbuttonk>
                                         <vbuttonk type="primary" class="input_w" permit="" 
                                             v-show="x_edit_cgd"
@@ -62,28 +63,28 @@
                                             @click="onButtonClick_Get_cgd">采购详情</vbuttonk>
                                         <div class="split"></div>
                                         <vbuttonk type="warning" class="input_w" permit="" 
-                                            v-show="x_flow_status_button['CGZF']"
+                                            v-show="x_flow_status_button['作废']"
                                             @click="onButtonClick_Flow_CGZF">采购作废</vbuttonk>
                                         <vbuttonk type="warning" class="input_w" permit="" 
-                                            v-show="x_flow_status_button['CGTH']"
+                                            v-show="x_flow_status_button['退回']"
                                             @click="onButtonClick_Flow_CGTH">采购退回</vbuttonk>
                                         <vbuttonk type="warning" class="input_w" permit="" 
-                                            v-show="x_flow_status_button['CGTJ']"
+                                            v-show="x_flow_status_button['提交']"
                                             @click="onButtonClick_Flow_CGTJ">提交采购</vbuttonk>
                                         <vbuttonk type="warning" class="input_w" permit="" 
-                                            v-show="x_flow_status_button['CGSH']"
+                                            v-show="x_flow_status_button['审核']"
                                             @click="onButtonClick_Flow_CGSH">采购审核</vbuttonk>
                                         <vbuttonk type="warning" class="input_w" permit="" 
-                                            v-show="x_flow_status_button['CGHZ']"
+                                            v-show="x_flow_status_button['核准']"
                                             @click="onButtonClick_Flow_CGHZ">财务核对</vbuttonk>
                                         <vbuttonk type="warning" class="input_w" permit="" 
-                                            v-show="x_flow_status_button['CGFH']"
+                                            v-show="x_flow_status_button['发货']"
                                             @click="onButtonClick_Flow_CGFH">商家发货</vbuttonk>
                                         <vbuttonk type="warning" class="input_w" permit="" 
-                                            v-show="x_flow_status_button['CGRK']"
+                                            v-show="x_flow_status_button['入库']"
                                             @click="onButtonClick_Flow_CGRK">收货入库</vbuttonk>
                                         <vbuttonk type="warning" class="input_w" permit="" 
-                                            v-show="x_flow_status_button['CGGD']"
+                                            v-show="x_flow_status_button['归档']"
                                             @click="onButtonClick_Flow_CGGD">采购归档</vbuttonk>
                                     </div>
                                 </div>
@@ -192,14 +193,15 @@ export default { name: "ext_cggl_cggl" }
 
     // 按钮状态
     const x_flow_status_button = ref({
-        "CGZF": false,
-        "CGTH": false,
-        "CGTJ": false,
-        "CGSH": false,
-        "CGHZ": false,
-        "CGFH": false,
-        "CGRK": false,
-        "CGGD": false,
+        "新建": false,
+        "作废": false,
+        "退回": false,
+        "提交": false,
+        "审核": false,
+        "核准": false,
+        "发货": false,
+        "入库": false,
+        "归档": false,
     });
 
     const x_edit_cgd = ref(false);
@@ -224,6 +226,13 @@ export default { name: "ext_cggl_cggl" }
         m_user_dic = await TLogic.netLoad_UserDic();
         v_rkcpmx.value?.updateUserDic(m_user_dic);
 
+        // 判断是否能够创建采购
+        const role = TGlobal.userData["f_role"];
+        const point = v_flow_cgd.value?.get_point_by_name("新建");
+        if (point != undefined) {
+            x_flow_status_button.value["新建"] = eolib.list_any_list(role, point.role);
+        }
+
         // 初始化加载数据
         netLoad_cgd_query(-1);        
     });
@@ -238,14 +247,15 @@ export default { name: "ext_cggl_cggl" }
         }
 
         const statusButton = x_flow_status_button.value;
-        statusButton["CGZF"] = false;
-        statusButton["CGTH"] = false;
-        statusButton["CGTJ"] = false;
-        statusButton["CGSH"] = false;
-        statusButton["CGHZ"] = false;
-        statusButton["CGFH"] = false;
-        statusButton["CGRK"] = false;
-        statusButton["CGGD"] = false;
+        statusButton["新建"] = false;
+        statusButton["作废"] = false;
+        statusButton["退回"] = false;
+        statusButton["提交"] = false;
+        statusButton["审核"] = false;
+        statusButton["核准"] = false;
+        statusButton["发货"] = false;
+        statusButton["入库"] = false;
+        statusButton["归档"] = false;
         x_flow_status_button.value = statusButton;
 
         v_rkcpmx.value?.setEditFields(0, []);
@@ -257,9 +267,11 @@ export default { name: "ext_cggl_cggl" }
         let point = v_flow_cgd.value?.get_point_by_id(flowPointId);
         if (point == undefined) return;
 
-        // 检查权限
+        // 检查角色
         const role = TGlobal.userData["f_role"];
         const pointRole = point.role;
+        //console.log("updateFlowStatusButton", flowPointId, yxbz, point, role);
+        // 判断角色是否满足条件
         if (!eolib.list_any_list(role, pointRole)) return;
 
         const pointName = point.name;
@@ -271,14 +283,14 @@ export default { name: "ext_cggl_cggl" }
 
         // 核准之后无法退回
         let isCGTH = v_flow_cgd.value?.check_point_order(point.flow_point_id, "已审核") || false;
-        statusButton["CGTH"] = !isCGTH;
+        statusButton["退回"] = !isCGTH;
 
-        statusButton["CGTJ"] = pointName == "新建";
-        statusButton["CGSH"] = pointName == "待审核";
-        statusButton["CGHZ"] = pointName == "已审核";
-        statusButton["CGFH"] = pointName == "已核准";
-        statusButton["CGRK"] = pointName == "已发货";
-        statusButton["CGGD"] = pointName == "已入库";
+        statusButton["提交"] = pointName == "新建";
+        statusButton["审核"] = pointName == "待审核";
+        statusButton["核准"] = pointName == "已审核";
+        statusButton["发货"] = pointName == "已核准";
+        statusButton["入库"] = pointName == "已发货";
+        statusButton["归档"] = pointName == "已入库";
 
         x_edit_cgd.value = false;
 
@@ -287,12 +299,14 @@ export default { name: "ext_cggl_cggl" }
         let fields1: string[] = [];
         let fields2: string[] = [];
 
+        console.log("updateFlowStatusButton", pointName);
+
         switch (pointName) { 
             case "新建":
                 editMode1 = 1;
                 fields1 = ["*"];
                 x_edit_cgd.value = true;
-                statusButton["CGTH"] = false;
+                statusButton["退回"] = false;
                 break;
             case "待审核":
             case "已审核":

@@ -62,6 +62,7 @@
                                     <el-table-column prop="f_cpmc" label="名称" width="180" show-overflow-tooltip />
                                     <el-table-column prop="f_jhsj_s" label="计划时间" width="140" />
                                     <el-table-column prop="f_wcsj_s" label="完成时间" width="140" />
+                                    <el-table-column prop="f_kcbh" label="批次" width="180" show-overflow-tooltip />
                                     <el-table-column prop="f_cpgg" label="规格" width="180" show-overflow-tooltip />
                                     <el-table-column prop="f_cpcc" label="尺寸" width="160" show-overflow-tooltip />
                                     <el-table-column prop="f_cpdw" label="单位" width="100" show-overflow-tooltip />
@@ -110,8 +111,8 @@
                                     @row-click="onTableRowClick_cpbj">
                                     <el-table-column prop="f_cpmc" label="部件名称" width="180" show-overflow-tooltip />
                                     <el-table-column prop="f_bjsl" label="部件数量" width="100" />
-                                    <el-table-column prop="f_kcbh" label="批次" width="180" show-overflow-tooltip />                                    
-                                    <el-table-column prop="f_bzsl" label="包装数量" width="100" />
+                                    <el-table-column prop="f_kcbh" label="批次" width="180" show-overflow-tooltip />
+                                    <el-table-column prop="f_cpsl" label="包装数量" width="100" />
                                     <el-table-column prop="f_cpgg" label="规格" width="180" show-overflow-tooltip />
                                     <el-table-column prop="f_cpcc" label="尺寸" width="160" show-overflow-tooltip />
                                     <el-table-column prop="f_cpdw" label="单位" width="100" show-overflow-tooltip />
@@ -132,6 +133,9 @@
     
     <!-- 生产物料选择对话框 -->
     <scwl_list ref="v_scwl_list" @close="onDialogClose_scwl"></scwl_list>
+
+    <!-- 生产产品对话框 -->
+    <scdcp_xx ref="v_scdcp_xx" @close="onDialogClose_scdcp_xx" />
 </template>
 
 <script lang="ts">
@@ -154,14 +158,17 @@ export default { name: "ext_scgl_scgl" }
     import TLogic from "@/logic/TLogic";
     import TGlobal from "@/logic/TGlobal";
 
-    import scd_xx from "@/views/frame/ext/scgl/scd_xx.vue";
-    import scwl_list from "@/views/frame/ext/scgl/scwl_list.vue";
+    import scdcp_xx from "./scdcp_xx.vue";
+    import scd_xx from "./scd_xx.vue";
+    import scwl_list from "./scwl_list.vue";
+import { da } from "element-plus/es/locales.mjs";
 
     type t_table = InstanceType<typeof vtable>;
     const v_table_sccp = ref<t_table>();
     const v_table_cpbj = ref<t_table>();
     const v_scd_xx = ref<InstanceType<typeof scd_xx>>();
     const v_scwl_list = ref<InstanceType<typeof scwl_list>>();
+    const v_scdcp_xx = ref<InstanceType<typeof scdcp_xx>>();
 
     let x_show_loading = ref(false);
 
@@ -181,7 +188,7 @@ export default { name: "ext_scgl_scgl" }
         netLoad_sccp_query(-1);
     });
 
-    const netLoad_sccp_query = (pageIndex: number = -1) => {
+    const netLoad_sccp_query = async (pageIndex: number = -1) => {
         let pageRowCount = x_page_row_count.value;
         let rowIndex = pageIndex * pageRowCount;
         if (pageIndex < 0) x_page_index.value = 1;
@@ -194,7 +201,7 @@ export default { name: "ext_scgl_scgl" }
             jssj = x_query_jhsj.value[1];
         }
 
-        v_table_sccp.value?.load_list_proc("p_sccp_query", { 
+        let ret = await eocore.proc("p_sccp_query", {
             "v_scy_id": -1,
             "v_cpbm": "",
             "v_cpmc": x_query_cpmc.value,
@@ -203,6 +210,77 @@ export default { name: "ext_scgl_scgl" }
             "s_page_row_index": rowIndex,
             "s_page_row_count": pageRowCount
         });
+        const list1 = eocore.check_net_array(ret);
+        if (list1 == undefined) return;
+
+        const ids = list1.filter(x => x["f_kcmxrk_id"] > 0).map(x => x["f_kcmxrk_id"]).join(",");
+        if (ids.length > 0) {
+
+            ret = await eocore.proc("p_kcmxrk_ids", {
+                "v_kcmxrk_ids": ids
+            });
+        
+            let list2 = eocore.check_net_array(ret);
+            if (list2 == undefined) return;
+
+            eolib.list_merge(list1, list2, "f_kcmxrk_id", "f_kcmxrk_id");
+        }
+
+        v_table_sccp.value?.load_list(list1);
+    }
+
+    const netLoad_scbj_list = async (sccpData: any) => {
+
+        // 生产工艺
+        x_show_loading.value = true;
+        let ret = await eocore.proc("p_cpbj_list", {
+            "v_cpdy_pid": sccpData["f_cpdy_id"] 
+        });
+        let list1 = eocore.check_net_array(ret);
+        x_show_loading.value = false;
+        if (list1 == undefined) return;
+
+        // 生产部件
+        x_show_loading.value = true;
+        ret = await eocore.proc("p_scbj_list", {
+            "v_sccp_id": sccpData["f_sccp_id"] 
+        });
+        let list2 = eocore.check_net_array(ret);
+        x_show_loading.value = false;
+        if (list2 == undefined) return;
+
+        // 通过f_cpbj_id关联生产
+        eolib.list_merge(list1, list2, "f_cpbj_id", "f_cpbj_id", {
+            "f_sccp_id": sccpData["f_sccp_id"], 
+            "f_scbj_id": 0, 
+            "f_kcmxrk_id": 0
+        });
+
+        // 库存批次
+        const ids = list2.filter(x => x["f_kcmxrk_id"] > 0).map(x => x["f_kcmxrk_id"]).join(",");
+        if (ids.length <= 0) {
+            v_table_cpbj.value?.load_list(list1);
+            return;
+        }
+
+        x_show_loading.value = true;
+        ret = await eocore.proc("p_kcmxrk_ids", {
+            "v_kcmxrk_ids": ids 
+        });
+        let list3 = eocore.check_net_array(ret);
+        x_show_loading.value = false;
+        if (list3 == undefined) return;
+
+        // 关联库存
+        eolib.list_merge(list1, list3, "f_kcmxrk_id", "f_kcmxrk_id", {
+            "f_kcbh": "", 
+            "f_cpsl": 0, 
+            "f_cpdj": 0.0,
+            "f_hwck": 0,
+            "f_beizhu": ""
+        });
+        
+        v_table_cpbj.value?.load_list(list1);
     }
 
     const onTableLoading = (show: boolean) => {
@@ -224,42 +302,7 @@ export default { name: "ext_scgl_scgl" }
     }
 
     const onTableRowClick_sccp = async (data: any) => {
-
-        x_show_loading.value = true;
-        let ret = await eocore.proc("p_cpbj_list", {
-            "v_cpdy_pid": data["f_cpdy_id"] 
-        });
-        let list1 = eocore.check_net_array(ret);
-        x_show_loading.value = false;
-
-        if (list1 == undefined) return;
-
-        x_show_loading.value = true;
-        ret = await eocore.proc("p_scbj_list", {
-            "v_sccp_id": data["f_sccp_id"] 
-        });
-        let list2 = eocore.check_net_array(ret);
-        x_show_loading.value = false;
-
-        if (list2 == undefined) return;
-
-        // 通过f_cpbj_id关联
-        for (let d1 of list1) {    
-            d1["f_scbj_id"] = 0;
-            d1["f_kcmxrk_id"] = 0;
-            d1["f_kcbh"] = "";
-            d1["f_sccp_id"] = data["f_sccp_id"];
-
-            for (let d2 of list2) {
-                if (d1["f_cpbj_id"] == d2["f_cpbj_id"]) {
-                    d1["f_scbj_id"] = d2["f_scbj_id"];
-                    d1["f_kcmxrk_id"] = d2["f_kcmxrk_id"];
-                    d1["f_kcbh"] = d2["f_kcbh"];
-                }
-            }
-        }
-        
-        v_table_cpbj.value?.load_list(list1);
+        netLoad_scbj_list(data);        
     }
 
     const onTableItem_cpbj = (data: any) => {
@@ -294,30 +337,12 @@ export default { name: "ext_scgl_scgl" }
         v_scd_xx.value?.showDialog(scdData);
     }
 
-    const onButtonClick_Del_scd = async () => {
-        // 获取当前选中的行数据
-        let selectedData = v_table_cpbj.value?.get_select_data();
-        
-        if (!selectedData) {
-            eocore.show_info("请先选择要删除的记录");
-            return;
-        }
-        
-        // 确认删除对话框
-        let confirmed = await eocore.show_confirm(`确定要删除 "${selectedData.f_cpmc || '该记录'}" 吗？`);
-        if(confirmed) {
-            // 实际的删除操作应在这里调用后端API
-            eocore.show_info("正在删除选中的生产管理信息");
-            // 示例：调用删除API
-            // eocore.proc("p_scgl_del", { id: selectedData.f_cpdy_id }).then((result) => {
-            //     if(result.success) {
-            //         eocore.show_success("删除成功");
-            //         netLoad_cpbj_query(); // 刷新列表
-            //     } else {
-            //         eocore.show_error("删除失败：" + result.message);
-            //     }
-            // });
-        }
+    const onButtonClick_Del_scd = async () => {        
+        v_table_sccp.value?.remove_data_proc_select("p_sccp_del", (data: any) => {
+            return {
+                "v_sccp_id": data["f_sccp_id"]
+            };
+        });
     }
 
     const onButtonClick_Load_cpdy = () => {
@@ -332,7 +357,156 @@ export default { name: "ext_scgl_scgl" }
         v_scwl_list.value?.show_dialog(cpbjData);
     }
 
-    const onButtonClick_New_scwl = () => {
+    /**
+     * 点击进行生产
+     */
+    const onButtonClick_New_scwl = async () => {
+
+        let scdData = v_table_sccp.value?.get_select_data(true);        
+        if (scdData == undefined) return;
+
+        // if (scdData["f_kcmxrk_id"] > 0) {
+        //     eocore.show_info("当前批次的生产已经完成，请勿重复生产");
+        //     return;
+        // }
+
+        const scwlList = v_table_cpbj.value?.get_list();
+        if (scwlList == undefined) return;
+
+        let cpzj = 0;
+        for (let d of scwlList) {
+            if (!eocore.check_id(d, "f_kcmxrk_id")) {
+                eocore.show_info("未指定生产物料");
+                return;
+            }
+
+            // 每个部件只能消耗一个批次
+            // 如果需要的同样的部件数量大于包装数量，则添加多个相同部件，确保每个部件小于包装数量
+
+            // 部件数量，生产所需要的数量
+            const bjsl = d["f_bjsl"];
+            // 包装数量
+            const cpsl = d["f_cpsl"];
+            if (bjsl > cpsl) {
+                eocore.show_info("部件数量不能大于包装数量");
+                return;
+            }
+
+            // 实际库存数量
+            const kcsl = d["f_kcsl"];
+            if (kcsl < bjsl) {
+                eocore.show_info("库存数量不足");
+                return;
+            }
+
+            // 计算实际单价
+            const cpdj = d["f_kczj"] / kcsl;
+
+            // 计算实际总价
+            cpzj += bjsl * cpdj;
+        }
+
+        let rklb = TLogic.codeTypes["生产加工"];
+        let scyId = TGlobal.userData["f_user_id"];
+
+        console.log(scdData, scwlList, rklb, cpzj);
+
+        const bzsl = scdData["f_bzsl"];
+
+        x_show_loading.value = true;
+        // 创建一个新的批号的货物
+        let dataNew = await TLogic.netLoad_kcmxrk_upd(scyId, rklb, {
+            "f_cpdy_id": scdData["f_cpdy_id"],
+            "f_cpbm": scdData["f_cpbm"],
+            "f_cpsl": bzsl, // 定义的包装数量即实际货物包装数量
+            "f_cpdj": cpzj / bzsl,
+            "f_hwck": 0,
+            "f_beizhu": scdData["f_beizhu"]
+        });
+        x_show_loading.value = false;
+        if (dataNew == undefined) return;
+
+        console.log("创建新货物批次", dataNew);
+
+        // 添加信息到scdData
+        Object.assign(scdData, scdData, dataNew);
+
+        console.log("更新生产任务", scdData);
+
+        let dt = new Date();
+        
+        // 修改生产任务批次
+        x_show_loading.value = true;
+        let ret = await eocore.proc(
+            "p_sccp_upd", {
+                "v_sccp_id": scdData["f_sccp_id"],
+                "v_scy_id": scyId,
+                "v_kcmxrk_id": dataNew["f_kcmxrk_id"], // 生产货物批次
+                "v_cpdy_id": scdData["f_cpdy_id"],                
+                "v_jhsj": scdData["f_jhsj"],
+                "v_jhsl": scdData["f_jhsl"],
+                "v_dqsl": bzsl,
+                "v_wcsj": eolib.datetime_2_string(dt),
+                "v_yxdj": scdData["f_yxdj"],
+                "v_yxbz": scdData["f_yxbz"],
+                "v_beizhu": scdData["f_beizhu"]
+            });
+        x_show_loading.value = false;
+        dataNew = eocore.check_net_object(ret);
+        if (dataNew == undefined) return;
+
+
+        let data2: any;
+        // 移除使用的部件物料
+        for (let d of scwlList) {
+            
+            // 部件数量，生产所需要的数量
+            const bjsl = d["f_bjsl"];
+            // 包装数量
+            const cpsl = d["f_cpsl"];
+            const sysl = cpsl - bjsl;
+
+            if (sysl > 0) {
+
+                // 如果物料没有用完，先拆分，再出库
+                x_show_loading.value = true;
+                const retData = await TLogic.netLoad_kcmx_cf(scyId, d, bjsl);
+                x_show_loading.value = false;
+
+                console.log("库存拆分", retData);
+
+                data2 = retData.dataNew2;
+
+            } else {
+                // 如果物料全部用完，直接出库
+
+                data2 = d;
+            }
+
+            console.log("部件出库", sysl, data2);
+
+            x_show_loading.value = true;
+            ret = await eocore.proc(
+                "p_kcmxck_upd", {
+                    "v_kcmxck_id": 0,
+                    "v_kcmxrk_id": data2["f_kcmxrk_id"], // 入库编号
+                    "v_cklb": rklb,
+                    "v_ckd_id": 0, // 直接盘库新增
+                    "v_kgy_id": scyId,
+                    "v_cksl": data2["f_cpsl"],
+                    "v_ckdj": data2["f_cpdj"],
+                    "v_wlgs_id": 0,
+                    "v_wldh": "",
+                    "v_beizhu": data2["f_beizhu"]
+            });
+            x_show_loading.value = false;
+        }
+
+        // 弹出显示生产结果
+        v_scdcp_xx.value?.showDialog(scdData);
+
+        // 更新表格
+        v_table_sccp.value?.update_data(scdData, -1, false, false);
     }
 
     /**
@@ -375,15 +549,21 @@ export default { name: "ext_scgl_scgl" }
             cb(false); return;
         }
 
-        cpbjData["f_scbj_id"] = dataNew["f_scbj_id"];
-        cpbjData["f_kcmxrk_id"] = dataNew["f_kcmxrk_id"];
-        cpbjData["f_kcbh"] = dataNew["f_kcbh"];
+        Object.assign(cpbjData, cpbjData, dataNew);
 
         console.log(cpbjData);
         v_table_cpbj.value?.update_data(cpbjData, -1, false, false);
         
         cb(true);
     }
+
+    const onDialogClose_scdcp_xx = (cancel: boolean, data: any, cb: (result: boolean) => void) => {
+        if (cancel) {
+            cb(true); return;
+        }
+        cb(true);
+    }
+
 </script>
 
 <style lang="scss" scoped>

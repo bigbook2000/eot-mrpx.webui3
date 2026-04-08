@@ -4,12 +4,19 @@ import Login from '@/views/frame/login.vue'
 import Main from '@/views/frame/main0.vue'
 import Home from '@/views/frame/home.vue'
 
+import TGlobal from '@/logic/TGlobal'
+import TLogic from '@/logic/TLogic'
+
+
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL), // createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
       name: 'index',
+      props: {
+        "mode": false
+      },
       component: Index
     },
     {
@@ -209,20 +216,27 @@ const router = createRouter({
   ]
 })
 
-var indexPath = false;
 router.beforeEach((to, from, next)=>{
 
-  //console.log(indexPath, to);
-  if (indexPath) {
-    next();
-  } else {
-    if (to.name == "index") {
-      indexPath = true;
-      next();
-    } else {
-      router.replace({name: "index"});
+  let toNext = true;
+  let menu = TGlobal.menuMap[to.name as string | ""];
+  //console.log(from, to, menu);
+  if (menu) {
+    if (menu.role_list.length > 0) {
+      if (TGlobal.userData["f_user_id"] > 0) {
+        toNext = TLogic.checkRoleList(menu.role_list);
+      } else {
+        toNext = false;
+      }
     }
   }
+
+  if (toNext) {
+    next();    
+  } else {
+    router.replace({name: "index"});
+  }
+
 });
 
 export default router

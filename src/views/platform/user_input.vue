@@ -38,14 +38,25 @@
 
     watch(() => props.userName, (newVal, oldVal) => {
 
-        //console.log(x_dept_id_s);
+        //console.log("watch userName", x_user_id_s.value, newVal, oldVal);
         x_user_id_s.value = newVal;
     }, {
         immediate: true,
-        deep: false
+        deep: true
+    });
+
+    watch(() => props.modelValue, (newVal, oldVal) => {
+        //console.log("watch modelValue", x_user_id_s.value, newVal, oldVal);
+        if (newVal <= 0) {
+            x_user_id_s.value = "";
+        }
+    }, {
+        immediate: true,
+        deep: true
     });
 
     onMounted(() => {
+        //console.log("onMounted", x_user_id_s.value);
     });
 
     const onInputClick_user = (event: FocusEvent) => {

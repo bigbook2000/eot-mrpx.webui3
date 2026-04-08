@@ -1,7 +1,7 @@
 <template>
     <!-- 借用编辑对话框 -->
     <vdialog ref="v_dialog"
-        width="800px" title="占用记录" 
+        width="800px" title="调拨记录" 
         @open="onDialogOpen"
         @close="onDialogClose">
         <div>
@@ -25,13 +25,13 @@
             </div>
             <div style="height:300px;">
                 <vtable ref="v_table_kcjy" 
-                    name="占用记录"
+                    name="调拨记录"
                     id-field="f_kcmx_id"
                     @loading="onTableLoading"
                     :on-item="onTableItem_kcjy">                            
-                    <el-table-column prop="f_jyzt_s" label="占用状态" width="90" />
-                    <el-table-column prop="f_jysj_s" label="占用时间" width="160" />
-                    <el-table-column prop="f_yg_id_s" label="占用员工" width="120" />                    
+                    <el-table-column prop="f_jyzt_s" label="调拨状态" width="90" />
+                    <el-table-column prop="f_jysj_s" label="调拨时间" width="160" />
+                    <el-table-column prop="f_yg_id_s" label="调拨员工" width="120" />                    
                     <el-table-column prop="f_beizhu" label="备注" width="200" show-overflow-tooltip />
                     <el-table-column prop="f_kgy_id_s" label="库管员" width="120" />
                     <el-table-column />
@@ -118,8 +118,8 @@
     }
     const onTableItem_kcjy = (data: any) => {
 
-        // 占用状态
-        data["f_jyzt_s"] = eodic.get_dic_label("占用状态", data["f_jyzt"]);
+        // 调拨状态
+        data["f_jyzt_s"] = eodic.get_dic_label("调拨状态", data["f_jyzt"]);
 
         // 日期格式化
         data["f_jysj_s"] = eolib.datetime_2_short(data["f_jysj"]);
@@ -149,7 +149,7 @@
             f_jysj_s: dts, // 借用时间
             f_ghsj: "1970-01-01 00:00:00", // 归还时间
             f_ghsj_s: "1970-01-01 00:00:00", // 归还时间
-            f_jyzt: 0, // 占用状态
+            f_jyzt: 1, // 调拨状态
             f_beizhu: "" // 备注
         };
 
@@ -158,7 +158,7 @@
 
 
     /**
-     * 货物占用
+     * 调拨记录
      */
     const onDialogClose_kcjy_xx = async (cancel: boolean, data0: any, cb: cfunc_boolean) => {
         if (cancel) { 

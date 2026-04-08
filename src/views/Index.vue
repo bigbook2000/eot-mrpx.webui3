@@ -54,6 +54,8 @@
         for (let d of array) {
             // 兼容
             d.path = d["f_path"];
+            d.role_list = d["f_role"].split(",").filter((item: any) => item != "");
+            TGlobal.menuMap[d.path] = d;
         }
             
         TGlobal.menuList = array;

@@ -21,13 +21,21 @@
                 </div>
             </div>
             <div class="cell eo_w4">
-                <div class="label_n">占用状态</div>
+                <div class="label_n">调拨状态</div>
                 <div class="input">
-                    <vdic style="width:100%" dic="占用状态" :all="false" field="value"
+                    <vdic style="width:100%" dic="调拨状态" :all="false" field="value"
                         v-model="x_data_kcmx['f_jyzt']" :disabled="true" />
                 </div>
             </div>
 
+            <div class="cell eo_w2">
+                <div class="label_n">产品编码</div>
+                <div class="input">
+                    <el-input v-model="x_data_kcmx['f_cpbm']" style="width:100%" 
+                        :readonly="true">
+                    </el-input>
+                </div>
+            </div>            
             <div class="cell eo_w2">
                 <div class="label_n">产品名称</div>
                 <div class="input">
@@ -41,55 +49,57 @@
                     </el-input>
                 </div>
             </div>
-            <div class="cell eo_w2">
-                <div class="label_n">产品编码</div>
-                <div class="input">
-                    <el-input v-model="x_data_kcmx['f_cpbm']" style="width:100%" 
-                        :readonly="true">
-                    </el-input>
-                </div>
-            </div>
+
             
             <div class="cell eo_w2">
-                <div class="label_n">包装数量</div>
-                <div class="input">
-                    <el-input-number v-model="x_data_kcmx['f_cpsl']" style="width:100%"
-                        :min="0" :max="999999" :step="1" />
-                </div>
-            </div>
-            <div class="cell eo_w2">
-                <div class="label_n">成本单价</div>
-                <div class="input">
-                    <el-input-number v-model="x_data_kcmx['f_cpdj']" style="width:100%"
-                        :min="0" :max="999999" :precision="3" :step="1" />
-                </div>
-            </div>
-
-            <div class="cell eo_w4">
-                <div class="label_n">入库数量</div>
-                <div class="input">
-                    <el-input-number v-model="x_rksl" style="width:100%"
-                        :min="1" :max="99" :precision="0" :step="1" :disabled="x_edit_upd" />
-                </div>
-            </div>
-            <div class="cell eo_w4">
                 <div class="label_n">入库时间</div>
                 <div class="input">
                     <el-input v-model="x_data_kcmx['f_rksj_s']" style="width:100%" 
                         :disabled="true"></el-input>
                 </div>
             </div>
+
             <div class="cell eo_w4">
-                <div class="label_n">盘库时间</div>
+                <div class="label_n">包装数量</div>
+                <div class="input">
+                    <el-input-number v-model="x_data_kcmx['f_kcsl']" style="width:100%"
+                        :min="0" :max="999999" :step="1" />
+                </div>
+            </div>
+            <div class="cell eo_w4">
+                <div class="label_n">成本单价</div>
+                <div class="input">
+                    <el-input-number v-model="x_data_kcmx['f_kcdj']" style="width:100%"
+                        :min="0" :max="999999" :precision="3" :step="1" />
+                </div>
+            </div>
+
+            <div class="cell eo_w2">
+                <div class="label_n">出库时间</div>
                 <div class="input">
                     <el-input v-model="x_data_kcmx['f_pksj_s']" style="width:100%" 
                         :disabled="true"></el-input>
                 </div>
             </div>
             <div class="cell eo_w4">
+                <div class="label_n">入库数量<span style="color:red;">*</span></div>
+                <div class="input">
+                    <el-input-number v-model="x_rksl" style="width:100%"
+                        :min="1" :max="99" :precision="0" :step="1" :disabled="x_edit_upd" />
+                </div>
+            </div>
+            <div class="cell eo_w4">
                 <div class="label_n">库管员</div>
                 <div class="input">
                     <el-input v-model="x_data_kcmx['f_kgy_id_s']" style="width:100%" 
+                        :disabled="true"></el-input>
+                </div>
+            </div>
+
+            <div class="cell eo_w2">
+                <div class="label_n">盘库时间</div>
+                <div class="input">
+                    <el-input v-model="x_data_kcmx['f_pksj_s']" style="width:100%" 
                         :disabled="true"></el-input>
                 </div>
             </div>
@@ -103,7 +113,7 @@
         </div>
         <template #button>
             <div class="button">
-                <el-button type="primary" class="eo_w100" @click="onButtonClick_kcjy">占用</el-button>
+                <el-button type="primary" class="eo_w100" @click="onButtonClick_kcjy">调拨</el-button>
             </div>
         </template>
     </vdialog>
@@ -121,7 +131,8 @@
     import { Search } from '@element-plus/icons-vue'
     import type { cfunc_boolean } from "@/inc/eotypes";
 
-    import eocore from "@/inc/eocore"
+    import eocore from "@/inc/eocore";
+    import eolib from "@/inc/eolib";
     import vdialog from "@/logic/common/vdialog.vue"
     import vdic from "@/logic/common/vdic.vue"
 
@@ -188,8 +199,8 @@
             cb(false); return;
         }
 
-        const cpsl = eocore.to_int(data["f_cpsl"]);
-        if (cpsl <= 0) {
+        const kcsl = eocore.to_int(data["f_kcsl"]);
+        if (kcsl <= 0) {
             eocore.show_info("请输入包装数量");
             cb(false); return;
         }
@@ -206,6 +217,7 @@
             cb(false); return;
         }
 
+        const dts = eolib.datetime_2_string(new Date(), true);
 
         let ret;
         if (isAdd) { 
@@ -214,28 +226,25 @@
             const rklb = TLogic.codeTypes["盘库整理"];
 
             for (let i=0; i<rksl; i++) {
+                
+                data["f_kcmx_id"] = 0;
+                data["f_kcbh"] = await TLogic.netLoad_RecordString_kcbh(data["f_cpdy_id"], data["f_cpbm"]);
+                data["f_rklb"] = rklb;
+                data["f_rksj"] = dts;
+                data["f_pksj"] = dts;
+                data["f_cklb"] = "";
+                data["v_cksj"] = "1970-01-01 00:00:00";
+                data["f_kgy_id"] = kgyId;
+		        dataNew = await TLogic.netLoad_kcmx_upd(data);
 
-                dataNew = await TLogic.netLoad_kcmxrk_upd(kgyId, rklb, data);
                 dataListNew.push(dataNew);
             }
 
         } else {
 
             // 回写数据库
-            ret = await eocore.proc(
-                "p_kcmx_upd", {
-                    "v_kcbh": data["f_kcbh"],
-                    "v_kcmxrk_id": data["f_kcmxrk_id"],
-                    "v_cpdy_id": data["f_cpdy_id"],
-                    "v_jyzt": data["f_jyzt"],
-                    "v_hwck": data["f_hwck"],
-                    "v_cpdj": data["f_cpdj"],
-                    "v_cpsl": data["f_cpsl"],
-                    "v_yxbz": data["f_yxbz"],
-                    "v_kgy_id": data["f_kgy_id"],
-                    "v_beizhu": data["f_beizhu"]
-            });
-            dataNew = eocore.check_net_object(ret);
+            data["f_pksj"] = dts;
+            dataNew = await TLogic.netLoad_kcmx_upd(data);
             if (dataNew == undefined) return;
 
             dataListNew.push(dataNew);
@@ -278,8 +287,8 @@
         x_data_kcmx["f_cpdy_id"] = data0["f_cpdy_id"];
         x_data_kcmx["f_cpmc"] = data0["f_cpmc"];
         x_data_kcmx["f_cpbm"] = data0["f_cpbm"];
-        x_data_kcmx["f_cpdj"] = kcdj;
-        x_data_kcmx["f_cpsl"] = cpsl;
+        x_data_kcmx["f_kcdj"] = kcdj;
+        x_data_kcmx["f_kcsl"] = cpsl;
 
         cb(true); 
     }
@@ -289,7 +298,7 @@
     }
 
     /**
-     * 货物占用
+     * 调拨记录
      */
     const onDialogClose_kcjy_list = async (cancel: boolean, data0: any, cb: cfunc_boolean) => {
         if (cancel) { 

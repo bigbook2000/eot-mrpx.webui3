@@ -332,14 +332,6 @@ export default { name: "platform_flow" }
             cb(false);
             return;
         }
-        
-        let roleList = data["f_role_d"];
-        let roleIds = "";
-        for (let d of roleList) {
-            roleIds += "," + d;
-        }
-        roleIds = roleIds.substring(1);
-        data["f_role"] = roleIds;
 
         await v_table_point.value?.update_data_net(
             "/framework/flow/point/upd", data, -1, data["f_flow_point_id"]<=0, true);

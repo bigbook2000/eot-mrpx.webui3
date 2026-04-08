@@ -1,12 +1,13 @@
 <template>
     <!-- 借用编辑对话框 -->
     <vdialog ref="v_dialog"
-        width="600px" title="占用变更" 
+        width="600px" title="调拨变更" 
         @open="onDialogOpen"
         @close="onDialogClose">
         <div class="eo_form">
+            <!--
             <div class="cell eo_w100">
-                <div class="label_n">批次<span style="color:red;">*</span></div>
+                <div class="label_n">批次</div>
                 <div class="input">
                     <el-input v-model="x_data_jyxx['f_kcbh']" style="width:100%" disabled>
                     </el-input>
@@ -19,19 +20,19 @@
                     </el-input>
                 </div>
             </div>
-
+            -->
             <div class="cell eo_w2">
-                <div class="label_n">占用员工</div>
+                <div class="label_n">调拨员工</div>
                 <div class="input">
-                    <user_input v-model="x_data_jyxx['f_yg_id']" 
-                        :userName="x_data_jyxx['f_yg_id_s']" 
+                    <user_input v-model="x_data_jyxx['f_jyyg_id']" 
+                        :userName="x_data_jyxx['f_jyyg_id_s']" 
                         style="width:100%"></user_input>
                 </div>
             </div>
             <div class="cell eo_w2">
-                <div class="label_n">占用状态</div>
+                <div class="label_n">调拨状态</div>
                 <div class="input">
-                    <vdic style="width:100%" dic="占用状态" :all="false" field="value"
+                    <vdic style="width:100%" dic="调拨状态" :all="false" field="value"
                         v-model="x_data_jyxx['f_jyzt']" />
                 </div>
             </div>
@@ -72,15 +73,15 @@
 
 
     // 表单数据
-    const x_data_jyxx: any = reactive({
+    const x_data_jyxx: any = ref({
         "f_kcbh": "",
         "f_cpmc": "",
-        "f_kcmxrk_id": 0,
+        "f_kcmx_id": 0,
         "f_cpdy_id": 0,
-        "f_yg_id": 0,
-        "f_yg_id_s": "",
-        "f_kgy_id": 0,
+        "f_jyyg_id": 0,
+        "f_jyyg_id_s": "",        
         "f_jyzt": 0,
+        "f_kgy_id": 0,
         "f_beizhu": ""
     });
     let m_kcmx_list: any[] = [];
@@ -94,11 +95,24 @@
         // 先打开对话框
         v_dialog.value!.show_dialog(undefined);
 
-        // 创建一个副本并更新响应式数据
-        if (jyxxData != undefined) {
-            Object.assign(x_data_jyxx, jyxxData);
-        }
+        x_data_jyxx.value = {
+            "f_kcbh": "",
+            "f_cpmc": "",
+            "f_kcmx_id": 0,
+            "f_cpdy_id": 0,
+            "f_jyyg_id": 0,
+            "f_jyyg_id_s": "",
+            "f_jyzt": 0,
+            "f_kgy_id": 0,
+            "f_beizhu": ""
+        };
 
+        // 创建一个副本并更新响应式数据
+        // if (jyxxData != undefined) {
+        //     Object.assign(x_data_jyxx, jyxxData);
+        // }
+
+        //console.log(x_data_jyxx);
         m_kcmx_list = kcmxList;
     }
 
@@ -113,16 +127,16 @@
             cb(true); return;
         }
         
-        const data = x_data_jyxx;
+        const data = x_data_jyxx.value;
 
         const jyzt = data["f_jyzt"];
-        const yg_id = data["f_yg_id"];
+        const jyyg_id = data["f_jyyg_id"];
 
         if (jyzt == 0) {
-            data["f_yg_id"] = 0;
+            data["f_jyyg_id"] = 0;
         } else {
-            if (yg_id == 0) {
-                eocore.show_error("请选择占用员工");
+            if (jyyg_id == 0) {
+                eocore.show_error("请选择调拨员工");
                 cb(false); return;            
             }
         }
@@ -138,11 +152,11 @@
 
             let ret = await eocore.proc(
                 "p_kcjy_upd", {
-                    "v_kcmxrk_id": d["f_kcmxrk_id"],
+                    "v_kcmx_id": d["f_kcmx_id"],
                     "v_cpdy_id": d["f_cpdy_id"],
-                    "v_yg_id": data["f_yg_id"],
-                    "v_kgy_id": data["f_kgy_id"],
+                    "v_jyyg_id": data["f_jyyg_id"],
                     "v_jyzt": data["f_jyzt"],
+                    "v_kgy_id": data["f_kgy_id"],
                     "v_beizhu": data["f_beizhu"] 
                 });
             let dataNew = eocore.check_net_object(ret);
