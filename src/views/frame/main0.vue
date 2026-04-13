@@ -138,6 +138,8 @@ import eolib from "@/inc/eolib"
         for (let d of TGlobal.menuList) {
 
             if (d["f_type"] != "menu") continue;
+
+            //console.log(d);
             // 通过角色判断
             if (!TLogic.checkRoleList(d.role_list)) continue;
 

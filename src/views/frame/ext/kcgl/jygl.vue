@@ -94,9 +94,10 @@
                     <el-table-column prop="f_yg_id_s" label="员工" width="120" />
                     <el-table-column prop="f_kcbh" label="批次" width="200" />                    
                     <el-table-column prop="f_cpmc" label="产品名称" width="180" show-overflow-tooltip />
-                    <el-table-column prop="f_cpsl" label="包装数量" width="100" />
+                    <el-table-column prop="f_cpsl" label="单件数量" width="100" />
                     <el-table-column prop="f_cpgg" label="规格" width="180" show-overflow-tooltip />
                     <el-table-column prop="f_cpcc" label="尺寸" width="160" show-overflow-tooltip />
+                    <el-table-column prop="f_cpzl" label="重量" width="160" show-overflow-tooltip />                    
                     <el-table-column prop="f_cpdw" label="单位" width="100" show-overflow-tooltip />
                     <el-table-column prop="f_kgy_id_s" label="库管员" width="120" show-overflow-tooltip />
                     <el-table-column prop="f_beizhu" label="备注" width="200" show-overflow-tooltip />

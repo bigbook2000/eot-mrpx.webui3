@@ -40,7 +40,8 @@
                 :on-item="onTableItem_cgdcp"
                 @row-click="onTableRowClick_cgdcp">
                 <el-table-column prop="f_cpmc" label="产品名称" width="200" show-overflow-tooltip />
-                <el-table-column prop="f_cgsl" label="采购数量" width="90" align="right" />                
+                <el-table-column prop="f_cgsl" label="采购件数" width="90" align="right" />
+                <el-table-column prop="f_bzsl" label="单件数量" width="90" align="right" />
                 <el-table-column prop="f_cgdj_s" label="采购单价" width="120" align="right" />
                 <el-table-column prop="f_cgzj_s" label="采购总价" width="120" align="right" />
                 <el-table-column prop="f_wlgs_id_s" label="物流公司" width="120" show-overflow-tooltip />
@@ -121,13 +122,13 @@
      * @param ddh 
      * @param reload 
      */
-    const loadList = (cgdId: number, cgdh: string, reload: boolean) => {
+    const loadList = async (cgdId: number, cgdh: string, reload: boolean): Promise<void> => {
 
         m_cgd_id = cgdId;
         m_cgdh = cgdh;
 
         if (reload) {
-            v_table_cgdcp.value?.load_list_proc("p_cgdcp_list", { 
+            await v_table_cgdcp.value?.load_list_proc("p_cgdcp_list", { 
                 "v_cgd_id": cgdId,
             });
         } else {
@@ -135,12 +136,6 @@
         }
     }
 
-    /**
-     * 将订单明细添加到库存中
-     */
-    const netLoad_kcmx_add = () => {
-
-    }
 
     /**
      * 加载状态处理
@@ -195,22 +190,23 @@
         }
 
         let cgdcpData = {
-            f_cgdcp_id: 0,
-            f_cpdy_id: 0, // 产品定义ID
-            f_cpmc: "", // 产品名称
-            f_cpbm: "", // 产品编码
-            f_cgd_id: m_cgd_id, // 订单ID
-            f_cgdh: m_cgdh,
-            f_cpjg: 0.0, // 销售定价
-            f_kcsl: 0.0, // 库存数量
-            f_kcdj: 0.0, // 库存单价
-            f_cgsl: 1.0,// 数量
-            f_cgdj: 0.0, // 单价 
-            f_cgzj: 0.0, // 总价
-            f_wlgs_id: 0, // 物流公司ID
-            f_wlgs_id_s: "", // 物流公司名称
-            f_wldh: "", // 物流单号
-            f_beizhu: "", // 备注
+            "f_cgdcp_id": 0,
+            "f_cpdy_id": 0, // 产品定义ID
+            "f_cpmc": "", // 产品名称
+            "f_cpbm": "", // 产品编码
+            "f_cgd_id": m_cgd_id, // 订单ID
+            "f_cgdh": m_cgdh,
+            "f_cpjg": 0.0, // 销售定价
+            "f_kcsl": 0.0, // 库存数量
+            "f_kcdj": 0.0, // 库存单价
+            "f_cgsl": 1.0, // 件数
+            "f_bzsl": 1.0, // 单件数量
+            "f_cgdj": 0.0, // 单价 
+            "f_cgzj": 0.0, // 总价
+            "f_wlgs_id": 0, // 物流公司ID
+            "f_wlgs_id_s": "", // 物流公司名称
+            "f_wldh": "", // 物流单号
+            "f_beizhu": "", // 备注
         };
         
         v_cgdcp_xx.value?.showDialog("产品信息", cgdcpData, m_field_array, true);

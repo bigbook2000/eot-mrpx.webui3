@@ -83,6 +83,7 @@
                     <el-table-column prop="f_cpmc" label="产品名称" width="180" show-overflow-tooltip />                    
                     <el-table-column prop="f_cpgg" label="规格" width="180" show-overflow-tooltip />
                     <el-table-column prop="f_cpcc" label="尺寸" width="160" show-overflow-tooltip />
+                    <el-table-column prop="f_cpzl" label="重量" width="160" show-overflow-tooltip />
                     <el-table-column prop="f_cpdw" label="单位" width="100" show-overflow-tooltip />
                     <el-table-column prop="f_kgy_id_s" label="库管员" width="140" />
                     <el-table-column prop="f_beizhu" label="备注" width="200" show-overflow-tooltip />

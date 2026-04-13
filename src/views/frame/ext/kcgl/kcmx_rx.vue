@@ -48,7 +48,7 @@
             </div>
             
             <div class="cell eo_w2">
-                <div class="label_n">包装数量</div>
+                <div class="label_n">单件数量</div>
                 <div class="input">
                     <el-input-number v-model="x_data_kcmx['f_kcsl']" style="width:100%"
                         :min="0" :max="999999" :step="1" />

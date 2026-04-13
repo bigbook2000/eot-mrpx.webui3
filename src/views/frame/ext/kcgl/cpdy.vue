@@ -71,9 +71,10 @@
                             <el-table-column prop="f_cpjg_s" label="定价" width="120" align="right" />
                             <el-table-column prop="f_kcsl" label="库存数量" width="120" align="right" />
                             <el-table-column prop="f_kcdj_s" label="库存单价" width="120" align="right" />
-                            <el-table-column prop="f_bzsl" label="包装数量" width="100" />
+                            <el-table-column prop="f_bzsl" label="单件数量" width="100" />
                             <el-table-column prop="f_cpgg" label="规格" width="180" show-overflow-tooltip />
                             <el-table-column prop="f_cpcc" label="尺寸" width="160" show-overflow-tooltip />
+                            <el-table-column prop="f_cpzl" label="重量" width="160" show-overflow-tooltip />
                             <el-table-column prop="f_cpdw" label="单位" width="100" show-overflow-tooltip />
                             <el-table-column prop="f_dlmc" label="大类" width="120" show-overflow-tooltip />
                             <el-table-column prop="f_xlmc" label="小类" width="140" show-overflow-tooltip />
@@ -108,6 +109,7 @@
                             <el-table-column prop="f_kcdj_s" label="库存单价" width="120" align="right" />
                             <el-table-column prop="f_cpgg" label="规格" width="180" show-overflow-tooltip />
                             <el-table-column prop="f_cpcc" label="尺寸" width="160" show-overflow-tooltip />
+                            <el-table-column prop="f_cpzl" label="重量" width="160" show-overflow-tooltip />
                             <el-table-column prop="f_cpdw" label="单位" width="100" show-overflow-tooltip />
                             <el-table-column prop="f_dlmc" label="大类" width="120" show-overflow-tooltip />
                             <el-table-column prop="f_xlmc" label="小类" width="140" show-overflow-tooltip />

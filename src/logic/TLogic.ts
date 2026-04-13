@@ -20,22 +20,19 @@ export default {
 		"应用_知识库": "file_logic_zsk",
 	},
 	
-	codeTypes: {
-		"采购入库": "CG",
-		"采购退货": "CT",		
-		"销售退货": "XT",
-		"销售订单": "XS",
+	codeTypes: [
+		"采购入库",
+		"采购退货",
+		"销售退货",
+		"销售订单",
 
-		"生产加工": "SC",
+		"生产加工",
 
-		"盘库整理": "KZ",
+		"盘库整理",
 		
-		"库存拆分": "KF",
-		"库存合并": "KH",
-	} as Record<string, string>,
-	codeTypeValues: {
-	} as Record<string, string>,
-	codeTypeArrays: [] as string[],
+		"库存拆分",
+		"库存合并",
+	],
 
 	flowTypes: {
 		"采购入库": "采购入库",
@@ -76,6 +73,13 @@ export default {
 		"损坏": 9,
 	},
 
+	/** 库存状态 */
+	kcbzCodes: {
+		"临时": 0,
+		"正常": 1,
+		"历史": -1
+	},
+
 	/**
 	 * 初始化
 	 */
@@ -84,12 +88,10 @@ export default {
 		let codeDic: any[] = [];
 
 		let i = 0;
-		for (let key in this.codeTypes) {
-		 	this.codeTypeValues[this.codeTypes[key]] = key;
-			this.codeTypeArrays.push(this.codeTypes[key]);
+		for (let d of this.codeTypes) {
 			codeDic.push({
 				value: i,
-				label: key,
+				label: d,
 			});
 			i++;
 		}
@@ -115,6 +117,7 @@ export default {
 	 */
 	checkRoleList(roleList: any[]): boolean {
 
+		//console.log("checkRoleList", roleList, TGlobal.userData["role_list"]);
 		if (roleList.length == 0) {
 			return true;
 		}
@@ -637,26 +640,47 @@ export default {
 	 * 更新库存明细
 	 * @param data 更新的库存明细数据
 	 */
-	async netLoad_kcmx_upd(data: any): Promise<any|undefined> {
+	async netLoad_kcmx_upd(
+		f_kcmx_id: number,
+		f_cpdy_id: number,
+		f_kcbh: string,
+		f_rklb: string,
+		f_rkid: number,
+		f_rksj: string,
+		f_cklb: string,
+		f_ckid: number,
+		f_cksj: string,
+		f_hwck: number,
+		f_pksj: string,
+		f_kcdj: number,
+		f_kcsl: number,
+		f_kcbz: number,
+		f_kgy_id: number,
+		f_jyzt: number,
+		f_jyyg_id: number,
+		f_beizhu: string
+	): Promise<any|undefined> {
 
 		const ret = await eocore.proc(    
 			"p_kcmx_upd", {
-				"v_kcmx_id": data["f_kcmx_id"],
-				"v_cpdy_id": data["f_cpdy_id"],
-				"v_kcbh": data["f_kcbh"],
-				"v_rklb": data["f_rklb"],
-				"v_rksj": data["f_rksj"],
-				"v_cklb": data["f_cklb"],
-				"v_cksj": data["f_cksj"],
-				"v_hwck": data["f_hwck"],
-				"v_pksj": data["f_pksj"],
-				"v_kcdj": data["f_kcdj"],
-				"v_kcsl": data["f_kcsl"],
-				"v_kcbz": data["f_kcbz"],
-				"v_kgy_id": data["f_kgy_id"],
-				"v_jyzt": data["f_jyzt"],
-				"v_jyyg_id": data["f_jyyg_id"],
-				"v_beizhu": data["f_beizhu"]
+				"v_kcmx_id": f_kcmx_id,
+				"v_cpdy_id": f_cpdy_id,
+				"v_kcbh": f_kcbh,
+				"v_rklb": f_rklb,
+				"v_rkid": f_rkid,
+				"v_rksj": f_rksj,
+				"v_cklb": f_cklb,
+				"v_ckid": f_ckid,				
+				"v_cksj": f_cksj,
+				"v_hwck": f_hwck,
+				"v_pksj": f_pksj,
+				"v_kcdj": f_kcdj,
+				"v_kcsl": f_kcsl,
+				"v_kcbz": f_kcbz,
+				"v_kgy_id": f_kgy_id,
+				"v_jyzt": f_jyzt,
+				"v_jyyg_id": f_jyyg_id,
+				"v_beizhu": f_beizhu
 		});		
         return eocore.check_net_object(ret);
 	},
@@ -674,21 +698,53 @@ export default {
 
 		const dts = eolib.datetime_2_string(new Date(), true);
 
-        let data1 = Object.assign({}, data);
-        data1["f_kcsl"] = kcsl1;
-		data1["f_pksj"] = dts;
-		data1["f_kgy_id"] = kgyId;
+		const kcmxId = data["f_kcmx_id"];
 
-        let dataNew1 = await this.netLoad_kcmx_upd(data1);
+		// 修改原有的
+        let dataNew1 = await this.netLoad_kcmx_upd(
+			kcmxId,
+			data["f_cpdy_id"],
+			data["f_kcbh"],
+			data["f_rklb"],
+			0,
+			data["f_rksj"],
+			data["f_cklb"],
+			0,
+			data["f_cksj"],
+			data["f_hwck"],
+			dts,
+			data["f_kcdj"],
+			kcsl1,
+			data["f_kcbz"],
+			kgyId,
+			data["f_jyzt"],
+			data["f_jyyg_id"],
+			data["f_beizhu"]
+		);
         if (dataNew1 == undefined) return undefined;
 
-		let data2 = Object.assign({}, data);
-		data2["f_kcmx_id"] = 0;
-        data2["f_kcsl"] = kcsl2;
-		data2["f_pksj"] = dts;
-		data2["f_kcbh"] = await this.netLoad_RecordString_kcbh(data["f_cpdy_id"], data["f_cpbm"]);
-
-        let dataNew2 = await this.netLoad_kcmx_upd(data2);
+		// 增加新的
+		let kcbh2 = await this.netLoad_RecordString_kcbh(data["f_cpdy_id"], data["f_cpbm"]);
+        let dataNew2 = await this.netLoad_kcmx_upd(
+			0,
+			data["f_cpdy_id"],
+			kcbh2,
+			data["f_rklb"],
+			kcmxId, // 关联
+			data["f_rksj"],
+			data["f_cklb"],
+			0,
+			data["f_cksj"],
+			data["f_hwck"],
+			dts,
+			data["f_kcdj"],
+			kcsl2,
+			data["f_kcbz"],
+			kgyId,
+			data["f_jyzt"],
+			data["f_jyyg_id"],
+			data["f_beizhu"]
+		);
         if (dataNew2 == undefined) return undefined;
 
 		return { 

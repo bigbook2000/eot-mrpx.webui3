@@ -24,7 +24,7 @@
                     <div class="cell eo_w200p">
                         <div class="label_n">入库类别</div>
                         <div class="input">
-                            <vdic style="width:100%" dic="库存类别" :all="true" field="value"
+                            <vdic style="width:100%" dic="库存类别" :all="true" field="label"
                                 v-model="x_query_rklb" />
                         </div>
                     </div>                    
@@ -82,6 +82,7 @@
                     <el-table-column prop="f_cpmc" label="产品名称" width="180" show-overflow-tooltip />                    
                     <el-table-column prop="f_cpgg" label="规格" width="180" show-overflow-tooltip />
                     <el-table-column prop="f_cpcc" label="尺寸" width="160" show-overflow-tooltip />
+                    <el-table-column prop="f_cpzl" label="重量" width="160" show-overflow-tooltip />
                     <el-table-column prop="f_cpdw" label="单位" width="100" show-overflow-tooltip />
                     <el-table-column prop="f_kgy_id_s" label="库管员" width="120" show-overflow-tooltip />
                     <el-table-column prop="f_beizhu" label="备注" width="200" show-overflow-tooltip />
@@ -165,16 +166,11 @@ export default { name: "ext_kcgl_rkjl" }
         const kssj = eolib.datetime_2_string(x_query_kssj.value);
         const jssj = eolib.datetime_2_string(x_query_jssj.value);
 
-        let rklb = "";
-        if (x_query_rklb.value >= 0) {
-            rklb = TLogic.codeTypeArrays[x_query_rklb.value];
-        }
-
         v_table_rkjl.value?.load_list_proc("p_rkjl_query", { 
             "v_kcbh": x_query_kcbh.value, 
             "v_kssj": kssj, 
             "v_jssj": jssj, 
-            "v_rklb": rklb, 
+            "v_rklb": x_query_rklb.value, 
             "v_cpmc": x_query_cpmc.value, 
             "v_order_by": " ORDER BY f_kcmxrk_id DESC",
             "s_page_row_index": rowIndex,
@@ -186,8 +182,6 @@ export default { name: "ext_kcgl_rkjl" }
         x_show_loading.value = show;
     }
     const onTableItem_rkjl = (data: any) => {
-        // 入库类别
-        data["f_rklb_s"] = TLogic.codeTypeValues[data["f_rklb"]];
 
         // 日期格式化
         data["f_rksj_s"] = eolib.datetime_2_short(data["f_rksj"]);

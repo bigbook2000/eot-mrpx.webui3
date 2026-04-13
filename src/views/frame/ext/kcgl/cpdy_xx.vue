@@ -59,6 +59,13 @@
                 </div>
             </div>
             <div class="cell eo_w2">
+                <div class="label_n">重量</div>
+                <div class="input">
+                    <el-input v-model="x_cpdy_data['f_cpzl']" style="width:100%"
+                        maxlength="32"></el-input>
+                </div>
+            </div>
+            <div class="cell eo_w2">
                 <div class="label_n">单位</div>
                 <div class="input">
                     <el-input v-model="x_cpdy_data['f_cpdw']" style="width:100%"
@@ -66,7 +73,7 @@
                 </div>
             </div>
             <div class="cell eo_w2">
-                <div class="label_n">包装数量</div>
+                <div class="label_n">单件数量</div>
                 <div class="input">
                     <el-input-number style="width:100%"
                         v-model="x_cpdy_data['f_bzsl']" 

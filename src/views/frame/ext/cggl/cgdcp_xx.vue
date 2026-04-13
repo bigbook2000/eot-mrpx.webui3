@@ -56,7 +56,7 @@
             
 
             <div class="cell eo_w2">
-                <div class="label_n">采购数量</div>
+                <div class="label_n">采购件数</div>
                 <div class="input">
                     <el-input-number v-model="x_data_cgdcp['f_cgsl']" style="width:100%"
                         :min="0" :max="999999" :precision="0" :step="1" 
@@ -65,10 +65,19 @@
                 </div>
             </div>
             <div class="cell eo_w2">
+                <div class="label_n">单件数量</div>
+                <div class="input">
+                    <el-input-number v-model="x_data_cgdcp['f_bzsl']" style="width:100%"
+                        :min="0" :max="999999" :precision="3" :step="1" 
+                        :disabled="!x_edit_fields['f_bzsl']" 
+                        @change="onNumberChange_jszj" />
+                </div>
+            </div>
+            <div class="cell eo_w2">
                 <div class="label_n">采购单价</div>
                 <div class="input">
                     <el-input-number v-model="x_data_cgdcp['f_cgdj']" style="width:100%"
-                        :min="0" :max="999999" :precision="2" :step="1" 
+                        :min="0" :max="999999" :precision="3" :step="1" 
                         :disabled="!x_edit_fields['f_cgdj']" 
                         @change="onNumberChange_jszj" />
                 </div>
@@ -91,7 +100,7 @@
                 <div class="label_n">采购总价</div>
                 <div class="input">
                     <el-input-number v-model="x_data_cgdcp['f_cgzj']" style="width:100%"
-                        :min="0" :max="999999" :precision="2" :step="1" 
+                        :min="0" :max="999999" :precision="3" :step="1" 
                         :disabled="!x_edit_fields['f_cgzj']" 
                         @change="onNumberChange_jsdj" />
                 </div>
@@ -157,6 +166,7 @@
         "f_wldh": false,
         "f_cpmc": false,
         "f_cgsl": false,
+        "f_bzsl": false,
         "f_cgdj": false,
         "f_cgzj": false,
         "f_beizhu": false
@@ -165,6 +175,7 @@
      * 显示对话框
      * @param data 数据对象
      * @param fieldArray 可编辑字段
+     * @param dbUpdate 是否进行入库操作
      */
     const showDialog = (title: string, data: any, fieldArray: string[], dbUpdate?: boolean) => {
 
@@ -193,10 +204,16 @@
             eocore.show_info("请选择产品");
             return undefined;
         }
-        if (data["f_cgsl"] <= 0) {
+
+        const cgsl = eocore.to_int(data["f_cgsl"]);
+        if (cgsl <= 0) {
             eocore.show_info("请输入采购数量");
             return undefined;
-        }        
+        }    
+        if (cgsl > 100) {
+            eocore.show_info("数量太大，若为散件，请打包入库");
+            return undefined;
+        }    
 
         // 计算总价
         onNumberChange_jszj();
@@ -209,7 +226,8 @@
                 "v_cpdy_id": data["f_cpdy_id"],                
                 "v_wlgs_id": data["f_wlgs_id"],
                 "v_wldh": data["f_wldh"],
-                "v_cgsl": data["f_cgsl"],
+                "v_cgsl": cgsl,
+                "v_bzsl": data["f_bzsl"],
                 "v_cgdj": data["f_cgdj"],
                 "v_cgzj": data["f_cgzj"],
                 "v_beizhu": data["f_beizhu"]
@@ -223,15 +241,19 @@
         return dataNew;
     }
 
-    const netLoad_kcmrk_upd = async (data: any): Promise<any> => { 
+    /**
+     * 将采购清单加入到库存明细中
+     * @param rkdcpData 采购清单数据
+     */
+    const netLoad_kcmx_upd = async (rkdcpData: any): Promise<any> => { 
 
         // 检查必填字段
-        if (!eocore.check_id(data, "f_cpdy_id")) {
+        if (!eocore.check_id(rkdcpData, "f_cpdy_id")) {
             eocore.show_info("请选择产品");
             return undefined;
         }
 
-        const cgsl = eocore.to_int(data["f_cgsl"]);
+        const cgsl = eocore.to_int(rkdcpData["f_cgsl"]);
         if (cgsl <= 0) {
             eocore.show_info("请输入采购数量");
             return undefined;
@@ -241,40 +263,45 @@
             return undefined;
         }
 
-        const rklb = TLogic.codeTypes["采购入库"];
-        // 先清除旧的数据
-        let ret = await eocore.proc(
-            "p_kcmxrk_clear", {
-                "v_rklb": rklb,
-                "v_rkd_id": data["f_cgd_id"],
-                "v_rkcp_id": data["f_cgdcp_id"]
-            });
-        let dataNew = eocore.check_net_object(ret);
-        if (dataNew == undefined) {
-            return undefined;
-        }
+        const dts = eolib.datetime_2_string(new Date(), true);
+
+        const cgdcpId = rkdcpData["f_cgdcp_id"];
+
+        // 先清除
+        const ret = await eocore.proc(    
+			"p_kcmxrk_clear", {
+				"v_rklb": "采购入库",
+				"v_rkids": cgdcpId,
+                "v_kcbz": TLogic.kcbzCodes["临时"],
+		});
+        const data = eocore.check_net_object(ret);
+        if (data == undefined) return undefined;
 
         const kgyId = TGlobal.userData["f_user_id"];
         for (let i=0; i<cgsl; i++) {
 
-            const kcbh = await TLogic.netLoad_RecordString_kcbh(data["f_cpdy_id"], data["f_cpbm"]);
-            ret = await eocore.proc(
-                "p_kcmxrk_upd", {
-                    "v_kcmxrk_id": 0,
-                    "v_kcbh": kcbh,
-                    "v_kcbz": 0, // 0表示未进入库存，1表示已经进入库存
-                    "v_cpdy_id": data["f_cpdy_id"],
-                    "v_rklb": rklb,
-                    "v_rkd_id": data["f_cgd_id"],
-                    "v_rkcp_id": data["f_cgdcp_id"],
-                    "v_kgy_id": kgyId,
-                    "v_cpsl": 1.0,
-                    "v_cpdj": data["f_cgdj"],
-                    "v_cpzj": data["f_cgdj"],
-                    "v_hwck": 1,
-                    "v_beizhu": data["f_beizhu"]
-                });
-            let dataNew = eocore.check_net_object(ret);
+            const kcbh = await TLogic.netLoad_RecordString_kcbh(
+                rkdcpData["f_cpdy_id"], rkdcpData["f_cpbm"]);
+            const dataNew = await TLogic.netLoad_kcmx_upd(
+                0,
+                rkdcpData["f_cpdy_id"],
+                kcbh,
+                "采购入库",
+                cgdcpId, // 关联采购产品清单
+                dts,
+                "",
+                0,
+                "1970-01-01 00:00:00",
+                0,
+                dts,
+                rkdcpData["f_cgdj"],
+                rkdcpData["f_bzsl"], // 单件数量
+                TLogic.kcbzCodes["临时"], // 库存标识
+                kgyId,
+                0,
+                0,
+                rkdcpData["f_beizhu"]
+            );
             if (dataNew == undefined) {
                 return undefined;
             }
@@ -309,8 +336,9 @@
 
         } else {
 
+            // 变更入库
             v_dialog.value?.show_loading(true);
-            await netLoad_kcmrk_upd(x_data_cgdcp);
+            await netLoad_kcmx_upd(x_data_cgdcp);
             v_dialog.value?.show_loading(false);
             
             emits("close", cancel, undefined, (result: boolean) => {
@@ -325,24 +353,29 @@
      */
     const onNumberChange_jszj = () => {
 
-        let cpsl = eocore.to_float(x_data_cgdcp['f_cgsl'] || 0);
-        let cpdj = eocore.to_float(x_data_cgdcp['f_cgdj'] || 0);
-        x_data_cgdcp['f_cgzj'] = Number((cpsl * cpdj).toFixed(2));
+        const bzsl = eocore.to_float(x_data_cgdcp['f_bzsl']);
+        const cpsl = eocore.to_int(x_data_cgdcp['f_cgsl']);
+        const cpdj = eocore.to_float(x_data_cgdcp['f_cgdj']);
+        x_data_cgdcp['f_cgzj'] = Number((cpsl * bzsl * cpdj).toFixed(2));
     }
     /**
      * 自动计算单价
      */
     const onNumberChange_jsdj = () => {
 
-        let cpsl = eocore.to_float(x_data_cgdcp['f_cgsl'] || 0);
-        let cpzj = eocore.to_float(x_data_cgdcp['f_cgzj'] || 0);
-
-        if (cpsl <= 0.0) {
-            cpsl = 1.0;
+        let bzsl = eocore.to_float(x_data_cgdcp['f_bzsl']);
+        if (bzsl <= 0.0) {
+            bzsl = 1.0;
+            x_data_cgdcp['f_bzsl'] = bzsl;
+        }
+        let cpsl = eocore.to_int(x_data_cgdcp['f_cgsl']) * bzsl;
+        if (cpsl <= 0) {
+            cpsl = 1;
             x_data_cgdcp['f_cgsl'] = cpsl;
         }
 
-        x_data_cgdcp['f_cgzj'] = Number((cpzj / cpsl).toFixed(2));
+        const cpzj = eocore.to_float(x_data_cgdcp['f_cgzj']);
+        x_data_cgdcp['f_cgzj'] = Number((cpzj / (cpsl * bzsl)).toFixed(2));
     } 
 
     const onInputOpen_cpdy = () => {
@@ -359,6 +392,7 @@
         x_data_cgdcp['f_cpmc'] = data['f_cpmc'];
         x_data_cgdcp['f_cpbm'] = data['f_cpbm'];
         x_data_cgdcp['f_cpjg'] = data['f_cpjg'];
+        x_data_cgdcp['f_bzsl'] = data['f_bzsl'];
         x_data_cgdcp['f_kcsl'] = data['f_kcsl'];
         x_data_cgdcp['f_kcdj'] = eolib.divide_num(data['f_kczj'], data['f_kcsl']);
 

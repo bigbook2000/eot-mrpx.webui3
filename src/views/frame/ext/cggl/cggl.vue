@@ -227,10 +227,9 @@ export default { name: "ext_cggl_cggl" }
         v_rkcpmx.value?.updateUserDic(m_user_dic);
 
         // 判断是否能够创建采购
-        const role = TGlobal.userData["f_role"];
         const point = v_flow_cgd.value?.get_point_by_name("新建");
         if (point != undefined) {
-            x_flow_status_button.value["新建"] = eolib.list_any_list(role, point.role);
+            x_flow_status_button.value["新建"] = TLogic.checkRoleString(point.role);
         }
 
         // 初始化加载数据
@@ -247,7 +246,7 @@ export default { name: "ext_cggl_cggl" }
         }
 
         const statusButton = x_flow_status_button.value;
-        statusButton["新建"] = false;
+        //statusButton["新建"] = false; // 初始设置
         statusButton["作废"] = false;
         statusButton["退回"] = false;
         statusButton["提交"] = false;
@@ -363,11 +362,8 @@ export default { name: "ext_cggl_cggl" }
             "s_page_row_count": pageRowCount
         });
 
-        v_cgdcp.value?.loadList(
-            0, "", false);
-        v_rkcpmx.value?.loadList(
-            TLogic.codeTypes["采购入库"],
-            0, "", false);
+        v_cgdcp.value?.loadList(0, "", false);
+        v_rkcpmx.value?.loadList("采购入库", "");
 
         v_flow_cgd.value?.load_List(0);
         
@@ -376,6 +372,7 @@ export default { name: "ext_cggl_cggl" }
 
     const netLoad_cgd_upd = async (data: any): Promise<any> => { 
 
+        x_show_loading.value = true;
         const ret = await eocore.proc(
             "p_cgd_upd", {
                 "v_cgd_id": data["f_cgd_id"],
@@ -400,6 +397,7 @@ export default { name: "ext_cggl_cggl" }
                 "v_yxbz": data["f_yxbz"],
                 "v_beizhu": data["f_beizhu"]
             });
+        x_show_loading.value = false;
         return eocore.check_net_object(ret);
     }
 
@@ -427,31 +425,18 @@ export default { name: "ext_cggl_cggl" }
     }
 
     /**
-     * 入库产品添加到库存表中
-     * @param data 
+     * 加载采购入库明细
      */
-    const netLoad_kcmx_upd = async (list: any[]): Promise<any> => { 
+    const loadList_rkcpmx = async () => {
+
+        const list = v_cgdcp.value?.getList() || [];
+        const rkIds = list.map((item: any) => item["f_cgdcp_id"]).join(",");
 
         x_show_loading.value = true;
-        for (let data of list) {
-
-            console.log("入库产品添加到库存表中", data);
-            const ret = await eocore.proc("p_kcmx_upd", {
-                "v_kcbh": data["f_kcbh"],
-                "v_kcmxrk_id": data["f_kcmxrk_id"],
-                "v_cpdy_id": data["f_cpdy_id"],
-                "v_jyzt": 0,
-                "v_hwck": data["f_hwck"],
-                "v_cpdj": data["f_cpdj"],
-                "v_cpsl": data["f_cpsl"],
-                "v_yxbz": 1,
-                "v_kgy_id": data["f_kgy_id"],
-                "v_beizhu": data["f_beizhu"]
-            });
-            eocore.check_net_object(ret);            
-        }
+        await v_rkcpmx.value?.loadList("采购入库", rkIds);
         x_show_loading.value = false;
     }
+
 
     /**
      * 表格数据格式化
@@ -508,17 +493,15 @@ export default { name: "ext_cggl_cggl" }
      */
     const onTableRowClick_cgd = async (data: any) => {
 
-        v_cgdcp.value?.loadList(
-            data["f_cgd_id"],
-            data["f_cgdh"],
-            true);
-        v_rkcpmx.value?.loadList(
-            TLogic.codeTypes["采购入库"],
-            data["f_cgd_id"],
-            data["f_cgdh"],
-            true);
+        x_show_loading.value = true;
+        await v_cgdcp.value?.loadList(data["f_cgd_id"], data["f_cgdh"], true);
+        x_show_loading.value = false;
 
+        loadList_rkcpmx();
+
+        x_show_loading.value = true;
         await v_flow_cgd.value?.load_List(data["f_cgd_id"]);
+        x_show_loading.value = false;
 
         updateFlowStatusButton(data);
     }
@@ -553,30 +536,30 @@ export default { name: "ext_cggl_cggl" }
     const onButtonClick_Add_cgd = async () => {
         
         let cgdData = {
-            f_cgd_id: 0,
-            f_cgdh: "",          // 采购入库单号
-            f_gys_id: 0,         // 供应商ID
-            f_gys_id_s: "",         // 供应商名称
-            f_cgy_id: TGlobal.userData['f_user_id'], // 采购员ID
-            f_cgy_id_s: TGlobal.userData['f_name'], // 采购员姓名
-            f_cgjh_id: 0, // 采购计划ID
-            f_cgjhdh: "", // 采购计划单号
-            f_lxr: "", // 联系人
-            f_lxdh: "", // 联系电话
-            f_wlgs_id: 0, // 物流公司ID
-            f_wlgs_id_s: "", // 物流公司名称
-            f_wldh: "", // 物流单号
-            f_shr_id: 0, // 收货人ID
-            f_shr_id_s: "", // 收货人姓名
-            f_fklb: 1, // 付款类别
-            f_zje: 0.0, // 总金额
-            f_sfje: 0.0, // 实付金额
-            f_cjsj: "", // 创建时间
-            f_shsj: "1970-01-01 00:00:00", // 收货时间
-            f_yxbz: 1, // 有效标志
-            f_flow_point_id: 0,
-            f_flow_process_id: 0,
-            f_beizhu: "" // 备注
+            "f_cgd_id": 0,
+            "f_cgdh": "",          // 采购入库单号
+            "f_gys_id": 0,         // 供应商ID
+            "f_gys_id_s": "",         // 供应商名称
+            "f_cgy_id": TGlobal.userData['f_user_id'], // 采购员ID
+            "f_cgy_id_s": TGlobal.userData['f_name'], // 采购员姓名
+            "f_cgjh_id": 0, // 采购计划ID
+            "f_cgjhdh": "", // 采购计划单号
+            "f_lxr": "", // 联系人
+            "f_lxdh": "", // 联系电话
+            "f_wlgs_id": 0, // 物流公司ID
+            "f_wlgs_id_s": "", // 物流公司名称
+            "f_wldh": "", // 物流单号
+            "f_shr_id": 0, // 收货人ID
+            "f_shr_id_s": "", // 收货人姓名
+            "f_fklb": 1, // 付款类别
+            "f_zje": 0.0, // 总金额
+            "f_sfje": 0.0, // 实付金额
+            "f_cjsj": "", // 创建时间
+            "f_shsj": "1970-01-01 00:00:00", // 收货时间
+            "f_yxbz": 1, // 有效标志
+            "f_flow_point_id": 0,
+            "f_flow_process_id": 0,
+            "f_beizhu": "" // 备注
         };
         
         v_cgd_xx.value?.showDialog(cgdData);
@@ -589,7 +572,7 @@ export default { name: "ext_cggl_cggl" }
         await v_table_cgd.value?.remove_data_proc_select("p_cgd_del", async (data: any) => {
             return {
                 "v_cgd_id": data["f_cgd_id"],
-                "v_rklb": TLogic.codeTypes["采购入库"]
+                "v_rklb": "采购入库"
             };
         });
     }
@@ -623,8 +606,7 @@ export default { name: "ext_cggl_cggl" }
         let cgdh = data["f_cgdh"];
         if (isAdd) {
 
-            cgdh = await TLogic.netLoad_RecordString(
-                "采购入库单号", TLogic.codeTypes["采购入库"], "yyMMdd", 6);
+            cgdh = await TLogic.netLoad_RecordString("采购入库单号", "CG", "yyMMdd", 6);
             data["f_cgdh"] = cgdh;
 
         } else {
@@ -649,7 +631,9 @@ export default { name: "ext_cggl_cggl" }
 
         if (isAdd) {
 
+            x_show_loading.value = true;
             v_flow_cgd.value?.clear_list(dataNew["f_cgd_id"]);
+            
             // 添加一个流程
             let processData = await v_flow_cgd.value?.add_process_data(
                 "", "新建", "-", 
@@ -662,15 +646,10 @@ export default { name: "ext_cggl_cggl" }
             }
 
             // 刷新明细
-            v_cgdcp.value?.loadList(
-                dataNew["f_cgd_id"],
-                dataNew["f_cgdh"],
-                false);
-            v_rkcpmx.value?.loadList(
-                TLogic.codeTypes["采购入库"],
-                dataNew["f_cgd_id"],
-                dataNew["f_cgdh"],
-                false);
+            v_cgdcp.value?.loadList(dataNew["f_cgd_id"], dataNew["f_cgdh"], false);
+            loadList_rkcpmx();
+
+            x_show_loading.value = false;
         }
 
         // 更新表格        
@@ -812,7 +791,7 @@ export default { name: "ext_cggl_cggl" }
         for (let d1 of list1) {
             bf = false;
             for (let d2 of list2) {
-                if (d1["f_cgdcp_id"] == d2["f_rkcp_id"]) {
+                if (d1["f_cgdcp_id"] == d2["f_rkid"]) {
                     bf = true;
                     break;
                 }
@@ -844,7 +823,7 @@ export default { name: "ext_cggl_cggl" }
      */
     const showFlowDialog = (cgdData: any, pointName: string) => {
         
-        v_flow_cgd.value?.add_process(pointName, (cancel: boolean, data: any, cb: cfunc_boolean) => {
+        v_flow_cgd.value?.add_process(pointName, async (cancel: boolean, data: any, cb: cfunc_boolean) => {
 
             if (cancel) { 
                 cb(true); return;
@@ -857,13 +836,22 @@ export default { name: "ext_cggl_cggl" }
             v_table_cgd.value?.update_data(cgdData, -1, false, false);
             // 更新流程按钮
             updateFlowStatusButton(cgdData);
+            
 
             if (pointName == "已入库") {
 
+                console.log("入库产品添加到库存表中", data);
+                const list = v_rkcpmx.value?.getList() || [];
+                const kcmxIds = list.map((item: any) => item["f_kcmx_id"]).join(",");
+
                 // 入库到库存
-                let list = v_rkcpmx.value?.getList();
-                list ??= [];
-                netLoad_kcmx_upd(list);
+                x_show_loading.value = true;                
+                const ret = await eocore.proc("p_kcmxrk_upd", {
+                    "v_kcmx_ids": kcmxIds,
+                    "v_kcbz": TLogic.kcbzCodes["正常"]
+                });
+                eocore.check_net_object(ret);
+                x_show_loading.value = false;
             }
 
             eocore.show_success("操作成功");

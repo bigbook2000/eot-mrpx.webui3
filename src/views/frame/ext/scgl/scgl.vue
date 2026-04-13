@@ -65,6 +65,7 @@
                                     <el-table-column prop="f_kcbh" label="批次" width="180" show-overflow-tooltip />
                                     <el-table-column prop="f_cpgg" label="规格" width="180" show-overflow-tooltip />
                                     <el-table-column prop="f_cpcc" label="尺寸" width="160" show-overflow-tooltip />
+                                    <el-table-column prop="f_cpzl" label="重量" width="160" show-overflow-tooltip />
                                     <el-table-column prop="f_cpdw" label="单位" width="100" show-overflow-tooltip />
                                     <el-table-column prop="f_cjsj_s" label="创建时间" width="140" />
                                     <el-table-column prop="f_cpbm" label="编码" width="160" />
@@ -112,9 +113,10 @@
                                     <el-table-column prop="f_cpmc" label="部件名称" width="180" show-overflow-tooltip />
                                     <el-table-column prop="f_bjsl" label="部件数量" width="100" />
                                     <el-table-column prop="f_kcbh" label="批次" width="180" show-overflow-tooltip />
-                                    <el-table-column prop="f_cpsl" label="包装数量" width="100" />
+                                    <el-table-column prop="f_cpsl" label="单件数量" width="100" />
                                     <el-table-column prop="f_cpgg" label="规格" width="180" show-overflow-tooltip />
                                     <el-table-column prop="f_cpcc" label="尺寸" width="160" show-overflow-tooltip />
+                                    <el-table-column prop="f_cpzl" label="重量" width="160" show-overflow-tooltip />
                                     <el-table-column prop="f_cpdw" label="单位" width="100" show-overflow-tooltip />
                                     <el-table-column prop="f_cpbm" label="编码" width="160" />
                                     <el-table-column prop="f_beizhu" label="备注" width="200" show-overflow-tooltip />
@@ -381,14 +383,14 @@ import { da } from "element-plus/es/locales.mjs";
             }
 
             // 每个部件只能消耗一个批次
-            // 如果需要的同样的部件数量大于包装数量，则添加多个相同部件，确保每个部件小于包装数量
+            // 如果需要的同样的部件数量大于单件数量，则添加多个相同部件，确保每个部件小于单件数量
 
             // 部件数量，生产所需要的数量
             const bjsl = d["f_bjsl"];
-            // 包装数量
+            // 单件数量
             const cpsl = d["f_cpsl"];
             if (bjsl > cpsl) {
-                eocore.show_info("部件数量不能大于包装数量");
+                eocore.show_info("部件数量不能大于单件数量");
                 return;
             }
 
@@ -406,7 +408,7 @@ import { da } from "element-plus/es/locales.mjs";
             cpzj += bjsl * cpdj;
         }
 
-        let rklb = TLogic.codeTypes["生产加工"];
+        let rklb = "生产加工";
         let scyId = TGlobal.userData["f_user_id"];
 
         console.log(scdData, scwlList, rklb, cpzj);
@@ -414,15 +416,16 @@ import { da } from "element-plus/es/locales.mjs";
         const bzsl = scdData["f_bzsl"];
 
         x_show_loading.value = true;
+        let dataNew = scdData;
         // 创建一个新的批号的货物
-        let dataNew = await TLogic.netLoad_kcmxrk_upd(scyId, rklb, {
-            "f_cpdy_id": scdData["f_cpdy_id"],
-            "f_cpbm": scdData["f_cpbm"],
-            "f_cpsl": bzsl, // 定义的包装数量即实际货物包装数量
-            "f_cpdj": cpzj / bzsl,
-            "f_hwck": 0,
-            "f_beizhu": scdData["f_beizhu"]
-        });
+        // let dataNew = await TLogic.netLoad_kcmxrk_upd(scyId, rklb, {
+        //     "f_cpdy_id": scdData["f_cpdy_id"],
+        //     "f_cpbm": scdData["f_cpbm"],
+        //     "f_cpsl": bzsl, // 定义的单件数量即实际货物单件数量
+        //     "f_cpdj": cpzj / bzsl,
+        //     "f_hwck": 0,
+        //     "f_beizhu": scdData["f_beizhu"]
+        // });
         x_show_loading.value = false;
         if (dataNew == undefined) return;
 
@@ -462,7 +465,7 @@ import { da } from "element-plus/es/locales.mjs";
             
             // 部件数量，生产所需要的数量
             const bjsl = d["f_bjsl"];
-            // 包装数量
+            // 单件数量
             const cpsl = d["f_cpsl"];
             const sysl = cpsl - bjsl;
 
