@@ -67,11 +67,11 @@
                         </div>
                     </div>
                     
-                    <!-- 库存明细表格 -->
+                    <!-- 库存明细表格，使用f_kcbh作为主键 -->
                     <div class="eo_col_f">
                         <vtable ref="v_table_kcmx" 
                             name="库存明细"
-                            id-field="f_kcmx_id"
+                            id-field="f_kcbh"
                             check="single" 
                             @loading="onTableLoading"
                             :on-item="onTableItem_kcmx"
@@ -124,9 +124,9 @@
         <!-- 借用单编辑对话框 -->
         <kcjy_xx ref="v_kcjy_xx" @close="onDialogClose_kcjy_xx"/>
         <!-- 拆库编辑对话框 -->
-        <kccf_xx ref="v_kccf_xx" @close="onDialogClose_kccf_xx"></kccf_xx>
+        <kcmx_cf ref="v_kcmx_cf" @close="onDialogClose_kcmx_cf"/>
         <!-- 并库编辑对话框 -->
-        <kcmx_rx ref="v_kcmx_rx" @close="onDialogClose_kcmx_rx"></kcmx_rx>
+        <kcmx_rx ref="v_kcmx_rx" @close="onDialogClose_kcmx_rx"/>
     </div>
 </template>
 
@@ -149,7 +149,7 @@ export default { name: "ext_kcgl_kczl" }
     import vdic from "@/logic/common/vdic.vue"
     import TLogic from "@/logic/TLogic";
     import TGlobal from "@/logic/TGlobal";
-    import kccf_xx from "@/views/frame/ext/kcgl/kccf_xx.vue";
+    import kcmx_cf from "@/views/frame/ext/kcgl/kcmx_cf.vue";
     import kcmx_rx from "@/views/frame/ext/kcgl/kcmx_rx.vue";
 
     import tcplb from "@/views/frame/ext/comm/tcplb.vue"
@@ -162,8 +162,8 @@ export default { name: "ext_kcgl_kczl" }
     type t_kcjy_xx = InstanceType<typeof kcjy_xx>;
     const v_kcjy_xx = ref<t_kcjy_xx>();        
 
-    type t_kccf_xx = InstanceType<typeof kccf_xx>;
-    const v_kccf_xx = ref<t_kccf_xx>();
+    type t_kcmx_cf = InstanceType<typeof kcmx_cf>;
+    const v_kcmx_cf = ref<t_kcmx_cf>();
 
     type t_kcmx = InstanceType<typeof kcmx>;
     const v_kcmx = ref<t_kcmx>();
@@ -403,12 +403,12 @@ export default { name: "ext_kcgl_kczl" }
             "f_kcsl_s": "1.0",         // 数量
             "f_kcdj": 0.0,         // 单价
             "f_kcdj_s": "0.00",        // 价格            
-            "f_kcbz": TLogic.kcbzCodes["正常"],           // 有效标志
             "f_pksj": "1970-01-01 00:00:00",
             "f_pksj_s": "",            
             "f_kgy_id": TGlobal.userData["f_user_id"],
             "f_kgy_id_s": TGlobal.userData["f_name"],
-            "f_beizhu": ""         // 备注
+            "f_beizhu": "",         // 备注
+            "f_kcbz": TLogic.kcbzCodes["正常"],           // 有效标志
         };
 
         // 扩展字段，批量添加
@@ -429,35 +429,14 @@ export default { name: "ext_kcgl_kczl" }
         let ret = await eocore.show_confirm("是否移除库存货物 " + data["f_kcbh"] + "？一旦操作将造成不可预知的错误");
         if (!ret) return;
         
-        // await v_table_kcmx.value?.remove_data_proc_select("p_kcmx_del", async (data: any) => {
-        //     return {
-        //         "v_kcmx_id": data["f_kcmx_id"]
-        //     };
-        // });
-
-        const dts = eolib.datetime_2_string(new Date(), true);
-        
         // 直接出库
         x_show_loading.value = true;
-        const dataNew = await TLogic.netLoad_kcmx_upd(
+        const dataNew = await TLogic.netLoad_kcmx_ck(
             data["f_kcmx_id"],
             data["f_cpdy_id"],
-            data["f_kcbh"],
-            data["f_rklb"],
-            data["f_rkid"],
-            data["f_rksj"],
             "盘库整理",
             0,
-            dts,
-            data["f_hwck"],
-            dts,
-            data["f_kcdj"],
-            data["f_kcsl"],
-            TLogic.kcbzCodes["历史"], // 库存标识设置为-1
             TGlobal.userData["f_user_id"],
-            data["f_jyzt"],
-            data["f_jyyg_id"],
-            data["f_beizhu"]
         );
         x_show_loading.value = false;        
         if (dataNew == undefined) return;
@@ -527,8 +506,12 @@ export default { name: "ext_kcgl_kczl" }
      * 库存拆分
      */
     const onButtonClick_Upd_kccf = () => {
-        let kcmxData = v_table_kcmx.value?.get_select_data(true);
-        if (kcmxData == undefined) return;
+
+        let kcmxList = v_table_kcmx.value?.get_check_list();
+        if (kcmxList == undefined) return;
+        if (eocore.check_empty(kcmxList)) return;
+
+        const kcmxData = kcmxList[0];
 
         const kcsl = eocore.to_int(kcmxData["f_kcsl"]);
         if (kcsl <= 1) {
@@ -539,10 +522,10 @@ export default { name: "ext_kcgl_kczl" }
         kcmxData["f_kcsl1"] = kcsl - 1;
         kcmxData["f_kcsl2"] = 1;
         
-        v_kccf_xx.value?.showDialog(kcmxData);
+        v_kcmx_cf.value?.showDialog(kcmxData);
     }
 
-    const onDialogClose_kccf_xx = async (cancel: boolean, data0: any, cb: cfunc_boolean) => {
+    const onDialogClose_kcmx_cf = async (cancel: boolean, data0: any, cb: cfunc_boolean) => {
         if (cancel) { 
             cb(true); return;
         }
@@ -585,88 +568,21 @@ export default { name: "ext_kcgl_kczl" }
         if (kcmxList == undefined) return;
         if (eocore.check_empty(kcmxList)) return;
 
-        let data0 = kcmxList[0];
-
-        let kczj = 0.0;
-        let kcsl = 0;
-
-        // 合并库存，需要产品定义一致
-        let cpdyId = data0["f_cpdy_id"];
-        for (let d of kcmxList) {
-
-            kczj += d["f_kcdj"] * d["f_kcsl"];
-            kcsl += d["f_kcsl"];
-
-            if (cpdyId != d["f_cpdy_id"]) {
-                eocore.show_info("请选择产品定义一致的库存进行合并");
-                return;
-            }
-        }
-
-        if (kcsl <= 0) {
-            eocore.show_info("库存数量必须大于零");
+        if (kcmxList.length <= 1) {
+            eocore.show_info("请选择至少两个库存进行合并");
             return;
         }
 
-        //console.log(kcmxList, cpzj, cpsl);
+        let data0 = kcmxList[0];
 
         // 二次确认
-        let ret = await eocore.show_confirm("确信要将 " + kcsl + " 个 " + data0["f_cpmc"] + " 合并吗？");
+        let ret = await eocore.show_confirm("确信要将 " + kcmxList.length + " 件 " + data0["f_cpmc"] + " 合并吗？");
         if (!ret) return;
 
-        let dataNew;
         let kgyId = TGlobal.userData["f_user_id"];
-
-        const dts = eolib.datetime_2_string(new Date(), true);
-
-        let i;        
-        for (i=1; i<kcmxList.length; i++) {
-            const data = kcmxList[i];
-
-            dataNew = await TLogic.netLoad_kcmx_upd(
-                data["f_kcmx_id"],
-                data["f_cpdy_id"],
-                data["f_kcbh"],
-                data["f_rklb"],
-                data["f_rkid"],
-                data["f_rksj"],
-                "库存合并",
-                data0["f_kcmx_id"], // 标记合并来源
-                dts,
-                data["f_hwck"],
-                dts,                
-                data["f_kcdj"],
-                data["f_kcsl"],
-                TLogic.kcbzCodes["历史"],
-                kgyId,
-                data["f_jyzt"],
-                data["f_jyyg_id"],
-                data["f_beizhu"]
-            );
-            if (dataNew == undefined) return;
-        }
-        
-        const dataAdd = await TLogic.netLoad_kcmx_upd(
-            data0["f_kcmx_id"],
-            data0["f_cpdy_id"],
-            data0["f_kcbh"],
-            data0["f_rklb"],
-            data0["f_rkid"],
-            data0["f_rksj"],
-            data0["f_cklb"],
-            data0["f_ckid"],
-            data0["f_cksj"],
-            data0["f_hwck"],
-            dts,
-            kczj / kcsl,
-            kcsl,
-            data0["f_kcbz"],
-            kgyId,
-            data0["f_jyzt"],
-            data0["f_jyyg_id"],
-            data0["f_beizhu"]
-        );
+        const dataAdd = await TLogic.netLoad_kcmx_hb(kgyId, kcmxList);
         if (dataAdd == undefined) return;
+
         v_kcmx.value?.showDialog(dataAdd);
 
         // 重新加载数据

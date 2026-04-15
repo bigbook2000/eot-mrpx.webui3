@@ -9,20 +9,6 @@
                 </el-input>
             </div>
         </div>
-        <div class="cell eo_w2">
-            <div class="label_n">仓库</div>
-            <div class="input">
-                <vdic style="width:100%" dic="产品仓库" :all="false" field="value"
-                    v-model="x_data_kcmx['f_hwck']" />
-            </div>
-        </div>
-        <div class="cell eo_w2">
-            <div class="label_n">调拨状态</div>
-            <div class="input">
-                <vdic style="width:100%" dic="调拨状态" :all="false" field="value"
-                    v-model="x_data_kcmx['f_jyzt']" :disabled="true" />
-            </div>
-        </div>
         <div class="cell eo_w100">
             <div class="label_n">产品名称</div>
             <div class="input">
@@ -82,6 +68,21 @@
             </div>
         </div>
         
+        <div class="cell eo_w2">
+            <div class="label_n">仓库</div>
+            <div class="input">
+                <vdic style="width:100%" dic="产品仓库" :all="false" field="value"
+                    v-model="x_data_kcmx['f_hwck']" />
+            </div>
+        </div>
+        <div class="cell eo_w2">
+            <div class="label_n">调拨状态</div>
+            <div class="input">
+                <vdic style="width:100%" dic="调拨状态" :all="false" field="value"
+                    v-model="x_data_kcmx['f_jyzt']" :disabled="true" />
+            </div>
+        </div>
+
         <div class="cell eo_w100">
             <div class="label_n">备注</div>
             <div class="input">
@@ -126,6 +127,8 @@
     // 是否新增
     const x_edit_add = ref(false);
 
+    let m_data_string = "";
+
     /**
      * 显示对话框
      * @param data 数据对象
@@ -134,6 +137,7 @@
 
         x_edit_add.value = !eocore.check_id(data, "f_kcmx_id");
 
+        m_data_string = JSON.stringify(data);
         // 创建一个副本并更新响应式数据
         Object.assign(x_data_kcmx, data);
 
@@ -142,6 +146,13 @@
 
     const getData = () => {
         return x_data_kcmx;
+    }
+
+    const isNoChanged = (): boolean => {
+                
+        const dataStr = JSON.stringify(x_data_kcmx);
+        //console.log("dataStr", (dataStr == m_data_string), dataStr, m_data_string);
+        return (dataStr == m_data_string);
     }
 
     /**
@@ -182,10 +193,90 @@
         cb(true); 
     }
 
+    const updateDataProc = async (): Promise<any[]|undefined> => {
+        
+        const data = x_data_kcmx;
+
+        // 检查必填字段
+        if (!eocore.check_id(data, "f_cpdy_id")) {
+            eocore.show_info("请选择产品");
+            return undefined;
+        }
+
+        const kcsl = eocore.to_int(data["f_kcsl"]);
+        if (kcsl <= 0) {
+            eocore.show_info("请输入单件数量");
+            return undefined;
+        }
+
+        let dataNew = x_data_kcmx;
+        let dataListNew: any[] = [];
+        const isAdd = !eocore.check_id(data, "f_kcmx_id");
+        data["_is_add"] = isAdd;
+
+        // 扩展字段，批量添加
+        let rksl = eocore.to_int(data["rksl"]);
+        if (rksl <= 0) rksl = 1;
+        if (rksl > 99) {
+            eocore.show_info("单次入库数量不能超过100");
+            return undefined;
+        }
+
+        if (isAdd) { 
+
+            const kgyId = TGlobal.userData["f_user_id"];
+
+            for (let i=0; i<rksl; i++) {
+                
+                data["f_kcbh"] = await TLogic.netLoad_RecordString_kcbh(
+                    data["f_cpdy_id"], data["f_cpbm"]);
+		        dataNew = await TLogic.netLoad_kcmx_upd(
+                    0,
+                    data["f_cpdy_id"],
+                    data["f_kcbh"],
+                    data["f_rklb"],
+                    data["f_rkid"],
+                    data["f_hwck"],
+                    data["f_kcdj"],
+                    data["f_kcsl"],
+                    kgyId,
+                    data["f_beizhu"],
+                    data["f_kcbz"],
+                );
+
+                dataListNew.push(dataNew);
+            }
+
+        } else {
+
+            // 回写数据库
+            dataNew = await TLogic.netLoad_kcmx_upd(
+                data["f_kcmx_id"],
+                data["f_cpdy_id"],
+                data["f_kcbh"],
+                data["f_rklb"],
+                data["f_rkid"],
+                data["f_hwck"],
+                data["f_kcdj"],
+                data["f_kcsl"],
+                data["f_kgy_id"],
+                data["f_beizhu"],
+                data["f_kcbz"],
+            );
+            if (dataNew == undefined) return undefined;
+
+            dataListNew.push(dataNew);
+        }
+
+        return dataListNew;
+    }
+
     // 暴露方法给父组件使用
     defineExpose({
+        isNoChanged,
         loadData,
-        getData
+        getData,
+        updateDataProc
     });
 </script>
 

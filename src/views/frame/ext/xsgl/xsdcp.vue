@@ -72,8 +72,6 @@
     let m_xsd_id = 0;
     let m_xsdh = "";
 
-    let m_xsdcp_data: any = undefined;
-
     // 编辑模式，0只读，1新增，2修改，9出库
     const x_edit_mode = ref(0);
     let m_field_array: string[] = [];
@@ -172,7 +170,6 @@
             f_cpjg: 0.0, // 成本单价
             f_xssl: 1.0,// 数量
             f_xsdj: 0.0, // 单价 
-            f_xszj: 0.0, // 总价
             f_beizhu: "", // 备注
         };
         

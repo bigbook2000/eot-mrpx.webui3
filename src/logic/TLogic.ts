@@ -77,6 +77,7 @@ export default {
 	kcbzCodes: {
 		"临时": 0,
 		"正常": 1,
+		"冻结": 9,
 		"历史": -1
 	},
 
@@ -637,8 +638,19 @@ export default {
 	},
 	
 	/**
-	 * 更新库存明细
-	 * @param data 更新的库存明细数据
+	 * 更新库存
+	 * @param f_kcmx_id 
+	 * @param f_cpdy_id （新增）
+	 * @param f_kcbh 批号（新增）
+	 * @param f_rklb （新增）
+	 * @param f_rkid （新增）
+	 * @param f_hwck 仓库
+	 * @param f_kcdj 单价
+	 * @param f_kcsl 数量
+	 * @param f_kgy_id 库管员
+	 * @param f_beizhu 备注
+	 * @param f_kcbz 库存标识
+	 * @returns 
 	 */
 	async netLoad_kcmx_upd(
 		f_kcmx_id: number,
@@ -646,19 +658,12 @@ export default {
 		f_kcbh: string,
 		f_rklb: string,
 		f_rkid: number,
-		f_rksj: string,
-		f_cklb: string,
-		f_ckid: number,
-		f_cksj: string,
 		f_hwck: number,
-		f_pksj: string,
 		f_kcdj: number,
 		f_kcsl: number,
-		f_kcbz: number,
 		f_kgy_id: number,
-		f_jyzt: number,
-		f_jyyg_id: number,
-		f_beizhu: string
+		f_beizhu: string,
+		f_kcbz: number
 	): Promise<any|undefined> {
 
 		const ret = await eocore.proc(    
@@ -668,22 +673,43 @@ export default {
 				"v_kcbh": f_kcbh,
 				"v_rklb": f_rklb,
 				"v_rkid": f_rkid,
-				"v_rksj": f_rksj,
-				"v_cklb": f_cklb,
-				"v_ckid": f_ckid,				
-				"v_cksj": f_cksj,
 				"v_hwck": f_hwck,
-				"v_pksj": f_pksj,
 				"v_kcdj": f_kcdj,
 				"v_kcsl": f_kcsl,
-				"v_kcbz": f_kcbz,
 				"v_kgy_id": f_kgy_id,
-				"v_jyzt": f_jyzt,
-				"v_jyyg_id": f_jyyg_id,
-				"v_beizhu": f_beizhu
+				"v_beizhu": f_beizhu,
+				"v_kcbz": f_kcbz
 		});		
         return eocore.check_net_object(ret);
 	},
+
+	/**
+	 * 出库
+	 * @param f_kcmx_id 
+	 * @param f_cpdy_id 
+	 * @param f_cklb 
+	 * @param f_ckid 
+	 * @param f_kgy_id 库管员
+	 * @returns 
+	 */
+	async netLoad_kcmx_ck(
+		f_kcmx_id: number,
+		f_cpdy_id: number,
+		f_cklb: string,
+		f_ckid: number,
+		f_kgy_id: number
+	): Promise<any|undefined> {
+
+		const ret = await eocore.proc(    
+			"p_kcmx_ck", {
+				"v_kcmx_id": f_kcmx_id,
+				"v_cpdy_id": f_cpdy_id,
+				"v_cklb": f_cklb,
+				"v_ckid": f_ckid,
+				"v_kgy_id": f_kgy_id
+		});		
+        return eocore.check_net_object(ret);
+	},	
 
 	/**
 	 * 拆分库存明细
@@ -696,8 +722,6 @@ export default {
 		const kcsl = data["f_kcsl"];
 		const kcsl1 = kcsl - kcsl2;
 
-		const dts = eolib.datetime_2_string(new Date(), true);
-
 		const kcmxId = data["f_kcmx_id"];
 
 		// 修改原有的
@@ -705,21 +729,14 @@ export default {
 			kcmxId,
 			data["f_cpdy_id"],
 			data["f_kcbh"],
-			data["f_rklb"],
-			0,
-			data["f_rksj"],
-			data["f_cklb"],
-			0,
-			data["f_cksj"],
+			"", // 忽略
+			0, // 忽略
 			data["f_hwck"],
-			dts,
 			data["f_kcdj"],
 			kcsl1,
-			data["f_kcbz"],
 			kgyId,
-			data["f_jyzt"],
-			data["f_jyyg_id"],
-			data["f_beizhu"]
+			data["f_beizhu"],
+			data["f_kcbz"]
 		);
         if (dataNew1 == undefined) return undefined;
 
@@ -729,21 +746,14 @@ export default {
 			0,
 			data["f_cpdy_id"],
 			kcbh2,
-			data["f_rklb"],
+			"库存拆分",
 			kcmxId, // 关联
-			data["f_rksj"],
-			data["f_cklb"],
-			0,
-			data["f_cksj"],
 			data["f_hwck"],
-			dts,
 			data["f_kcdj"],
 			kcsl2,
-			data["f_kcbz"],
 			kgyId,
-			data["f_jyzt"],
-			data["f_jyyg_id"],
-			data["f_beizhu"]
+			data["f_beizhu"],
+			data["f_kcbz"]
 		);
         if (dataNew2 == undefined) return undefined;
 
@@ -752,5 +762,65 @@ export default {
 			dataNew1: dataNew1, 
 			dataNew2: dataNew2 
 		};
+	},
+
+	async netLoad_kcmx_hb(kgyId: number, list: any[]): Promise<any|undefined> {
+
+		const data0 = list[0];
+
+		let kczj = 0.0;
+        let kcsl = 0;
+
+        // 合并库存，需要产品定义一致
+        let cpdyId = data0["f_cpdy_id"];
+        for (let d of list) {
+
+            kczj += d["f_kcdj"] * d["f_kcsl"];
+            kcsl += d["f_kcsl"];
+
+            if (cpdyId != d["f_cpdy_id"]) {
+                eocore.show_info("请选择产品定义一致的库存进行合并");
+                return undefined;
+            }
+        }
+
+        if (kcsl <= 0) {
+            eocore.show_info("库存数量必须大于零");
+            return undefined;
+        }
+
+		let dataNew: any;
+        let i;        
+
+		// 修改第一个
+        const dataAdd = await this.netLoad_kcmx_upd(
+            data0["f_kcmx_id"],
+            data0["f_cpdy_id"],
+            data0["f_kcbh"],
+            "", // 忽略
+            0, // 忽略
+            data0["f_hwck"],
+            kczj / kcsl,
+            kcsl,
+            kgyId,
+            data0["f_beizhu"],
+            data0["f_kcbz"]
+        );
+		if (dataAdd == undefined) return undefined;
+
+		// 其他的都出库
+        for (i=1; i<list.length; i++) {
+            const d = list[i];
+            dataNew = await this.netLoad_kcmx_ck(
+                d["f_kcmx_id"],
+                d["f_cpdy_id"],
+                "库存合并",
+                dataAdd["f_kcmx_id"], // 标记合并来源
+                kgyId
+            );
+            if (dataNew == undefined) return undefined;
+        }
+
+        return dataAdd;
 	}
 }

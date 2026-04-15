@@ -42,14 +42,14 @@
             <div class="cell eo_w2">
                 <div class="label_n">库存数量</div>
                 <div class="input">
-                    <el-input v-model="x_data_cgdcp['f_kcsl']" style="width:100%" disabled>
+                    <el-input v-model="x_data_cgdcp['f_cpsl_s']" style="width:100%" disabled>
                     </el-input>
                 </div>
             </div> 
             <div class="cell eo_w2">
                 <div class="label_n">库存成本</div>
                 <div class="input">
-                    <el-input v-model="x_data_cgdcp['f_kcdj']" style="width:100%" disabled>
+                    <el-input v-model="x_data_cgdcp['f_cpdj_s']" style="width:100%" disabled>
                     </el-input>
                 </div>
             </div> 
@@ -189,6 +189,10 @@
 
         // 创建一个副本并更新响应式数据
         x_data_cgdcp = reactive(Object.assign({}, data));
+
+        x_data_cgdcp["f_cpsl_s"] = eolib.fixed_num(x_data_cgdcp["f_cpsl"], 3);
+        x_data_cgdcp["f_cpdj_s"] = eolib.fixed_num(eolib.divide_num(x_data_cgdcp["f_cpzj"], x_data_cgdcp["f_cpsl"]), 3);
+
         console.log(x_data_cgdcp);
     }
 
@@ -288,19 +292,12 @@
                 kcbh,
                 "采购入库",
                 cgdcpId, // 关联采购产品清单
-                dts,
-                "",
                 0,
-                "1970-01-01 00:00:00",
-                0,
-                dts,
                 rkdcpData["f_cgdj"],
-                rkdcpData["f_bzsl"], // 单件数量
-                TLogic.kcbzCodes["临时"], // 库存标识
+                rkdcpData["f_bzsl"], // 单件数量                
                 kgyId,
-                0,
-                0,
-                rkdcpData["f_beizhu"]
+                rkdcpData["f_beizhu"],
+                TLogic.kcbzCodes["临时"], // 库存标识
             );
             if (dataNew == undefined) {
                 return undefined;

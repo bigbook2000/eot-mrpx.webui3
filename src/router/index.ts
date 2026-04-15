@@ -169,9 +169,9 @@ const router = createRouter({
           component: () => import('@/views/frame/ext/xsgl/gjjl.vue')
         },
         { /** 订单管理 */
-          path: '/ext/xsgl/ddgl',
-          name: 'ext_xsgl_ddgl',
-          component: () => import('@/views/frame/ext/xsgl/ddgl.vue')
+          path: '/ext/xsgl/xsgl',
+          name: 'ext_xsgl_xsgl',
+          component: () => import('@/views/frame/ext/xsgl/xsgl.vue')
         },
         { /** 生产工艺 */
           path: '/ext/scgl/scgy',

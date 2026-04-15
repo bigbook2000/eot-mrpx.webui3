@@ -55,9 +55,9 @@
                     <el-table-column prop="f_jyzt_s" label="状态" width="80" />
                     <el-table-column prop="f_kcbh" label="批次" width="200" />
                     <el-table-column prop="f_cpmc" label="产品名称" width="200" show-overflow-tooltip sortable />
-                    <el-table-column prop="f_cpdj_s" label="单价" width="120" align="right" sortable />
+                    <el-table-column prop="f_kcdj_s" label="单价" width="120" align="right" sortable />
+                    <el-table-column prop="f_kcsl_s" label="数量" width="120" align="right" sortable />
                     <el-table-column prop="f_rksj_s" label="入库时间" width="160" sortable />
-                    <el-table-column prop="f_cpbm" label="产品编码" width="160" sortable />
                     <el-table-column prop="f_dlmc" label="大类" width="120" show-overflow-tooltip />
                     <el-table-column prop="f_xlmc" label="小类" width="140" show-overflow-tooltip />
                     <el-table-column prop="f_hwck_s" label="仓库" width="100" />
@@ -88,6 +88,8 @@
 
     import eocore from "@/inc/eocore"
     import eolib from "@/inc/eolib";
+    import eodic from "@/inc/eodic";
+    
     import vdialog from "@/logic/common/vdialog.vue"
     import vtable from "@/logic/common/vtable.vue"
 
@@ -261,16 +263,24 @@
      * @param data 表格行数据
      */
     const onTableItem_kcmx = (data: any) => {
+
         data["f_cpzt_s"] = "";
         if (data["f_cpzt"] == 0) data["f_cpzt_s"] = "停产";
         else if (data["f_cpzt"] == 1) data["f_cpzt_s"] = "正常";
+
+        // 调拨状态显示
+        data["f_jyzt_s"] = eodic.get_dic_label("调拨状态", data["f_jyzt"]);
         
         // 格式化价格
         data["f_cpjg_s"] = eolib.fixed_num(data["f_cpjg"], 3);
-        let kcsl = eocore.to_float(data["f_kcsl"]);
-        let kcdj = eocore.to_float(data["f_kczj"]);
-        if (kcsl > 0.0) kcdj = kcdj / kcsl;
-        data["f_kcdj_s"] = eolib.fixed_num(kcdj, 3);
+
+        data["f_kcsl_s"] = eolib.fixed_num(data["f_kcsl"], 3);
+        data["f_kcdj_s"] = eolib.fixed_num(data["f_kcdj"], 3);
+
+        data["f_rksj_s"] = eolib.date_2_string(data["f_rksj"]);
+
+        // 仓库显示
+        data["f_hwck_s"] = eodic.get_dic_label("产品仓库", data["f_hwck"]);
     }
 
     /**

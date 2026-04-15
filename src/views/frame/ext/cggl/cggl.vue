@@ -134,7 +134,7 @@
                                     </div>
                                     <div class="eo_row_sp"></div>
                                     <div class="eo_row_f"> 
-                                        <rkcpmx ref="v_rkcpmx" style="height:100%;"></rkcpmx>
+                                        <cdgrk ref="v_cdgrk" style="height:100%;"></cdgrk>
                                     </div>
                                 </div>                            
                             </div>
@@ -176,10 +176,10 @@ export default { name: "ext_cggl_cggl" }
     import TLogic from "@/logic/TLogic";
     import TGlobal from "@/logic/TGlobal";
 
-    import rkcpmx from "@/views/frame/ext/kcgl/rkcpmx.vue"
-    import cgdcp from "@/views/frame/ext/cggl/cgdcp.vue"
+    import cdgrk from "./cdgrk.vue"
+    import cgdcp from "./cgdcp.vue"
 
-    const v_rkcpmx = ref<InstanceType<typeof rkcpmx>>();
+    const v_cdgrk = ref<InstanceType<typeof cdgrk>>();
     const v_cgdcp = ref<InstanceType<typeof cgdcp>>();
 
     type t_table = InstanceType<typeof vtable>;
@@ -224,7 +224,7 @@ export default { name: "ext_cggl_cggl" }
     onMounted(async () => {
         
         m_user_dic = await TLogic.netLoad_UserDic();
-        v_rkcpmx.value?.updateUserDic(m_user_dic);
+        v_cdgrk.value?.updateUserDic(m_user_dic);
 
         // 判断是否能够创建采购
         const point = v_flow_cgd.value?.get_point_by_name("新建");
@@ -257,7 +257,7 @@ export default { name: "ext_cggl_cggl" }
         statusButton["归档"] = false;
         x_flow_status_button.value = statusButton;
 
-        v_rkcpmx.value?.setEditFields(0, []);
+        v_cdgrk.value?.setEditFields(0, []);
         v_cgdcp.value?.setEditFields(0, []);
 
         if (flowPointId <= 0) return;
@@ -322,7 +322,7 @@ export default { name: "ext_cggl_cggl" }
         }
 
         v_cgdcp.value?.setEditFields(editMode1, fields1);
-        v_rkcpmx.value?.setEditFields(editMode2, fields2);
+        v_cdgrk.value?.setEditFields(editMode2, fields2);
     };
 
     /**
@@ -363,7 +363,7 @@ export default { name: "ext_cggl_cggl" }
         });
 
         v_cgdcp.value?.loadList(0, "", false);
-        v_rkcpmx.value?.loadList("采购入库", "");
+        v_cdgrk.value?.loadList("采购入库", "");
 
         v_flow_cgd.value?.load_List(0);
         
@@ -433,7 +433,7 @@ export default { name: "ext_cggl_cggl" }
         const rkIds = list.map((item: any) => item["f_cgdcp_id"]).join(",");
 
         x_show_loading.value = true;
-        await v_rkcpmx.value?.loadList("采购入库", rkIds);
+        await v_cdgrk.value?.loadList("采购入库", rkIds);
         x_show_loading.value = false;
     }
 
@@ -781,7 +781,7 @@ export default { name: "ext_cggl_cggl" }
             return;
         }
 
-        const list2 = v_rkcpmx.value?.getList() || [];
+        const list2 = v_cdgrk.value?.getList() || [];
         if (eocore.check_empty(list2)) {
             eocore.show_info("无入库产品");
             return;
@@ -841,12 +841,12 @@ export default { name: "ext_cggl_cggl" }
             if (pointName == "已入库") {
 
                 console.log("入库产品添加到库存表中", data);
-                const list = v_rkcpmx.value?.getList() || [];
+                const list = v_cdgrk.value?.getList() || [];
                 const kcmxIds = list.map((item: any) => item["f_kcmx_id"]).join(",");
 
                 // 入库到库存
                 x_show_loading.value = true;                
-                const ret = await eocore.proc("p_kcmxrk_upd", {
+                const ret = await eocore.proc("p_kcmx_kcbz", {
                     "v_kcmx_ids": kcmxIds,
                     "v_kcbz": TLogic.kcbzCodes["正常"]
                 });
