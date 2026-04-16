@@ -88,7 +88,7 @@
                             <el-table-column prop="f_kcbh" label="批次" width="200" />
                             <el-table-column prop="f_rksj_s" label="入库时间" width="160" sortable />
                             <el-table-column prop="f_cpmc" label="产品名称" width="200" show-overflow-tooltip sortable />
-                            <el-table-column prop="f_kcdj_s" label="单价" width="120" align="right" sortable />                            
+                            <el-table-column prop="f_kcdj_s" label="单价" width="120" align="right" sortable />
                             <el-table-column prop="f_kcsl" label="数量" width="100" />
                             <el-table-column prop="f_cpgg" label="规格" width="180" show-overflow-tooltip />
                             <el-table-column prop="f_cpcc" label="尺寸" width="160" show-overflow-tooltip />

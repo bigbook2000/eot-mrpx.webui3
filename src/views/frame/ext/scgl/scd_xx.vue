@@ -132,7 +132,7 @@
                 "p_sccp_upd", {
                     "v_sccp_id": data["f_sccp_id"],
                     "v_scy_id": data["f_scy_id"],
-                    "v_kcmxrk_id": 0, // 还未生产货物
+                    "v_kcmx_id": 0, // 还未生产货物
                     "v_cpdy_id": data["f_cpdy_id"],                
                     "v_jhsj": data["f_jhsj"],
                     "v_jhsl": data["f_jhsl"],

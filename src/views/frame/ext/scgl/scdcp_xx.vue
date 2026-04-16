@@ -26,7 +26,7 @@
             <div class="cell eo_w100">
                 <div class="label_n">数量</div>
                 <div class="input">
-                    <el-input v-model="x_data_scdcp['f_cpsl']" style="width:100%">
+                    <el-input v-model="x_data_scdcp['f_kcsl']" style="width:100%">
                     </el-input>
                 </div>
             </div>

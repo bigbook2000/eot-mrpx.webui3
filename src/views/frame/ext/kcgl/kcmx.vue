@@ -88,7 +88,7 @@
             cb(true); return;
         }
 
-        const dataListNew = v_kcmx_xx.value?.updateDataProc();
+        const dataListNew = await v_kcmx_xx.value?.updateDataProc();
         if (dataListNew == undefined) {
             cb(false); return;
         }

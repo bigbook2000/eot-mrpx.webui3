@@ -59,10 +59,12 @@
                                     :on-item="onTableItem_sccp"
                                     @row-click="onTableRowClick_sccp">
                                     <el-table-column prop="f_scy_id_s" label="生产员" width="120" />
-                                    <el-table-column prop="f_cpmc" label="名称" width="180" show-overflow-tooltip />
                                     <el-table-column prop="f_jhsj_s" label="计划时间" width="140" />
-                                    <el-table-column prop="f_wcsj_s" label="完成时间" width="140" />
+                                    <el-table-column prop="f_cpmc" label="名称" width="180" show-overflow-tooltip />
                                     <el-table-column prop="f_kcbh" label="批次" width="180" show-overflow-tooltip />
+                                    <el-table-column prop="f_bzsl" label="单件数量" width="100" />
+                                    <el-table-column prop="f_kcdj_s" label="单价" width="120" align="right" sortable />                                    
+                                    <el-table-column prop="f_wcsj_s" label="完成时间" width="140" />                                    
                                     <el-table-column prop="f_cpgg" label="规格" width="180" show-overflow-tooltip />
                                     <el-table-column prop="f_cpcc" label="尺寸" width="160" show-overflow-tooltip />
                                     <el-table-column prop="f_cpzl" label="重量" width="160" show-overflow-tooltip />
@@ -113,7 +115,7 @@
                                     <el-table-column prop="f_cpmc" label="部件名称" width="180" show-overflow-tooltip />
                                     <el-table-column prop="f_bjsl" label="部件数量" width="100" />
                                     <el-table-column prop="f_kcbh" label="批次" width="180" show-overflow-tooltip />
-                                    <el-table-column prop="f_cpsl" label="单件数量" width="100" />
+                                    <el-table-column prop="f_kcsl" label="数量" width="100" />
                                     <el-table-column prop="f_cpgg" label="规格" width="180" show-overflow-tooltip />
                                     <el-table-column prop="f_cpcc" label="尺寸" width="160" show-overflow-tooltip />
                                     <el-table-column prop="f_cpzl" label="重量" width="160" show-overflow-tooltip />
@@ -215,23 +217,24 @@ import { da } from "element-plus/es/locales.mjs";
         const list1 = eocore.check_net_array(ret);
         if (list1 == undefined) return;
 
-        const ids = list1.filter(x => x["f_kcmxrk_id"] > 0).map(x => x["f_kcmxrk_id"]).join(",");
+        const ids = list1.filter(x => x["f_kcmx_id"] > 0).map(x => x["f_kcmx_id"]).join(",");
         if (ids.length > 0) {
 
-            ret = await eocore.proc("p_kcmxrk_ids", {
-                "v_kcmxrk_ids": ids
+            ret = await eocore.proc("p_kcmx_ids", {
+                "v_kcmx_ids": ids
             });
         
             let list2 = eocore.check_net_array(ret);
             if (list2 == undefined) return;
 
-            eolib.list_merge(list1, list2, "f_kcmxrk_id", "f_kcmxrk_id");
+            eolib.list_merge(list1, list2, "f_kcmx_id", "f_kcmx_id");
         }
 
         v_table_sccp.value?.load_list(list1);
+        v_table_cpbj.value?.load_list([]);
     }
 
-    const netLoad_scbj_list = async (sccpData: any) => {
+    const netLoad_scbj_list = async (sccpData: any): Promise<any[]|undefined> => {
 
         // 生产工艺
         x_show_loading.value = true;
@@ -240,7 +243,7 @@ import { da } from "element-plus/es/locales.mjs";
         });
         let list1 = eocore.check_net_array(ret);
         x_show_loading.value = false;
-        if (list1 == undefined) return;
+        if (list1 == undefined) return undefined;
 
         // 生产部件
         x_show_loading.value = true;
@@ -249,32 +252,31 @@ import { da } from "element-plus/es/locales.mjs";
         });
         let list2 = eocore.check_net_array(ret);
         x_show_loading.value = false;
-        if (list2 == undefined) return;
+        if (list2 == undefined) return undefined;
 
         // 通过f_cpbj_id关联生产
         eolib.list_merge(list1, list2, "f_cpbj_id", "f_cpbj_id", {
             "f_sccp_id": sccpData["f_sccp_id"], 
             "f_scbj_id": 0, 
-            "f_kcmxrk_id": 0
+            "f_kcmx_id": 0
         });
 
         // 库存批次
-        const ids = list2.filter(x => x["f_kcmxrk_id"] > 0).map(x => x["f_kcmxrk_id"]).join(",");
-        if (ids.length <= 0) {
-            v_table_cpbj.value?.load_list(list1);
-            return;
+        const ids = list2.filter(x => x["f_kcmx_id"] > 0).map(x => x["f_kcmx_id"]).join(",");
+        if (ids.length <= 0) {            
+            return v_table_cpbj.value?.load_list(list1);
         }
 
         x_show_loading.value = true;
-        ret = await eocore.proc("p_kcmxrk_ids", {
-            "v_kcmxrk_ids": ids 
+        ret = await eocore.proc("p_kcmx_ids", {
+            "v_kcmx_ids": ids 
         });
         let list3 = eocore.check_net_array(ret);
         x_show_loading.value = false;
-        if (list3 == undefined) return;
+        if (list3 == undefined) return undefined;
 
         // 关联库存
-        eolib.list_merge(list1, list3, "f_kcmxrk_id", "f_kcmxrk_id", {
+        eolib.list_merge(list1, list3, "f_kcmx_id", "f_kcmx_id", {
             "f_kcbh": "", 
             "f_cpsl": 0, 
             "f_cpdj": 0.0,
@@ -282,7 +284,7 @@ import { da } from "element-plus/es/locales.mjs";
             "f_beizhu": ""
         });
         
-        v_table_cpbj.value?.load_list(list1);
+        return v_table_cpbj.value?.load_list(list1);
     }
 
     const onTableLoading = (show: boolean) => {
@@ -304,7 +306,7 @@ import { da } from "element-plus/es/locales.mjs";
     }
 
     const onTableRowClick_sccp = async (data: any) => {
-        netLoad_scbj_list(data);        
+        netLoad_scbj_list(data);
     }
 
     const onTableItem_cpbj = (data: any) => {
@@ -340,11 +342,12 @@ import { da } from "element-plus/es/locales.mjs";
     }
 
     const onButtonClick_Del_scd = async () => {        
-        v_table_sccp.value?.remove_data_proc_select("p_sccp_del", (data: any) => {
+        await v_table_sccp.value?.remove_data_proc_select("p_sccp_del", (data: any) => {
             return {
                 "v_sccp_id": data["f_sccp_id"]
             };
         });
+        v_table_cpbj.value?.load_list([]);
     }
 
     const onButtonClick_Load_cpdy = () => {
@@ -360,26 +363,20 @@ import { da } from "element-plus/es/locales.mjs";
     }
 
     /**
-     * 点击进行生产
+     * 生产加工
+     * @param sccpData 
      */
-    const onButtonClick_New_scwl = async () => {
+    const netLoad_scjg = async (sccpData: any): Promise<any> => {
 
-        let scdData = v_table_sccp.value?.get_select_data(true);        
-        if (scdData == undefined) return;
-
-        // if (scdData["f_kcmxrk_id"] > 0) {
-        //     eocore.show_info("当前批次的生产已经完成，请勿重复生产");
-        //     return;
-        // }
-
-        const scwlList = v_table_cpbj.value?.get_list();
+        // 更新生产部件
+        const scwlList = await netLoad_scbj_list(sccpData);
         if (scwlList == undefined) return;
 
         let cpzj = 0;
         for (let d of scwlList) {
-            if (!eocore.check_id(d, "f_kcmxrk_id")) {
+            if (!eocore.check_id(d, "f_kcmx_id")) {
                 eocore.show_info("未指定生产物料");
-                return;
+                return undefined;
             }
 
             // 每个部件只能消耗一个批次
@@ -387,76 +384,66 @@ import { da } from "element-plus/es/locales.mjs";
 
             // 部件数量，生产所需要的数量
             const bjsl = d["f_bjsl"];
-            // 单件数量
-            const cpsl = d["f_cpsl"];
-            if (bjsl > cpsl) {
-                eocore.show_info("部件数量不能大于单件数量");
-                return;
-            }
 
             // 实际库存数量
             const kcsl = d["f_kcsl"];
             if (kcsl < bjsl) {
-                eocore.show_info("库存数量不足");
-                return;
+                eocore.show_info("数量不足");
+                return undefined;
             }
 
             // 计算实际单价
-            const cpdj = d["f_kczj"] / kcsl;
+            const cpdj = eocore.to_float(d["f_kcdj"]);
 
             // 计算实际总价
             cpzj += bjsl * cpdj;
         }
 
-        let rklb = "生产加工";
         let scyId = TGlobal.userData["f_user_id"];
 
-        console.log(scdData, scwlList, rklb, cpzj);
+        let bzsl = sccpData["f_bzsl"];
+        if (bzsl <= 0) bzsl = 1;
 
-        const bzsl = scdData["f_bzsl"];
-
-        x_show_loading.value = true;
-        let dataNew = scdData;
         // 创建一个新的批号的货物
-        // let dataNew = await TLogic.netLoad_kcmxrk_upd(scyId, rklb, {
-        //     "f_cpdy_id": scdData["f_cpdy_id"],
-        //     "f_cpbm": scdData["f_cpbm"],
-        //     "f_cpsl": bzsl, // 定义的单件数量即实际货物单件数量
-        //     "f_cpdj": cpzj / bzsl,
-        //     "f_hwck": 0,
-        //     "f_beizhu": scdData["f_beizhu"]
-        // });
-        x_show_loading.value = false;
-        if (dataNew == undefined) return;
+        let kcbh = await TLogic.netLoad_RecordString_kcbh(
+            sccpData["f_cpdy_id"], sccpData["f_cpbm"]);
+        let dataNew = await TLogic.netLoad_kcmx_upd(
+            0,
+            sccpData["f_cpdy_id"],
+            kcbh,
+            "生产加工",
+            sccpData["f_sccp_id"],
+            0,
+            cpzj / bzsl,
+            bzsl,
+            scyId,
+            sccpData["f_beizhu"],
+            TLogic.kcbzCodes["临时"]
+        );
+        if (dataNew == undefined) return undefined;
 
-        console.log("创建新货物批次", dataNew);
-
-        // 添加信息到scdData
-        Object.assign(scdData, scdData, dataNew);
-
-        console.log("更新生产任务", scdData);
+        // sccpData
+        Object.assign(sccpData, sccpData, dataNew);
 
         let dt = new Date();
         
         // 修改生产任务批次
-        x_show_loading.value = true;
         let ret = await eocore.proc(
             "p_sccp_upd", {
-                "v_sccp_id": scdData["f_sccp_id"],
+                "v_sccp_id": sccpData["f_sccp_id"],
                 "v_scy_id": scyId,
-                "v_kcmxrk_id": dataNew["f_kcmxrk_id"], // 生产货物批次
-                "v_cpdy_id": scdData["f_cpdy_id"],                
-                "v_jhsj": scdData["f_jhsj"],
-                "v_jhsl": scdData["f_jhsl"],
+                "v_kcmx_id": dataNew["f_kcmx_id"], // 生产货物批次
+                "v_cpdy_id": sccpData["f_cpdy_id"],                
+                "v_jhsj": sccpData["f_jhsj"],
+                "v_jhsl": sccpData["f_jhsl"],
                 "v_dqsl": bzsl,
                 "v_wcsj": eolib.datetime_2_string(dt),
-                "v_yxdj": scdData["f_yxdj"],
-                "v_yxbz": scdData["f_yxbz"],
-                "v_beizhu": scdData["f_beizhu"]
+                "v_yxdj": sccpData["f_yxdj"],
+                "v_yxbz": sccpData["f_yxbz"],
+                "v_beizhu": sccpData["f_beizhu"]
             });
-        x_show_loading.value = false;
         dataNew = eocore.check_net_object(ret);
-        if (dataNew == undefined) return;
+        if (dataNew == undefined) return undefined;
 
 
         let data2: any;
@@ -466,17 +453,16 @@ import { da } from "element-plus/es/locales.mjs";
             // 部件数量，生产所需要的数量
             const bjsl = d["f_bjsl"];
             // 单件数量
-            const cpsl = d["f_cpsl"];
-            const sysl = cpsl - bjsl;
+            const kcsl = d["f_kcsl"];
+            const sysl = kcsl - bjsl;
 
             if (sysl > 0) {
 
                 // 如果物料没有用完，先拆分，再出库
+                // 用的是新批号，剩余的是旧批号
                 x_show_loading.value = true;
                 const retData = await TLogic.netLoad_kcmx_cf(scyId, d, bjsl);
                 x_show_loading.value = false;
-
-                console.log("库存拆分", retData);
 
                 data2 = retData.dataNew2;
 
@@ -486,30 +472,54 @@ import { da } from "element-plus/es/locales.mjs";
                 data2 = d;
             }
 
-            console.log("部件出库", sysl, data2);
+            TLogic.netLoad_kcmx_ck(
+                data2["f_kcmx_id"],
+                sccpData["f_cpdy_id"],
+                "生产加工",
+                sccpData["f_sccp_id"],
+                scyId);
 
-            x_show_loading.value = true;
-            ret = await eocore.proc(
-                "p_kcmxck_upd", {
-                    "v_kcmxck_id": 0,
-                    "v_kcmxrk_id": data2["f_kcmxrk_id"], // 入库编号
-                    "v_cklb": rklb,
-                    "v_ckd_id": 0, // 直接盘库新增
-                    "v_kgy_id": scyId,
-                    "v_cksl": data2["f_cpsl"],
-                    "v_ckdj": data2["f_cpdj"],
-                    "v_wlgs_id": 0,
-                    "v_wldh": "",
-                    "v_beizhu": data2["f_beizhu"]
+            // 由于使用的是新批号，所以这里需要更新批次
+            let ret = await eocore.proc("p_scbj_upd", {
+                "v_scbj_id": d["f_scbj_id"],
+                "v_sccp_id": d["f_sccp_id"],
+                "v_cpbj_id": d["f_cpbj_id"],
+                "v_kcmx_id": data2["f_kcmx_id"],
+                "v_scbz": 1,
+                "v_beizhu": "",
             });
-            x_show_loading.value = false;
+            let dataNew = eocore.check_net_object(ret);
+            if (dataNew == undefined) return undefined;
         }
 
+        return sccpData;
+    }
+
+    /**
+     * 点击进行生产
+     */
+    const onButtonClick_New_scwl = async () => {
+
+        let sccpData = v_table_sccp.value?.get_select_data(true);        
+        if (sccpData == undefined) return;
+
+        if (sccpData["f_kcmx_id"] > 0) {
+            eocore.show_info("当前批次的生产已经完成，请勿重复生产");
+            return;
+        }
+
+        let det = await eocore.show_confirm("确定要进行生产 " + sccpData["f_cpmc"] + " 吗？");
+        if (!det) return;
+
+        x_show_loading.value = true;
+        await netLoad_scjg(sccpData);
+        x_show_loading.value = false;
+
         // 弹出显示生产结果
-        v_scdcp_xx.value?.showDialog(scdData);
+        v_scdcp_xx.value?.showDialog(sccpData);
 
         // 更新表格
-        v_table_sccp.value?.update_data(scdData, -1, false, false);
+        v_table_sccp.value?.update_data(sccpData, -1, false, false);
     }
 
     /**
@@ -543,7 +553,7 @@ import { da } from "element-plus/es/locales.mjs";
             "v_scbj_id": cpbjData["f_scbj_id"],
             "v_sccp_id": cpbjData["f_sccp_id"],
             "v_cpbj_id": cpbjData["f_cpbj_id"],
-            "v_kcmxrk_id": data["f_kcmxrk_id"],
+            "v_kcmx_id": data["f_kcmx_id"],
             "v_scbz": 0,
             "v_beizhu": "",
         });
@@ -560,10 +570,20 @@ import { da } from "element-plus/es/locales.mjs";
         cb(true);
     }
 
-    const onDialogClose_scdcp_xx = (cancel: boolean, data: any, cb: (result: boolean) => void) => {
+    const onDialogClose_scdcp_xx = async (cancel: boolean, data: any, cb: (result: boolean) => void) => {
         if (cancel) {
             cb(true); return;
         }
+
+        // 生产成功，标识改为正常
+        x_show_loading.value = true;                
+        const ret = await eocore.proc("p_kcmx_kcbz", {
+            "v_kcmx_ids": "" + data["f_kcmx_id"],
+            "v_kcbz": TLogic.kcbzCodes["正常"]
+        });
+        eocore.check_net_object(ret);
+        x_show_loading.value = false;
+
         cb(true);
     }
 

@@ -38,7 +38,7 @@
                     <el-table-column prop="f_jysj_s" label="时间" width="140" />
                     <el-table-column prop="f_kcbh" label="批次" width="200" />
                     <el-table-column prop="f_cpmc" label="产品名称" width="180" show-overflow-tooltip />
-                    <el-table-column prop="f_cpsl" label="单件数量" width="120" />
+                    <el-table-column prop="f_kcsl" label="数量" width="120" />
                     <el-table-column prop="f_cpgg" label="规格" width="180" show-overflow-tooltip />
                     <el-table-column prop="f_cpcc" label="尺寸" width="160" show-overflow-tooltip />
                     <el-table-column prop="f_cpzl" label="重量" width="160" show-overflow-tooltip />
@@ -138,7 +138,7 @@
             "v_kssj": "", 
             "v_jssj": "", 
             "v_jyzt": 1,  // 借用状态为1表示生产领料
-            "v_yg_id": TGlobal.userData["f_user_id"], 
+            "v_jyyg_id": TGlobal.userData["f_user_id"], 
             "v_cpbm": m_kcjy_data["f_cpbm"], 
             "v_cpmc": "", 
             "v_order_by": " ORDER BY f_kcjy_id DESC",
