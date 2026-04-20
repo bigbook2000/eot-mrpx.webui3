@@ -125,8 +125,6 @@
         <kcjy_xx ref="v_kcjy_xx" @close="onDialogClose_kcjy_xx"/>
         <!-- 拆库编辑对话框 -->
         <kcmx_cf ref="v_kcmx_cf" @close="onDialogClose_kcmx_cf"/>
-        <!-- 并库编辑对话框 -->
-        <kcmx_rx ref="v_kcmx_rx" @close="onDialogClose_kcmx_rx"/>
     </div>
 </template>
 
@@ -150,7 +148,6 @@ export default { name: "ext_kcgl_kczl" }
     import TLogic from "@/logic/TLogic";
     import TGlobal from "@/logic/TGlobal";
     import kcmx_cf from "@/views/frame/ext/kcgl/kcmx_cf.vue";
-    import kcmx_rx from "@/views/frame/ext/kcgl/kcmx_rx.vue";
 
     import tcplb from "@/views/frame/ext/comm/tcplb.vue"
     import kcmx from "./kcmx.vue"
@@ -170,8 +167,6 @@ export default { name: "ext_kcgl_kczl" }
     
     // 产品类别列表
     const x_cplb_list = ref<any[]>([]);
-    // 用户字典
-    let m_user_dic: any = {};
 
     // 查询条件
     const x_query_cplb = ref([0, 0]);
@@ -222,9 +217,6 @@ export default { name: "ext_kcgl_kczl" }
     ];
 
     onMounted(async () => {
-
-        // 所有账号信息
-        m_user_dic = await TLogic.netLoad_UserDic();
                 
         // 加载产品类别列表
         x_cplb_list.value = await TLogic.netload_Tree_cplb(true);
@@ -333,7 +325,7 @@ export default { name: "ext_kcgl_kczl" }
         data["f_hwck_s"] = eodic.get_dic_label("产品仓库", data["f_hwck"]);
         
         // 用户转换
-        TLogic.updateDicUserData(data, m_user_dic, ["f_jyyg_id"]);
+        TLogic.updateDicUserData(data, ["f_jyyg_id"]);
     }
 
     /**
@@ -433,6 +425,7 @@ export default { name: "ext_kcgl_kczl" }
         x_show_loading.value = true;
         const dataNew = await TLogic.netLoad_kcmx_ck(
             data["f_kcmx_id"],
+            data["f_kcmx_pid"],
             data["f_cpdy_id"],
             "盘库整理",
             0,
@@ -587,14 +580,6 @@ export default { name: "ext_kcgl_kczl" }
 
         // 重新加载数据
         netLoad_kcmx_query(-1);
-    }
-
-    const onDialogClose_kcmx_rx = async (cancel: boolean, data0: any, cb: cfunc_boolean) => {
-        if (cancel) { 
-            cb(true); return;
-        }
-
-        cb(true);
     }
 
 </script>

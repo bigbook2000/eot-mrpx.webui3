@@ -33,6 +33,7 @@
                 @loading="onTableLoading"
                 :on-item="onTableItem_xsdck"
                 @row-click="onTableRowClick_xsdck">
+                <el-table-column prop="f_ckbz_s" label="标识" width="80" />
                 <el-table-column prop="f_kcbh" label="批次" width="200" />
                 <el-table-column prop="f_cpmc" label="产品名称" width="200" show-overflow-tooltip />
                 <el-table-column prop="f_kcdj_s" label="库存单价" width="120" align="right" />
@@ -46,9 +47,6 @@
             </vtable>
         </div>
         <xsdck_xx ref="v_xsdck_xx" @close="onDialogClose_xsdck_xx" />
-        <!--
-        <ckcp_ck ref="v_ckcp_ck" @close="onDialogClose_ckcp_ck" />
-        -->
     </div>
 </template>
 
@@ -68,25 +66,16 @@
     import TGlobal from "@/logic/TGlobal";
 
     import xsdck_xx from "./xsdck_xx.vue"
-    // import ckcp_ck from "./ckcp_ck.vue"
 
     type t_table = InstanceType<typeof vtable>;
     const v_table_xsdck = ref<t_table>();
     
     type t_xsdck_xx = InstanceType<typeof xsdck_xx>;
     const v_xsdck_xx = ref<t_xsdck_xx>();
-    // const v_ckcp_xx = ref<t_xsdck_xx>();
 
-    // type t_ckcp_ck = InstanceType<typeof ckcp_ck>;
-    // const v_ckcp_ck = ref<t_ckcp_ck>();
-
-    let m_user_dic: any = {};
     // 编辑模式，0只读，1新增，2修改，9入库
     const x_edit_mode = ref(0);
     let m_field_array: string[] = [];
-
-    // 物流公司清单
-    let m_wlgs_list: any[] = [];
 
     // 销售单
     let m_xsd_data: any = undefined;
@@ -99,25 +88,13 @@
     }>()
 
     onMounted(async () => {
-        m_user_dic = await TLogic.netLoad_UserDic();
-
-        let ret = await eocore.proc("p_wlgs_list", {
-            "v_wlgs_ids": ""
-        })
-        let list = eocore.check_net_array(ret);
-        if (list != undefined) {
-            m_wlgs_list = list;
-        }
+        await TLogic.netLoad_Wlgs_list();
     });
 
     const setEditFields = (mode: number, fieldArray: string[]) => {
 
         x_edit_mode.value = mode;
         m_field_array = fieldArray;
-    }    
-
-    const updateUserDic = (userDic: any) => {
-        m_user_dic = userDic;
     }
 
     const getList = (): any[]|undefined => { 
@@ -161,6 +138,9 @@
             data["f_cksj_s"] = eolib.datetime_2_short(data["f_cksj"], true);
         }
 
+        data["f_ckbz_s"] = "";
+        if (data["f_ckbz"] == 2) data["f_ckbz_s"] = "退货";
+
         // 价格格式化
         data["f_kcdj_s"] = eolib.fixed_num(data["f_kcdj"], 2);
 
@@ -168,11 +148,10 @@
         data["f_hwck_s"] = eodic.get_dic_label("产品仓库", data["f_hwck"]);
 
         // 用户转换
-        TLogic.updateDicUserData(data, m_user_dic, ["f_kgy_id"]);
+        TLogic.updateDicUserData(data, ["f_kgy_id"]);
 
         // 显示物流公司名称
-        data["f_wlgs_id_s"] = eolib.get_value2(
-            m_wlgs_list, "f_wlgs_id", data["f_wlgs_id"], "f_gsmc");
+        data["f_wlgs_id_s"] = TLogic.getLabel_wlgs(data["f_wlgs_id"]);
     }
 
     /**
@@ -218,6 +197,7 @@
             f_wldh: "", // 物流单号
             f_hwck: 0,
             f_ckbz: 0, // 出库标识
+            f_xsdj: m_xsdcp_data["f_xsdj"], // 同步单价
             f_beizhu: "", // 备注
         };
         
@@ -269,8 +249,6 @@
     const onButtonClick_Get_xsdck = () => {
         let xsdckData = v_table_xsdck.value?.get_select_data(true);
         if (xsdckData == undefined) return;
-
-        //v_ckcp_xx.value?.showDialog(kcmxckData, []);
     }
 
     const onDialogClose_xsdck_xx = async (cancel: boolean, data: any, cb: cfunc_boolean) => {
@@ -286,7 +264,6 @@
     
     defineExpose({
         setEditFields,
-        updateUserDic,
         getList,
         loadList
     })

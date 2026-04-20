@@ -1,7 +1,7 @@
 <template>
-    <!-- 生产物料选择列表 -->
+    <!-- 销售出库选择列表 -->
     <vdialog ref="v_dialog"
-        width="1200px" title="选择物料"
+        width="1200px" title="选择销售出库"
         @close="onDialogClose"
         @open="onDialogOpen">
         <div class="eo_col" style="height:500px;">
@@ -13,6 +13,13 @@
                         <div class="input">
                             <el-input style="width:100%" maxlength="32"
                                 v-model="x_query_kcbh" placeholder="产品批次"></el-input>
+                        </div>
+                    </div>
+                    <div class="cell eo_w240p">
+                        <div class="label_n">名称</div>
+                        <div class="input">
+                            <el-input style="width:100%" maxlength="32"
+                                v-model="x_query_cpmc" placeholder="产品名称"></el-input>
                         </div>
                     </div>
                     <div class="cell">
@@ -27,23 +34,26 @@
             
             <!-- 产品表格 -->
             <div class="eo_col_f">
-                <vtable ref="v_table_kcjy" 
+                <vtable ref="v_table_xsdck" 
                     name="库存明细"
                     check="single" 
-                    id-field="f_kcjy_id"
+                    id-field="f_kcmx_id"
                     @loading="onTableLoading"
-                    :on-item="onTableItem_kcjy"
-                    :on-page="onTablePage_kcjy"
-                    @row-click="onTableRowClick_kcjy">
-                    <el-table-column prop="f_jysj_s" label="时间" width="140" />
+                    :on-item="onTableItem_xsdck"
+                    :on-page="onTablePage_xsdck"
+                    @row-click="onTableRowClick_xsdck">
+                    <el-table-column prop="f_cjsj_s" label="时间" width="140" />
                     <el-table-column prop="f_kcbh" label="批次" width="200" />
                     <el-table-column prop="f_cpmc" label="产品名称" width="180" show-overflow-tooltip />
+                    <el-table-column prop="f_xsdh" label="订单号" width="160" />                    
+                    <el-table-column prop="f_xsje_s" label="金额" width="120" align="right" />
                     <el-table-column prop="f_kcsl" label="数量" width="120" />
+                    <el-table-column prop="f_xsy_id_s" label="销售员" width="120" />
+                    <el-table-column prop="f_khgl_id_s" label="客户" width="280" show-overflow-tooltip />
                     <el-table-column prop="f_cpgg" label="规格" width="180" show-overflow-tooltip />
                     <el-table-column prop="f_cpcc" label="尺寸" width="160" show-overflow-tooltip />
                     <el-table-column prop="f_cpzl" label="重量" width="160" show-overflow-tooltip />
                     <el-table-column prop="f_cpdw" label="单位" width="100" show-overflow-tooltip />
-                    <el-table-column prop="f_kgy_id_s" label="库管员" width="120" show-overflow-tooltip />
                     <el-table-column prop="f_beizhu" label="备注" width="200" show-overflow-tooltip />
                     <el-table-column />
                 </vtable>
@@ -53,7 +63,7 @@
             <div class="eo_page_bar">
                 <el-pagination
                     background
-                    @current-change="onPageChange_kcjy"
+                    @current-change="onPageChange_xsdck"
                     :current-page="x_page_index"
                     :page-size="x_page_row_count"
                     layout="total, prev, pager, next, jumper"
@@ -82,7 +92,7 @@
     const v_dialog = ref<t_dialog>();
     
     type t_table = InstanceType<typeof vtable>;
-    const v_table_kcjy = ref<t_table>();
+    const v_table_xsdck = ref<t_table>();
 
     // 定义组件事件
     const emit = defineEmits<{
@@ -91,6 +101,7 @@
 
     // 查询条件
     const x_query_kcbh = ref("");
+    const x_query_cpmc = ref("");
 
     // 分页变量
     const x_page_index = ref(1);
@@ -100,26 +111,20 @@
     // 加载状态
     const x_show_loading = ref(false);
 
-    let m_kcjy_data = {
-        "f_cpbm": ""
-    };
-
     /**
      * 显示对话框
      * @param data 数据对象
      */
     const show_dialog = async (data: any) => {
 
-        Object.assign(m_kcjy_data, m_kcjy_data, data);
-
         // 先打开对话框
         v_dialog.value!.show_dialog(undefined);
-        v_table_kcjy.value?.load_list([]);
+        v_table_xsdck.value?.load_list([]);
     }
     const onDialogOpen = (data: any) => {
 
         // 加载产品数据
-        netLoad_kcmx_query(-1);
+        netLoad_xsdck_query(-1);
     }
 
 
@@ -127,22 +132,21 @@
      * 查询产品数据
      * @param pageIndex 页码索引，-1表示重置到第1页
      */
-    const netLoad_kcmx_query = async (pageIndex: number = -1) => {
+    const netLoad_xsdck_query = async (pageIndex: number = -1) => {
 
         let pageRowCount = x_page_row_count.value;
         let rowIndex = pageIndex * pageRowCount;
         if (pageIndex < 0) x_page_index.value = 1;
 
-        v_table_kcjy.value?.load_list_proc("p_kcjy_query", { 
-            "v_kcbz": TLogic.kcbzCodes["正常"],
+        v_table_xsdck.value?.load_list_proc("p_xsdck_query", { 
+            "v_xsy_id": TGlobal.userData["f_user_id"],            
+            "v_khmc": "",
+            "v_xsdh": "", 
+            "v_cjsj1": "", 
+            "v_cjsj2": "", 
             "v_kcbh": x_query_kcbh.value, 
-            "v_kssj": "", 
-            "v_jssj": "", 
-            "v_jyzt": 1,  // 借用状态为1表示生产领料
-            "v_jyyg_id": TGlobal.userData["f_user_id"], 
-            "v_cpbm": m_kcjy_data["f_cpbm"], 
-            "v_cpmc": "", 
-            "v_order_by": " ORDER BY f_kcjy_id DESC",
+            "v_cpmc": x_query_cpmc.value, 
+            "v_order_by": " ORDER BY f_xsdck_id DESC",
             "s_page_row_index": rowIndex,
             "s_page_row_count": pageRowCount
         });
@@ -153,24 +157,19 @@
      * 表格数据格式化
      * @param data 表格行数据
      */
-    const onTableItem_kcjy = (data: any) => {
-        data["f_cpzt_s"] = "";
-        if (data["f_cpzt"] == 0) data["f_cpzt_s"] = "停产";
-        else if (data["f_cpzt"] == 1) data["f_cpzt_s"] = "正常";
-        
-        // 格式化价格
-        data["f_cpjg_s"] = eolib.fixed_num(data["f_cpjg"], 3);
-        let kcsl = eocore.to_float(data["f_kcsl"]);
-        let kcdj = eocore.to_float(data["f_kczj"]);
-        if (kcsl > 0.0) kcdj = kcdj / kcsl;
-        data["f_kcdj_s"] = eolib.fixed_num(kcdj, 3);
+    const onTableItem_xsdck = (data: any) => {
+
+        data["f_cjsj_s"] = eolib.date_2_string(data["f_cjsj"]);
+
+        data["f_xsje_s"] = 
+            eolib.fixed_num(eocore.to_float(data["f_xsdj"] * data["f_kcsl"]), 2);
     }
 
     /**
      * 分页处理
      * @param n 总记录数
      */
-    const onTablePage_kcjy = (n: number): number => {
+    const onTablePage_xsdck = (n: number): number => {
         x_row_total.value = n;
         return n;
     }
@@ -187,7 +186,7 @@
      * 表格行点击事件
      * @param data 行数据
      */
-    const onTableRowClick_kcjy = (data: any) => {
+    const onTableRowClick_xsdck = (data: any) => {
         // 点击行后的操作，如选中高亮等
     }
 
@@ -195,16 +194,16 @@
      * 分页点击事件
      * @param pageIndex 页码
      */
-    const onPageChange_kcjy = (pageIndex: number) => {
+    const onPageChange_xsdck = (pageIndex: number) => {
         x_page_index.value = pageIndex;
-        netLoad_kcmx_query(pageIndex - 1);
+        netLoad_xsdck_query(pageIndex - 1);
     }
 
     /**
      * 查找按钮点击
      */
     const onButtonClick_Load_kcmx = () => {
-        netLoad_kcmx_query(-1);
+        netLoad_xsdck_query(-1);
     }
 
     /**
@@ -218,7 +217,7 @@
         }
         
         // 获取选中的产品
-        let selectedData = v_table_kcjy.value?.get_select_data(true);
+        let selectedData = v_table_xsdck.value?.get_select_data(true);
         if (selectedData == undefined) {
             cb(false); return;
         }

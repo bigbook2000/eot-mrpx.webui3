@@ -4,6 +4,7 @@
         :show-close="false" 
         :align-center="true"
         :close-on-click-modal="false"
+        :append-to-body="true"
         @opened="onDialogOpened"
         @close="onDialogClose">
         <template #header="{ close }">

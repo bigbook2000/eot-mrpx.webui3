@@ -130,7 +130,8 @@
                             <div class="eo_col_d" style="height:400px;">
                                 <div class="eo_row">
                                     <div class="eo_row_d" style="width:60%;"> 
-                                        <cgdcp ref="v_cgdcp" style="height:100%;"></cgdcp>
+                                        <cgdcp ref="v_cgdcp" style="height:100%;"
+                                            @row-click="onTableRowClick_cgdcp"></cgdcp>
                                     </div>
                                     <div class="eo_row_sp"></div>
                                     <div class="eo_row_f"> 
@@ -206,8 +207,6 @@ export default { name: "ext_cggl_cggl" }
 
     const x_edit_cgd = ref(false);
 
-    let m_user_dic: any = {};
-
     // 查询条件
     const x_query_cgdh = ref("");
     const x_query_gysmc = ref("");
@@ -223,9 +222,6 @@ export default { name: "ext_cggl_cggl" }
 
     onMounted(async () => {
         
-        m_user_dic = await TLogic.netLoad_UserDic();
-        v_cdgrk.value?.updateUserDic(m_user_dic);
-
         // 判断是否能够创建采购
         const point = v_flow_cgd.value?.get_point_by_name("新建");
         if (point != undefined) {
@@ -363,7 +359,7 @@ export default { name: "ext_cggl_cggl" }
         });
 
         v_cgdcp.value?.loadList(0, "", false);
-        v_cdgrk.value?.loadList("采购入库", "");
+        v_cdgrk.value?.loadList(0, 0);
 
         v_flow_cgd.value?.load_List(0);
         
@@ -424,19 +420,6 @@ export default { name: "ext_cggl_cggl" }
         return await netLoad_cgd_upd(cgdData);
     }
 
-    /**
-     * 加载采购入库明细
-     */
-    const loadList_rkcpmx = async () => {
-
-        const list = v_cgdcp.value?.getList() || [];
-        const rkIds = list.map((item: any) => item["f_cgdcp_id"]).join(",");
-
-        x_show_loading.value = true;
-        await v_cdgrk.value?.loadList("采购入库", rkIds);
-        x_show_loading.value = false;
-    }
-
 
     /**
      * 表格数据格式化
@@ -464,7 +447,7 @@ export default { name: "ext_cggl_cggl" }
         data["f_sfje_s"] = eolib.fixed_num(data["f_sfje"], 3);
 
         // 用户转换
-        TLogic.updateDicUserData(data, m_user_dic, ["f_shr_id", "f_cgy_id"]);
+        TLogic.updateDicUserData(data, ["f_shr_id", "f_cgy_id"]);
 
         // 流程
         data["f_flow_point_id_s"] = v_flow_cgd.value?.get_point_name_by_id(data["f_flow_point_id"]);
@@ -495,9 +478,8 @@ export default { name: "ext_cggl_cggl" }
 
         x_show_loading.value = true;
         await v_cgdcp.value?.loadList(data["f_cgd_id"], data["f_cgdh"], true);
+        await v_cdgrk.value?.loadList(data["f_cgd_id"], 0);
         x_show_loading.value = false;
-
-        loadList_rkcpmx();
 
         x_show_loading.value = true;
         await v_flow_cgd.value?.load_List(data["f_cgd_id"]);
@@ -647,7 +629,7 @@ export default { name: "ext_cggl_cggl" }
 
             // 刷新明细
             v_cgdcp.value?.loadList(dataNew["f_cgd_id"], dataNew["f_cgdh"], false);
-            loadList_rkcpmx();
+            v_cdgrk.value?.loadList(dataNew["f_cgd_id"], 0);
 
             x_show_loading.value = false;
         }
@@ -791,7 +773,7 @@ export default { name: "ext_cggl_cggl" }
         for (let d1 of list1) {
             bf = false;
             for (let d2 of list2) {
-                if (d1["f_cgdcp_id"] == d2["f_rkid"]) {
+                if (d1["f_cgdcp_id"] == d2["f_cgdcp_id"]) {
                     bf = true;
                     break;
                 }
@@ -840,7 +822,6 @@ export default { name: "ext_cggl_cggl" }
 
             if (pointName == "已入库") {
 
-                console.log("入库产品添加到库存表中", data);
                 const list = v_cdgrk.value?.getList() || [];
                 const kcmxIds = list.map((item: any) => item["f_kcmx_id"]).join(",");
 
@@ -852,11 +833,16 @@ export default { name: "ext_cggl_cggl" }
                 });
                 eocore.check_net_object(ret);
                 x_show_loading.value = false;
+
             }
 
             eocore.show_success("操作成功");
             cb(true);
         });
+    }
+
+    const onTableRowClick_cgdcp = (data: any) => {
+        v_cdgrk.value?.loadList(data["f_cgd_id"], data["f_cgdcp_id"]);
     }
     
 </script>

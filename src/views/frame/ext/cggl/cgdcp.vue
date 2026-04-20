@@ -87,23 +87,13 @@
     const x_edit_mode = ref(0);
     let m_field_array: string[] = [];
 
-        // 物流公司清单
-    let m_wlgs_list: any[] = [];
-
     const emits = defineEmits<{
         (e: "row-click", data: any): void
         (e: "loading", show: boolean): void
     }>()
 
     onMounted(async () => {
-
-        let ret = await eocore.proc("p_wlgs_list", {
-            "v_wlgs_ids": ""
-        })
-        let list = eocore.check_net_array(ret);
-        if (list != undefined) {
-            m_wlgs_list = list;
-        }
+        await TLogic.netLoad_Wlgs_list();
     });
 
     const setEditFields = (mode: number, fieldArray: string[]) => {
@@ -163,8 +153,7 @@
         data["f_kcdj_s"] = eolib.fixed_num(kcdj, 3);
 
         // 显示物流公司名称
-        data["f_wlgs_id_s"] = eolib.get_value2(
-            m_wlgs_list, "f_wlgs_id", data["f_wlgs_id"], "f_gsmc");
+        data["f_wlgs_id_s"] = TLogic.getLabel_wlgs(data["f_wlgs_id"]);
     }
 
     /**
@@ -172,6 +161,7 @@
      * @param data 行数据
      */
     const onTableRowClick_cgdcp = (data: any) => {
+        emits("row-click", data);
     }
 
     /**
@@ -279,6 +269,7 @@
 
         if (data != undefined) {
             v_table_cgdcp.value?.update_data(data, -1, data["_is_add"], true);
+            emits("row-click", data);
         }
 
         cb(true);

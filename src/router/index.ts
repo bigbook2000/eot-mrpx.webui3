@@ -153,6 +153,11 @@ const router = createRouter({
           name: 'ext_cggl_cggl',
           component: () => import('@/views/frame/ext/cggl/cggl.vue')
         },
+        { /** 采购退货 */
+          path: '/ext/cggl/cgth',
+          name: 'ext_cggl_cgth',
+          component: () => import('@/views/frame/ext/cggl/cgth.vue')
+        },
         { /** 物流公司 */
           path: '/ext/cwgl/wlgs',
           name: 'ext_cwgl_wlgs',
@@ -172,6 +177,11 @@ const router = createRouter({
           path: '/ext/xsgl/xsgl',
           name: 'ext_xsgl_xsgl',
           component: () => import('@/views/frame/ext/xsgl/xsgl.vue')
+        },
+        { /** 销售退货 */
+          path: '/ext/xsgl/xsth',
+          name: 'ext_xsgl_xsth',
+          component: () => import('@/views/frame/ext/xsgl/xsth.vue')
         },
         { /** 生产工艺 */
           path: '/ext/scgl/scgy',

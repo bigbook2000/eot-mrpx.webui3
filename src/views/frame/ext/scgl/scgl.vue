@@ -184,11 +184,7 @@ import { da } from "element-plus/es/locales.mjs";
     const x_page_row_count = ref(20);
     const x_row_total = ref(0);
 
-    let m_user_dic: any = {};
-
     onMounted(async () => {
-
-        m_user_dic = await TLogic.netLoad_UserDic();
         netLoad_sccp_query(-1);
     });
 
@@ -302,7 +298,7 @@ import { da } from "element-plus/es/locales.mjs";
         }
 
         // 用户转换
-        TLogic.updateDicUserData(data, m_user_dic, ["f_scy_id"]);
+        TLogic.updateDicUserData(data, ["f_scy_id"]);
     }
 
     const onTableRowClick_sccp = async (data: any) => {
@@ -409,6 +405,7 @@ import { da } from "element-plus/es/locales.mjs";
             sccpData["f_cpdy_id"], sccpData["f_cpbm"]);
         let dataNew = await TLogic.netLoad_kcmx_upd(
             0,
+            0,
             sccpData["f_cpdy_id"],
             kcbh,
             "生产加工",
@@ -445,7 +442,6 @@ import { da } from "element-plus/es/locales.mjs";
         dataNew = eocore.check_net_object(ret);
         if (dataNew == undefined) return undefined;
 
-
         let data2: any;
         // 移除使用的部件物料
         for (let d of scwlList) {
@@ -460,9 +456,23 @@ import { da } from "element-plus/es/locales.mjs";
 
                 // 如果物料没有用完，先拆分，再出库
                 // 用的是新批号，剩余的是旧批号
-                x_show_loading.value = true;
                 const retData = await TLogic.netLoad_kcmx_cf(scyId, d, bjsl);
-                x_show_loading.value = false;
+                if (retData == undefined) return undefined;
+
+                const data1 = retData.dataNew1;
+
+                // 借用状态保持
+                ret = await eocore.proc(
+                    "p_kcjy_upd", {
+                        "v_kcjy_id": 0,
+                        "v_kcmx_id": data1["f_kcmx_id"],
+                        "v_cpdy_id": data1["f_cpdy_id"],
+                        "v_jyyg_id": scyId,
+                        "v_jyzt": 1, // 生产
+                        "v_kgy_id": scyId,
+                        "v_beizhu": ""
+                    });
+                eocore.check_net_object(ret);
 
                 data2 = retData.dataNew2;
 
@@ -474,13 +484,14 @@ import { da } from "element-plus/es/locales.mjs";
 
             TLogic.netLoad_kcmx_ck(
                 data2["f_kcmx_id"],
+                data2["f_kcmx_pid"],
                 sccpData["f_cpdy_id"],
                 "生产加工",
                 sccpData["f_sccp_id"],
                 scyId);
 
             // 由于使用的是新批号，所以这里需要更新批次
-            let ret = await eocore.proc("p_scbj_upd", {
+            ret = await eocore.proc("p_scbj_upd", {
                 "v_scbj_id": d["f_scbj_id"],
                 "v_sccp_id": d["f_sccp_id"],
                 "v_cpbj_id": d["f_cpbj_id"],

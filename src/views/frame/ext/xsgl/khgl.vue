@@ -179,12 +179,7 @@ export default { name: "ext_xsgl_khgl" }
     // 加载状态
     const x_show_loading = ref(false);
 
-    let m_user_dic: any = {};
-
     onMounted(async () => {
-
-        // 所有账号信息
-        m_user_dic = await TLogic.netLoad_UserDic();
         // 初始化加载数据
         netLoad_khgl_query(-1);
     });
@@ -247,7 +242,7 @@ export default { name: "ext_xsgl_khgl" }
             data["f_xzsf"], data["f_xzds"], data["f_xzqx"]);
 
         // 用户转换
-        TLogic.updateDicUserData(data, m_user_dic, ["f_xsy_id"]);
+        TLogic.updateDicUserData(data, ["f_xsy_id"]);
     }
 
     /**

@@ -62,17 +62,11 @@
     // 表单数据
     const x_data_kcmx: any = reactive({});
 
-    // 用户信息字典
-    let m_user_dic: any = {};
-
     /**
      * 显示对话框
      * @param data 数据对象
      */
     const loadData = async (kcmxData: any) => {
-
-        // 所有账号信息
-        m_user_dic = await TLogic.netLoad_UserDic();
 
         // 创建一个副本并更新响应式数据
         Object.assign(x_data_kcmx, kcmxData);
@@ -93,7 +87,7 @@
         data["f_jysj_s"] = eolib.datetime_2_short(data["f_jysj"]);
 
         // 用户转换
-        TLogic.updateDicUserData(data, m_user_dic, ["f_yg_id", "f_kgy_id"]);
+        TLogic.updateDicUserData(data, ["f_yg_id", "f_kgy_id"]);
     }
 
     // 暴露方法给父组件使用

@@ -102,14 +102,14 @@
     const get_point_name_by_id = (pointId: number): string => {
 
         if (m_flow_type == undefined) {
-            console.log("******** ********", "eoflow::get_point_name_by_id: type", pointId);
+            console.log("******** ********", "eoflow::get_point_name_by_id: type", pointId, m_flow_type);
             return "";
         }
 
         for (let d2 of m_flow_type.points) {
             if (d2.flow_point_id == pointId) return d2.name;
         }
-        console.log("******** ********", "eoflow::get_point_name_by_id: undefined", pointId);
+        console.log("******** ********", "eoflow::get_point_name_by_id: undefined", pointId, m_flow_type);
         return "";
     }
 

@@ -249,7 +249,7 @@
      * 将采购清单加入到库存明细中
      * @param rkdcpData 采购清单数据
      */
-    const netLoad_kcmx_upd = async (rkdcpData: any): Promise<any> => { 
+    const netLoad_cgdrk_upd = async (rkdcpData: any): Promise<any> => { 
 
         // 检查必填字段
         if (!eocore.check_id(rkdcpData, "f_cpdy_id")) {
@@ -267,20 +267,30 @@
             return undefined;
         }
 
-        const dts = eolib.datetime_2_string(new Date(), true);
-
+        const cgdId = rkdcpData["f_cgd_id"];
         const cgdcpId = rkdcpData["f_cgdcp_id"];
-
-        // 先清除
-        const ret = await eocore.proc(    
-			"p_kcmxrk_clear", {
-				"v_rklb": "采购入库",
-				"v_rkids": cgdcpId,
-                "v_kcbz": TLogic.kcbzCodes["临时"],
+        // 列出旧的
+        let ret = await eocore.proc(
+			"p_cgdrk_list", {
+				"v_cgd_id": cgdId,
+                "v_cgdcp_id": cgdcpId,
 		});
-        const data = eocore.check_net_object(ret);
-        if (data == undefined) return undefined;
+        const list = eocore.check_net_array(ret);
+        if (list == undefined) return undefined;
 
+        if (list.length > 0) {
+            const kcmxIds = list.map((item: any) => item["f_kcmx_id"]).join(",");
+
+            // 先清除        
+            ret = await eocore.proc(    
+				"p_cgdrk_clear", {
+					"v_kcmx_ids": kcmxIds
+			});
+            const data = eocore.check_net_object(ret);
+            if (data == undefined) return undefined;
+        }
+
+        // 添加到库存明细
         const kgyId = TGlobal.userData["f_user_id"];
         for (let i=0; i<cgsl; i++) {
 
@@ -288,10 +298,11 @@
                 rkdcpData["f_cpdy_id"], rkdcpData["f_cpbm"]);
             const dataNew = await TLogic.netLoad_kcmx_upd(
                 0,
+                0,
                 rkdcpData["f_cpdy_id"],
                 kcbh,
                 "采购入库",
-                cgdcpId, // 关联采购产品清单
+                cgdId, // 关联采购单
                 0,
                 rkdcpData["f_cgdj"],
                 rkdcpData["f_bzsl"], // 单件数量                
@@ -299,9 +310,23 @@
                 rkdcpData["f_beizhu"],
                 TLogic.kcbzCodes["临时"], // 库存标识
             );
-            if (dataNew == undefined) {
-                return undefined;
-            }
+            if (dataNew == undefined) return undefined;
+
+            // 添加到采购明细
+
+            ret = await eocore.proc(    
+                "p_cgdrk_upd", {
+                    "v_cgd_id": cgdId,
+                    "v_cgdcp_id": cgdcpId,
+                    "v_kcmx_id": dataNew["f_kcmx_id"],
+                    "v_kcbh": dataNew["f_kcbh"],                    
+                    "v_kgy_id": kgyId,
+                    "v_cgdj": rkdcpData["f_cgdj"],
+                    "v_beizhu": rkdcpData["f_beizhu"],
+                    "v_rkbz": 1,
+                });
+            const data = eocore.check_net_object(ret);
+            if (data == undefined) return undefined;
         }
 
         eocore.show_success("入库成功，请重新刷新清单");
@@ -335,7 +360,7 @@
 
             // 变更入库
             v_dialog.value?.show_loading(true);
-            await netLoad_kcmx_upd(x_data_cgdcp);
+            await netLoad_cgdrk_upd(x_data_cgdcp);
             v_dialog.value?.show_loading(false);
             
             emits("close", cancel, undefined, (result: boolean) => {

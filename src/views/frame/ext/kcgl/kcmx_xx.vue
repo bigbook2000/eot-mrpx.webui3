@@ -232,6 +232,7 @@
                     data["f_cpdy_id"], data["f_cpbm"]);
 		        dataNew = await TLogic.netLoad_kcmx_upd(
                     0,
+                    0,
                     data["f_cpdy_id"],
                     data["f_kcbh"],
                     data["f_rklb"],
@@ -252,6 +253,7 @@
             // 回写数据库
             dataNew = await TLogic.netLoad_kcmx_upd(
                 data["f_kcmx_id"],
+                data["f_kcmx_pid"],
                 data["f_cpdy_id"],
                 data["f_kcbh"],
                 data["f_rklb"],

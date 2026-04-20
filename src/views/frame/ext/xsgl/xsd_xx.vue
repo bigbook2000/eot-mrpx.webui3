@@ -30,6 +30,13 @@
                     </el-input>
                 </div>
             </div>
+            <div class="cell eo_w2">
+                <div class="label_n">客户地址</div>
+                <div class="input">
+                    <el-input v-model="x_data_xsd['f_lxdz']" style="width:100%"
+                        maxlength="50" placeholder="请输入客户地址"></el-input>
+                </div>
+            </div>
             <div class="cell eo_w4">
                 <div class="label_n">联系人</div>
                 <div class="input">
@@ -175,9 +182,10 @@
         cb(true);
     }
 
+
     // 暴露方法给父组件
     defineExpose({
-        showDialog
+        showDialog,
     });
 </script>
 

@@ -76,7 +76,6 @@
     let m_rkd_ids = "";
     let m_rklb = "";
 
-    let m_user_dic: any = {};
     // 编辑模式，0只读，1新增，2修改，9入库
     const x_edit_mode = ref(0);
     let m_edit_fields: string[] = [];
@@ -87,7 +86,6 @@
     }>()
 
     onMounted(async () => {
-        m_user_dic = await TLogic.netLoad_UserDic();
     });
 
     const setEditFields = (mode: number, editFields: string[]) => {
@@ -95,10 +93,6 @@
         x_edit_mode.value = mode;
         m_edit_fields = editFields;
     }    
-
-    const updateUserDic = (userDic: any) => {
-        m_user_dic = userDic;
-    }
 
     const getList = (): any[]|undefined => { 
         return v_table_kcmxrk.value?.get_list();
@@ -162,7 +156,7 @@
         data["f_kcdj_s"] = eolib.fixed_num(data["f_kcdj"], 2);
 
         // 用户转换
-        TLogic.updateDicUserData(data, m_user_dic, ["f_kgy_id"]);
+        TLogic.updateDicUserData(data, ["f_kgy_id"]);
     }
 
     /**
@@ -296,7 +290,6 @@
     
     defineExpose({
         setEditFields,
-        updateUserDic,
         getList,
         loadList
     })

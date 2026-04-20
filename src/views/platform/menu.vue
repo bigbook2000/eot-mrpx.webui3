@@ -79,7 +79,9 @@ export default { name: "platform_menu" }
         let list = eocore.check_net_array(ret);
         if (list != undefined) m_role_list = list;
 
-        v_table_menu.value!.load_list_net("/framework/menu/list", {});
+        v_table_menu.value!.load_list_net("/framework/menu/list", {
+            "v_status": -1
+        });
     });
 
     const updateMenuPidList = (): cdic_item[] => {        
@@ -106,7 +108,9 @@ export default { name: "platform_menu" }
     }
 
     const onButtonClick_Load = () => {
-        v_table_menu.value!.load_list_net("/framework/menu/list", {});
+        v_table_menu.value!.load_list_net("/framework/menu/list", {
+            "v_status": -1
+        });
     }
 
     const onButtonClick_Add = () => {

@@ -46,7 +46,9 @@
 
     const netLoad_menu_list = async () => {
 
-        let ret = await eocore.post("/framework/menu/list", [{}]);
+        let ret = await eocore.post("/framework/menu/list", [{
+            "v_status": 1
+        }]);
 
         let array = eocore.check_net_array(ret);
         if (array == undefined) array = new Array();
@@ -81,6 +83,7 @@
         await netLoad_menu_list();
 
         await eodic.net_load_dic(TGlobal.settingList["dic_version"]);
+
 
         //let router = useRouter();
         router.replace({ name:'login' });

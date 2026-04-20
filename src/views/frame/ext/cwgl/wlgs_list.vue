@@ -3,6 +3,7 @@
         width="900px"
         :show-close="false" 
         :close-on-click-modal="false"
+        :append-to-body="true"
         @opened="onDialogOpened"
         @close="onDialogClose">
         <template #header="{ close }">

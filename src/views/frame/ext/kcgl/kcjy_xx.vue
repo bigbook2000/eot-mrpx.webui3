@@ -152,6 +152,7 @@
 
             let ret = await eocore.proc(
                 "p_kcjy_upd", {
+                    "v_kcjy_id": 0,
                     "v_kcmx_id": d["f_kcmx_id"],
                     "v_cpdy_id": d["f_cpdy_id"],
                     "v_jyyg_id": data["f_jyyg_id"],

@@ -208,9 +208,6 @@ export default { name: "ext_xsgl_ddgl" }
     });
 
     const x_edit_xsd = ref(false);
-
-    let m_user_dic: any = {};
-
     // 查询条件
     const x_query_xsdh = ref("");
     const x_query_khmc = ref("");
@@ -225,9 +222,6 @@ export default { name: "ext_xsgl_ddgl" }
     const x_show_loading = ref(false);
 
     onMounted(async () => {
-        
-        m_user_dic = await TLogic.netLoad_UserDic();
-        //v_xsdcp.value?.updateUserDic(m_user_dic);
 
         const point = v_flow_xsd.value?.get_point_by_name("新建");
         if (point != undefined) {
@@ -372,6 +366,7 @@ export default { name: "ext_xsgl_ddgl" }
                 "v_xsjh_id": data["f_xsjh_id"],
                 "v_lxr": data["f_lxr"],
                 "v_lxdh": data["f_lxdh"],
+                "v_lxdz": data["f_lxdz"],
                 "v_fklb": data["f_fklb"],
                 "v_xsje": data["f_xsje"],
                 "v_ssje": data["f_ssje"],
@@ -427,7 +422,7 @@ export default { name: "ext_xsgl_ddgl" }
         data["f_ssje_s"] = eolib.fixed_num(data["f_ssje"], 2);
 
         // 用户转换
-        TLogic.updateDicUserData(data, m_user_dic, ["f_xsy_id"]);
+        TLogic.updateDicUserData(data, ["f_xsy_id"]);
 
         // 流程
         data["f_flow_point_id_s"] = v_flow_xsd.value?.get_point_name_by_id(data["f_flow_point_id"]);
@@ -507,26 +502,26 @@ export default { name: "ext_xsgl_ddgl" }
     const onButtonClick_Add_xsd = async () => {
         
         let ddData = {
-            f_xsd_id: 0,
-            f_xsdh: "",          // 销售订单号
-            f_khgl_id: 0,         // 客户ID
-            f_khgl_id_s: "",      // 客户名称
-            f_xsjh_id: 0, // 销售计划ID
-            f_xsy_id: TGlobal.userData['f_user_id'], // 销售员ID
-            f_xsy_id_s: TGlobal.userData['f_name'], // 销售员姓名
-            f_lxr: "", // 联系人
-            f_lxdh: "", // 联系电话
-            f_fklb: 1, // 付款类别
-            f_xsje: 0.0, // 销售金额
-            f_ssje: 0.0, // 实收金额
-            f_cjsj: "", // 创建时间
-            f_fhsj: "", // 发货时间
-            f_fhy_id: 0, // 发货员ID
-            f_fhy_id_s: "", // 发货员
-            f_yxbz: 1, // 有效标志
-            f_flow_point_id: 0,
-            f_flow_process_id: 0,
-            f_beizhu: "" // 备注
+            "f_xsd_id": 0,
+            "f_xsdh": "",          // 销售订单号
+            "f_khgl_id": 0,         // 客户ID
+            "f_khgl_id_s": "",      // 客户名称
+            "f_xsjh_id": 0, // 销售计划ID
+            "f_xsy_id": TGlobal.userData['f_user_id'], // 销售员ID
+            "f_xsy_id_s": TGlobal.userData['f_name'], // 销售员姓名
+            "f_lxr": "", // 联系人
+            "f_lxdh": "", // 联系电话
+            "f_fklb": 1, // 付款类别
+            "f_xsje": 0.0, // 销售金额
+            "f_ssje": 0.0, // 实收金额
+            "f_cjsj": "", // 创建时间
+            "f_fhsj": "", // 发货时间
+            "f_fhy_id": 0, // 发货员ID
+            "f_fhy_id_s": "", // 发货员
+            "f_yxbz": 1, // 有效标志
+            "f_flow_point_id": 0,
+            "f_flow_process_id": 0,
+            "f_beizhu": "" // 备注
         };
         
         v_xsd_xx.value?.showDialog(ddData);

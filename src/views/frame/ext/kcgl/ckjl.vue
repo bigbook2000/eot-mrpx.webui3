@@ -134,9 +134,6 @@ export default { name: "ext_kcgl_ckjl" }
     type t_table = InstanceType<typeof vtable>;
     const v_table_rkjl = ref<t_table>();
 
-    // 用户字典
-    let m_user_dic: any = {};
-
     let x_show_loading = ref(false);
 
     const x_query_kcbh = ref("");
@@ -151,10 +148,6 @@ export default { name: "ext_kcgl_ckjl" }
     const x_row_total = ref(0);    
 
     onMounted(async () => {
-
-        // 所有账号信息
-        m_user_dic = await TLogic.netLoad_UserDic();
-
         await netLoad_rkjl_query(-1);
     });
 
@@ -191,7 +184,7 @@ export default { name: "ext_kcgl_ckjl" }
         data["f_jysj_s"] = eolib.datetime_2_short(data["f_jysj"]);
 
         // 用户转换
-        TLogic.updateDicUserData(data, m_user_dic, ["f_yg_id", "f_kgy_id"]);
+        TLogic.updateDicUserData(data, ["f_yg_id", "f_kgy_id"]);
     }
 
     const onTableRowClick_rkjl = (data: any) => {

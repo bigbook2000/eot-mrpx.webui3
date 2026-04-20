@@ -81,10 +81,15 @@ export default {
 		"历史": -1
 	},
 
+	/** 用户字典 */
+	userDic: {} as any,	
+	/** 物流公司字典 */
+	wlgsList: [] as any[],
+
 	/**
 	 * 初始化
 	 */
-	init() {
+	async init() {
 
 		let codeDic: any[] = [];
 
@@ -191,22 +196,22 @@ export default {
 
 		let ret = await eocore.post("/framework/user/dic", [{ }]);
 		let list = eocore.check_net_array(ret);
-		if (list == undefined) return [];
+		if (list == undefined) return {};
 
 		let dic: any = {};
 		for (let d of list) {
 			dic["U" + d["f_user_id"]] = d["f_name"];
 		}
+		this.userDic = dic;
 
 		return dic;
 	},
 	/**
 	 * 将列表数据中的用户id转换成name
 	 * @param listData 
-	 * @param userDic 
 	 * @param fields 
 	 */
-	updateDicUserList(listData: any[], userDic: any, fields: string[]) {
+	updateDicUserList(listData: any[], fields: string[]) {
 
 		for (let d of listData) {
 			for (let f of fields) {
@@ -214,22 +219,44 @@ export default {
 					console.log("字段不存在：" + f);
 					continue;
 				}
-				d[f + "_s"] = userDic["U" + d[f]];
+				d[f + "_s"] = this.userDic["U" + d[f]];
 				if (d[f + "_s"] == undefined) d[f + "_s"] = "";
 			}
 		}
 	},
-	updateDicUserData(data: any, userDic: any, fields: string[]) {
+	updateDicUserData(data: any, fields: string[]) {
 
 		for (let f of fields) {
 			if (data[f] == undefined) {
 				console.log("字段不存在：" + f);
 				continue;
 			}
-			data[f + "_s"] = userDic["U" + data[f]];
+			data[f + "_s"] = this.userDic["U" + data[f]];
 			if (data[f + "_s"] == undefined) data[f + "_s"] = "";
 		}
 	},
+
+	async netLoad_Wlgs_list(): Promise<any[]> {
+		let ret = await eocore.proc("p_wlgs_list", {
+            "v_wlgs_ids": ""
+        })
+        let list = eocore.check_net_array(ret);
+        if (list != undefined) {
+            this.wlgsList = list;
+        }
+		return this.wlgsList;
+	},
+
+	getLabel_wlgs(wlgsId: number): string {
+		for (let d of this.wlgsList) {
+			if (d["f_wlgs_id"] == wlgsId) {
+				return d["f_gsmc"];
+			}
+		}
+		return "";
+	},
+
+
 
 	/**
 	 * 获取一个序列ID
@@ -383,6 +410,42 @@ export default {
     },
 
 	/**
+	 * 安全计算数学表达式
+	 * 支持的运算符: +, -, *, /, (), 以及 Math 对象的方法
+	 * @param expression 数学表达式，X 会被替换为实际值
+	 * @param value X 的值
+	 * @returns 计算结果
+	 */
+	safeEvalExpression(expression: string, value: number): number {
+		try {
+			// 替换 X 为实际值
+			let expr = expression.replace(/\X/g, value.toString());
+			
+			// 只允许安全的数学字符
+			// 允许: 数字, 小数点, 运算符, 括号, 空格, Math对象方法
+			if (!/^[0-9+\-*/().\s]+$/.test(expr) && !expr.includes('Math')) {
+				console.warn('包含不安全字符的表达式:', expression);
+				return value;
+			}
+			
+			// 使用 Function 构造器替代 eval，更安全
+			// 只暴露 Math 对象
+			const calcFunc = new Function('Math', 'return ' + expr);
+			const result = calcFunc(Math);
+			
+			if (typeof result !== 'number' || isNaN(result) || !isFinite(result)) {
+				console.warn('表达式计算结果无效:', expression, '结果:', result);
+				return value;
+			}
+			
+			return result;
+		} catch (error) {
+			console.warn('表达式计算失败:', expression, error);
+			return value;
+		}
+	},
+
+	/**
 	 * 处理设备数据
 	 * data["f_data"] 为json字符串
 	 * fd["f_data"]和fd["f_chart"] 分别为表格和图表系数转换
@@ -417,12 +480,10 @@ export default {
 					let dv2 = dv1;
 
 					if (sdd.length > 0) {
-						sdd = sdd.replace(/\X/g, dv1);
-						dv1 = eval(sdd);
+						dv1 = this.safeEvalExpression(sdd, dv1);
 					}
 					if (sdc.length > 0) {
-						sdc = sdc.replace(/\X/g, dv2);
-						dv2 = eval(sdc);
+						dv2 = this.safeEvalExpression(sdc, dv2);
 					}
 
 					data.dataList[dn] = dv1.toFixed(dp);
@@ -640,6 +701,7 @@ export default {
 	/**
 	 * 更新库存
 	 * @param f_kcmx_id 
+	 * @param f_kcmx_pid 关联库存明细
 	 * @param f_cpdy_id （新增）
 	 * @param f_kcbh 批号（新增）
 	 * @param f_rklb （新增）
@@ -654,6 +716,7 @@ export default {
 	 */
 	async netLoad_kcmx_upd(
 		f_kcmx_id: number,
+		f_kcmx_pid: number,
 		f_cpdy_id: number,
 		f_kcbh: string,
 		f_rklb: string,
@@ -669,6 +732,7 @@ export default {
 		const ret = await eocore.proc(    
 			"p_kcmx_upd", {
 				"v_kcmx_id": f_kcmx_id,
+				"v_kcmx_pid": f_kcmx_pid,
 				"v_cpdy_id": f_cpdy_id,
 				"v_kcbh": f_kcbh,
 				"v_rklb": f_rklb,
@@ -679,13 +743,14 @@ export default {
 				"v_kgy_id": f_kgy_id,
 				"v_beizhu": f_beizhu,
 				"v_kcbz": f_kcbz
-		});		
+		});
         return eocore.check_net_object(ret);
 	},
 
 	/**
 	 * 出库
 	 * @param f_kcmx_id 
+	 * @param f_kcmx_pid 关联库存明细
 	 * @param f_cpdy_id 
 	 * @param f_cklb 
 	 * @param f_ckid 
@@ -694,6 +759,7 @@ export default {
 	 */
 	async netLoad_kcmx_ck(
 		f_kcmx_id: number,
+		f_kcmx_pid: number,
 		f_cpdy_id: number,
 		f_cklb: string,
 		f_ckid: number,
@@ -703,6 +769,7 @@ export default {
 		const ret = await eocore.proc(    
 			"p_kcmx_ck", {
 				"v_kcmx_id": f_kcmx_id,
+				"v_kcmx_pid": f_kcmx_pid,								
 				"v_cpdy_id": f_cpdy_id,
 				"v_cklb": f_cklb,
 				"v_ckid": f_ckid,
@@ -727,6 +794,7 @@ export default {
 		// 修改原有的
         let dataNew1 = await this.netLoad_kcmx_upd(
 			kcmxId,
+			data["f_kcmx_pid"],
 			data["f_cpdy_id"],
 			data["f_kcbh"],
 			"", // 忽略
@@ -744,10 +812,11 @@ export default {
 		let kcbh2 = await this.netLoad_RecordString_kcbh(data["f_cpdy_id"], data["f_cpbm"]);
         let dataNew2 = await this.netLoad_kcmx_upd(
 			0,
+			kcmxId, // 关联
 			data["f_cpdy_id"],
 			kcbh2,
-			"库存拆分",
-			kcmxId, // 关联
+			data["f_rklb"], // 不要变
+			data["f_rkid"], // 不要变
 			data["f_hwck"],
 			data["f_kcdj"],
 			kcsl2,
@@ -764,6 +833,12 @@ export default {
 		};
 	},
 
+	/**
+	 * 库存合并，合并之后原有关联关系会断开
+	 * @param kgyId 
+	 * @param list 
+	 * @returns 
+	 */
 	async netLoad_kcmx_hb(kgyId: number, list: any[]): Promise<any|undefined> {
 
 		const data0 = list[0];
@@ -790,11 +865,13 @@ export default {
         }
 
 		let dataNew: any;
-        let i;        
+        let i;
+		const kcmxId = data0["f_kcmx_id"];
 
 		// 修改第一个
         const dataAdd = await this.netLoad_kcmx_upd(
-            data0["f_kcmx_id"],
+            kcmxId,
+            kcmxId, // 关联
             data0["f_cpdy_id"],
             data0["f_kcbh"],
             "", // 忽略
@@ -813,9 +890,10 @@ export default {
             const d = list[i];
             dataNew = await this.netLoad_kcmx_ck(
                 d["f_kcmx_id"],
+                kcmxId,
                 d["f_cpdy_id"],
                 "库存合并",
-                dataAdd["f_kcmx_id"], // 标记合并来源
+                0,
                 kgyId
             );
             if (dataNew == undefined) return undefined;

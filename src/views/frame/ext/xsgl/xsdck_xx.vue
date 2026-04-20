@@ -222,6 +222,7 @@
                 "v_wldh": data["f_wldh"],
                 "v_kgy_id": data["f_kgy_id"],
                 "v_ckbz": data["f_ckbz"],
+                "v_xsdj": data["f_xsdj"],
                 "v_beizhu": data["f_beizhu"]
             });
         let dataNew = eocore.check_net_object(ret);

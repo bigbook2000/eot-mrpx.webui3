@@ -47,7 +47,8 @@
     import tmd5 from "@/inc/tmd5";
     import eocore from "@/inc/eocore";
     import TGlobal from "@/logic/TGlobal";
-import eoflow from "@/inc/eoflow";
+    import TLogic from "@/logic/TLogic";
+    import eoflow from "@/inc/eoflow";
 
     var x_login_id = ref("");
     var x_login_psw = ref("");
@@ -101,7 +102,10 @@ import eoflow from "@/inc/eoflow";
         TGlobal.permitString = permits;
 
         // 初始化流程
-        eoflow.net_load_flow_List();
+        await eoflow.net_load_flow_List();
+
+        // 加载用户字典
+        await TLogic.netLoad_UserDic();
 
         x_login_disable.value = false;
         
