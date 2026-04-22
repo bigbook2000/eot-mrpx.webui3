@@ -10,7 +10,7 @@
     import eocore from '@/inc/eocore';
     import TGlobal from '@/logic/TGlobal'
 
-    import wlgs_list from "@/views/frame/ext/cwgl/wlgs_list.vue"
+    import wlgs_list from "@/views/frame/ext/tcwgl/wlgs_list.vue"
 
     const v_wlgs_list = ref<InstanceType<typeof wlgs_list>>();
 

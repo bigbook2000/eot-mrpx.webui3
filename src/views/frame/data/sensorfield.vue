@@ -246,7 +246,7 @@ export default { name: "data_sensorfield" }
         }
 
         //console.log(data);
-        if (eocore.check_string(data, "f_name") <= 0) {
+        if (!eocore.check_len(data["f_name"])) {
             eocore.show_error("请输入名称");
             return;
         }
@@ -270,11 +270,11 @@ export default { name: "data_sensorfield" }
         }
 
         //console.log(data);
-        if (eocore.check_string(data, "f_name") <= 0) {
+        if (!eocore.check_len(data["f_name"])) {
             eocore.show_error("请输入名称");
             return;
         }
-        if (eocore.check_string(data, "f_code") <= 0) {
+        if (!eocore.check_len(data["f_code"])) {
             eocore.show_error("请输入编码");
             return;
         }

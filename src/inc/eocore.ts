@@ -79,7 +79,7 @@ export default {
 	 * @param str 
 	 * @returns 
 	 */
-	to_string(str: any): string {
+	to_str(str: any): string {
 		if (str == undefined) return "";
 		str = str.toString();
 		return str.trim();
@@ -88,23 +88,18 @@ export default {
 	 * 检查并处理字符串长度
 	 * @param data 
 	 * @param key 
-	 * @returns 返回字符串长度
+	 * @param len 默认最小长度为1
+	 * @returns 返回字符串长度是否满足
 	 */
-	check_string(data: any, key: string): number {
+	check_len(data: any, len: number = 1): boolean {
 
 		if (data == undefined) {
-			console.log("******** ********", "check_string: data is undefined", data, key);
-			return -1;
+			console.log("******** ********", "check_len: data is undefined");
+			return false;
 		}
 
-		let str = data[key];
-		if (str == undefined) {
-			console.log("******** ********", "check_string: key not found", data, key);
-			return -1;
-		}
-
-		str = str.toString().trim();
-		return str.length;
+		const str = data.toString().trim();
+		return (str.length >= len);
 	},
 
 	/**

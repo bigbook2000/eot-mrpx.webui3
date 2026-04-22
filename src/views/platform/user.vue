@@ -222,7 +222,7 @@ export default { name: "platform_user" }
         console.log(data);
         let userId = data["f_user_id"];
         
-        let loginId = eocore.to_string(data["f_login_id"]);
+        let loginId = eocore.to_str(data["f_login_id"]);
         let pat = /^[a-zA-Z0-9_-]{4,16}$/;
         if (!pat.test(loginId)) {
             eocore.show_error('账号输入不符合[4-16个字符]');
@@ -236,7 +236,7 @@ export default { name: "platform_user" }
         //     return;
         // }
 
-        if (eocore.check_string(data, "f_name") <= 0) {
+        if (!eocore.check_len(data["f_name"])) {
             eocore.show_error("姓名不能输入为空");
             cb(false); return;
         }

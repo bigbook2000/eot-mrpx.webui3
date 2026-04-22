@@ -306,7 +306,7 @@ import TGlobal from "@/logic/TGlobal";
             cb(true); return;
         }
         
-        if (eocore.check_string(data, "f_name") <= 0) {
+        if (!eocore.check_len(data["f_name"])) {
             eocore.show_error("名称不能输入为空");
             cb(false); return;
         }

@@ -143,12 +143,12 @@ export default { name: "device_version" }
 
         x_form_types_type.value = [
             { type: "input", name: "f_dtype", span: 100, label: "名称" },
-            { type: "textarea", name: "f_note", span: 100, label: "描述" },
+            { type: "text", name: "f_note", span: 100, label: "描述" },
         ];
         x_form_types_version.value = [
             { type: "label", name: "f_dtype", span: 100, label: "类型" },
             { type: "input", name: "f_dversion", span: 100, label: "名称" },
-            { type: "textarea", name: "f_note", span: 100, label: "描述" },
+            { type: "text", name: "f_note", span: 100, label: "描述" },
         ];
 
         v_table_type.value!.load_list_proc("np_dtype_list", {});
@@ -244,7 +244,7 @@ export default { name: "device_version" }
             cb(true); return;
         }
         
-        if (eocore.check_string(data, "f_dtype") <= 0) {
+        if (!eocore.check_len(data["f_dtype"])) {
             eocore.show_error("名称不能输入为空");
             cb(false); return;
         }
@@ -262,7 +262,7 @@ export default { name: "device_version" }
             cb(true); return;
         }
         
-        if (eocore.check_string(data, "f_dversion") <= 0) {
+        if (!eocore.check_len(data["f_dversion"])) {
             eocore.show_error("名称不能输入为空");
             cb(false); return;
         }

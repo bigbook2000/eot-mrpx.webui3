@@ -68,4 +68,41 @@
         }
     }
 }
+
+/* tab */
+.sv_tab {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    .sv_tab_head {
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: row;
+        font-size: 14px;
+        padding: 10px 10px 0px 10px;
+        border-bottom: 1px solid var(--eo_color_grey_light3);
+
+        .itemtrue {
+            color: #fff;
+            padding: 8px 10px;
+            text-align: center;
+            background-color: var(--eo_color_main);
+            cursor: pointer;
+        }
+        .itemfalse {
+            color: #666;
+            padding: 8px 10px;
+            text-align: center;
+            background-color: var(--eo_color_grey_light3);
+            cursor: pointer;
+        }
+    }
+    .sv_tab_body {
+        flex: 1 1 auto;
+        width: 100%;
+        height: auto;
+    }
+}
   

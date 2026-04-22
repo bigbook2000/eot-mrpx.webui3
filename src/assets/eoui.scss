@@ -18,7 +18,10 @@
     --eo_color_info: #4099ff;
     
     --eo_color_grey: #696a6f;
-    --eo_color_grey_light: #cccccc;
+    --eo_color_grey_light1: #999999;
+    --eo_color_grey_light2: #cccccc;
+    --eo_color_grey_light3: #eeeeee;
+    --eo_color_grey_light4: #f0f0f0;
     --eo_color_grey_dark: #414244;
 }
 
@@ -96,6 +99,7 @@ body {
         height: 0;
         flex: 1 1 auto;
         box-sizing: border-box;
+        overflow: hidden;
     }    
 }
 
@@ -116,6 +120,7 @@ body {
         height: 100%;	
         flex: 1 1 auto;
         box-sizing: border-box;
+        overflow: hidden;
     }    
 }
 
@@ -313,10 +318,12 @@ body {
     overflow-y: auto;
 }
 .eo_scroll_v {
+    height: 100%;
     overflow-x: hidden;
     overflow-y: auto;
 }
 .eo_scroll_h {
+    width: 100%;
     overflow-x: auto;
     overflow-y: hidden;
 }

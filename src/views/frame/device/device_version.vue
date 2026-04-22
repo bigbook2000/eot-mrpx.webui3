@@ -163,7 +163,7 @@
             eocore.show_info("该版本无Bin文件");
             return;
         }
-        if (eocore.check_string(dataVersion, "f_config_data") <= 0) {
+        if (!eocore.check_len(dataVersion["f_config_data"])) {
             eocore.show_info("该版本无配置");
             return;
         }

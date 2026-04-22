@@ -312,7 +312,7 @@ const onDialogClose_device = async (cancel: boolean, data: any, cb: cfunc_boolea
         return;
     }
 
-    let mn = eocore.to_string(data["f_mn"]);
+    let mn = eocore.to_str(data["f_mn"]);
     let pat = /^[a-zA-Z0-9_-]{2,64}$/;
     if (!pat.test(mn)) {
         eocore.show_error('mn输入不符合规范[2-64]');

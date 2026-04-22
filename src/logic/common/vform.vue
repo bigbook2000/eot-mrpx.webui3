@@ -89,13 +89,13 @@
                     :active-value="1" :inactive-value="0"></el-switch>
             </div>
             <!-- 固定高度多行输入框，高度 4 -->
-            <div v-if="form.type=='textarea'" class="input">
+            <div v-if="form.type=='text'" class="input">
                 <el-input style="width:100%"
                     v-model="data[form.name]" type="textarea" resize="none"
                     :row="4" :autosize="{minRows: 4, maxRows: 4}"></el-input>
             </div>
             <!-- 变高度多行输入框，高度 row -->
-            <div v-if="form.type=='textarea2'" class="input">
+            <div v-if="form.type=='text2'" class="input">
                 <el-input style="width:100%"
                     v-model="data[form.name]" type="textarea" resize="none"
                     :row="form.row" :autosize="{minRows: form.row, maxRows: form.row}"></el-input>

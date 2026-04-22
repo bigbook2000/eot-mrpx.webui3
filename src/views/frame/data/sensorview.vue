@@ -216,11 +216,11 @@ export default { name: "data_sensorview" }
             return;
         }
 
-        if (eocore.check_string(data, "f_label") <= 0) {
+        if (!eocore.check_len(data["f_label"])) {
             eocore.show_error("请输入名称");
             return;
         }
-        if (eocore.check_string(data, "f_type") <= 0) {
+        if (!eocore.check_len(data["f_type"])) {
             eocore.show_error("请选择类型");
             return;
         }

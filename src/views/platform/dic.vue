@@ -266,7 +266,7 @@ export default { name: "platform_dic" }
             cb(true); return;
         }
         
-        if (eocore.check_string(data, "f_label") <= 0) {
+        if (!eocore.check_len(data["f_label"])) {
             eocore.show_error("名称不能输入为空");
             cb(false); return;
         }
@@ -286,7 +286,7 @@ export default { name: "platform_dic" }
             cb(true); return;
         }
 
-        if (eocore.check_string(data, "f_label") <= 0) {
+        if (!eocore.check_len(data["f_label"])) {
             eocore.show_error("名称不能输入为空");
             cb(false); return;
         }

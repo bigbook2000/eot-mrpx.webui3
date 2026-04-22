@@ -555,4 +555,35 @@ export default {
 		// window.URL.revokeObjectURL(b)
 	},
 
+	encode_string(str: string): string {
+  		str = str.toString();
+  		return str.replace(/[&<>"'=()!;]/g, match => ({
+			'&': '&amp;',
+			'<': '&lt;',
+			'>': '&gt;',
+			'"': '&quot;',
+			"'": '&#39;',
+			'=': '&#61;',
+			'(': '&#40;',
+			')': '&#41;',
+			'!': '&#33;',
+			';': '&#59;'
+		}[match] as string));
+	},
+
+	decode_string(str: string): string {
+		str = str.toString();
+		return str.replace(/&amp;|&lt;|&gt;|&quot;|&#39;|&#61;|&#40;|&#41;|&#33;|&#59;/g, match => ({
+			'&amp;': '&',
+			'&lt;': '<',
+			'&gt;': '>',
+			'&quot;': '"',
+			'&#39;': "'",
+			'&#61;': '=',
+			'&#40;': '(',
+			'&#41;': ')',
+			'&#33;': '!',
+			'&#59;': ';'
+		}[match] as string));
+	}
 }
