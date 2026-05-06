@@ -107,16 +107,19 @@
      */
     const loadList = async (xsdData: any, xsdcpData: any) => {
 
+        if (xsdData == undefined) {
+            v_table_xsdck.value?.load_list([]);
+            return;
+        }
         m_xsd_data = xsdData;
         m_xsdcp_data = xsdcpData;
-        if (m_xsdcp_data != undefined) {
-            await v_table_xsdck.value?.load_list_proc("p_xsdck_list", { 
-                "v_xsd_id": m_xsdcp_data["f_xsd_id"],
-                "v_xsdcp_id": m_xsdcp_data["f_xsdcp_id"]
-            });
-        } else {
-            v_table_xsdck.value?.load_list([]);
-        }
+        let xsdcpId = 0;
+        if (xsdcpData != undefined) xsdcpId = xsdcpData["f_xsdcp_id"];
+            
+        await v_table_xsdck.value?.load_list_proc("p_xsdck_list", { 
+            "v_xsd_id": xsdData["f_xsd_id"],
+            "v_xsdcp_id": xsdcpId
+        });
     }
 
     /**
@@ -220,6 +223,7 @@
         // 恢复标识
         let ret = await eocore.proc("p_kcmx_kcbz", {
             "v_kcmx_ids": "" + xsdckData["f_kcmx_id"],
+            "v_cpdy_ids": "" + xsdckData["f_cpdy_id"],
             "v_kcbz": TLogic.kcbzCodes["正常"]
         });
         if (eocore.check_net_object(ret) == undefined) return;

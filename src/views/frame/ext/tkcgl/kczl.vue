@@ -6,10 +6,10 @@
             <div class="eo_tool_bar">
                 <div class="eo_form">
                     <div class="cell eo_w280p">
-                        <div class="label_n">产品编码</div>
+                        <div class="label_n">批次</div>
                         <div class="input">
                             <el-input style="width:100%" maxlength="32"
-                                v-model="x_query_cpbm" placeholder="产品编码"></el-input>
+                                v-model="x_query_kcbh" placeholder="批次"></el-input>
                         </div>
                     </div>
                     <div class="cell" style="width:400px;">
@@ -172,11 +172,12 @@ export default { name: "ext_kcgl_kczl" }
     const x_query_cplb = ref([0, 0]);
     const x_query_cpmc = ref("");
     const x_query_cpbm = ref("");
+    const x_query_kcbh = ref("");
     const x_query_jyzt = ref(-1);
 
     // 分页变量
     const x_page_index = ref(1);
-    const x_page_row_count = ref(20);
+    const x_page_row_count = ref(100);
     const x_row_total = ref(0);
 
     // 加载状态
@@ -262,11 +263,19 @@ export default { name: "ext_kcgl_kczl" }
         let orderBy = getOrderByString();
 
         v_table_kcmx.value?.load_list_proc("p_kcmx_query", { 
+            "v_kcbz": TLogic.kcbzCodes["正常"],
             "v_cpdl_id": x_query_cplb.value[0],
             "v_cpxl_id": x_query_cplb.value[1],
             "v_cpmc": x_query_cpmc.value,
             "v_cpbm": x_query_cpbm.value,
+            "v_kcbh": x_query_kcbh.value,
             "v_jyzt": x_query_jyzt.value,
+            "v_rklb": "",
+            "v_cklb": "",
+            "v_rksj1": "",
+            "v_rksj2": "",
+            "v_cksj1": "",
+            "v_cksj2": "",
             "v_order_by": orderBy,
             "s_page_row_index": rowIndex,
             "s_page_row_count": pageRowCount
@@ -378,7 +387,7 @@ export default { name: "ext_kcgl_kczl" }
             "f_kcmx_id": 0,
             "f_cpdy_id": 0,        // 产品定义ID
             "f_kcbh": "",
-            "f_rklb": "盘库整理", // 入库类别
+            "f_rklb": "整理入库", // 入库类别
             "f_rkid": 0,
             "f_rksj": "1970-01-01 00:00:00",
             "f_rksj_s": "",
@@ -423,13 +432,19 @@ export default { name: "ext_kcgl_kczl" }
         
         // 直接出库
         x_show_loading.value = true;
-        const dataNew = await TLogic.netLoad_kcmx_ck(
+        const dataNew = await TLogic.netLoad_kcmx_upd(
             data["f_kcmx_id"],
-            data["f_kcmx_pid"],
+            0, // 关联
             data["f_cpdy_id"],
-            "盘库整理",
+            data["f_kcbh"],
+            "整理出库",
             0,
+            data["f_hwck"],
+            data["f_kcdj"],
+            data["f_kcsl"],
             TGlobal.userData["f_user_id"],
+            data["f_beizhu"],
+            TLogic.kcbzCodes["历史"]
         );
         x_show_loading.value = false;        
         if (dataNew == undefined) return;

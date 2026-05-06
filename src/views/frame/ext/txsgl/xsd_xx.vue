@@ -176,8 +176,11 @@
 
         x_data_xsd["f_khgl_id"] = data["f_khgl_id"];
         x_data_xsd["f_khgl_id_s"] = data["f_khmc"];
-        x_data_xsd["f_lxr"] = data["f_fzr"];
-        x_data_xsd["f_lxdh"] = data["f_gsdh"];
+        x_data_xsd["f_lxr"] = data["f_lxr"];
+        x_data_xsd["f_lxdh"] = data["f_lxfs"];
+        x_data_xsd["f_lxdz"] = data["f_gsdz"];
+
+        console.log(x_data_xsd);
 
         cb(true);
     }

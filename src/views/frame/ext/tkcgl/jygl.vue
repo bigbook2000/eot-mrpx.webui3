@@ -22,6 +22,16 @@
                         </div>
                     </div>
                     <div class="cell eo_w240p">
+                        <div class="label_n">使用状态</div>
+                        <div class="input">
+                            <el-select style="width:100%" v-model="x_query_kcbz">
+                                <el-option label="未用" :value="1"></el-option>
+                                <el-option label="已用" :value="-1"></el-option>
+                                <el-option label="全部" :value="-9"></el-option>
+                            </el-select>
+                        </div>
+                    </div>                    
+                    <div class="cell eo_w240p">
                         <div class="label_n">员工</div>
                         <div class="input">
                             <user_input v-model="x_query_yg_id" 
@@ -50,7 +60,7 @@
                         </div>
                     </div>
 
-                    <div class="cell eo_w200p">
+                    <div class="cell eo_w240p">
                         <div class="label_n">调拨状态</div>
                         <div class="input">
                             <vdic style="width:100%" dic="调拨状态" :all="true" field="value"
@@ -150,6 +160,7 @@ export default { name: "ext_kcgl_jygl" }
 
     let x_show_loading = ref(false);
 
+    const x_query_kcbz = ref(-9);
     const x_query_kcbh = ref("");
     const x_query_kssj = ref("");
     const x_query_jssj = ref("");
@@ -164,6 +175,12 @@ export default { name: "ext_kcgl_jygl" }
     const x_row_total = ref(0);    
 
     onMounted(async () => {
+
+        let dt = new Date();
+        x_query_jssj.value = eolib.date_end(dt);
+        dt.setMonth(dt.getMonth() - 1);
+        x_query_kssj.value = eolib.date_start(dt);
+
         await netLoad_kcjy_query(-1);
     });
 
@@ -177,12 +194,13 @@ export default { name: "ext_kcgl_jygl" }
         const kssj = eolib.datetime_2_string(x_query_kssj.value);
         const jssj = eolib.datetime_2_string(x_query_jssj.value);
 
-        v_table_kcjy.value?.load_list_proc("p_kcjym_query", { 
+        v_table_kcjy.value?.load_list_proc("p_kcjy_query", { 
+            "v_kcbz": -9,
             "v_kcbh": x_query_kcbh.value, 
             "v_kssj": kssj, 
             "v_jssj": jssj, 
             "v_jyzt": x_query_jyzt.value, 
-            "v_yg_id": x_query_yg_id.value, 
+            "v_jyyg_id": x_query_yg_id.value, 
             "v_cpmc": x_query_cpmc.value, 
             "v_order_by": " ORDER BY f_kcjy_id DESC",
             "s_page_row_index": rowIndex,
@@ -224,19 +242,6 @@ export default { name: "ext_kcgl_jygl" }
         netLoad_kcjy_query(pageIndex);
     }
 
-    const onButtonClick_Add_jyd = () => {
-    }
-    const onButtonClick_Del_jyd = () => {
-    }
-    const onButtonClick_Upd_jyd = () => {
-    }
-
-    /**
-     * 保存事件处理
-     */
-    const onDialogClose_jygl_xx = async (data: any, isAdd: boolean) => {
-
-    }
 </script>
 
 <style lang="scss" scoped>

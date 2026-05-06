@@ -52,40 +52,13 @@
                             <div class="eo_tool_bar">
                                 <div class="eo_form">
                                     <div class="cell">
-                                        <vbuttonk type="primary" class="input_w" permit="" 
-                                            v-show="x_flow_status_button['新建']"
-                                            @click="onButtonClick_Add_cgd">新建采购</vbuttonk>
-                                        <vbuttonk type="primary" class="input_w" permit="" 
-                                            v-show="x_edit_cgd"
-                                            @click="onButtonClick_Upd_cgd">修改采购</vbuttonk>
-                                        <vbuttonk type="default" class="input_w" permit="" 
-                                            v-show="!x_edit_cgd"
-                                            @click="onButtonClick_Get_cgd">采购详情</vbuttonk>
-                                        <div class="split"></div>
-                                        <vbuttonk type="warning" class="input_w" permit="" 
-                                            v-show="x_flow_status_button['作废']"
-                                            @click="onButtonClick_Flow_CGZF">采购作废</vbuttonk>
-                                        <vbuttonk type="warning" class="input_w" permit="" 
-                                            v-show="x_flow_status_button['退回']"
-                                            @click="onButtonClick_Flow_CGTH">采购退回</vbuttonk>
-                                        <vbuttonk type="warning" class="input_w" permit="" 
-                                            v-show="x_flow_status_button['提交']"
-                                            @click="onButtonClick_Flow_CGTJ">提交采购</vbuttonk>
-                                        <vbuttonk type="warning" class="input_w" permit="" 
-                                            v-show="x_flow_status_button['审核']"
-                                            @click="onButtonClick_Flow_CGSH">采购审核</vbuttonk>
-                                        <vbuttonk type="warning" class="input_w" permit="" 
-                                            v-show="x_flow_status_button['核准']"
-                                            @click="onButtonClick_Flow_CGHZ">财务核对</vbuttonk>
-                                        <vbuttonk type="warning" class="input_w" permit="" 
-                                            v-show="x_flow_status_button['发货']"
-                                            @click="onButtonClick_Flow_CGFH">商家发货</vbuttonk>
-                                        <vbuttonk type="warning" class="input_w" permit="" 
-                                            v-show="x_flow_status_button['入库']"
-                                            @click="onButtonClick_Flow_CGRK">收货入库</vbuttonk>
-                                        <vbuttonk type="warning" class="input_w" permit="" 
-                                            v-show="x_flow_status_button['归档']"
-                                            @click="onButtonClick_Flow_CGGD">采购归档</vbuttonk>
+                                        <tflow_button ref="v_flow_button" 
+                                            @on-new="onButtonClick_Flow_Add"
+                                            @on-back="onButtonClick_Flow_Back"
+                                            @on-edit="onButtonClick_Flow_Upd"
+                                            @on-get="onButtonClick_Flow_Get"
+                                            @on-cancel="onButtonClick_Flow_Cancel"
+                                            @on-flow="onButtonClick_Flow" />                                        
                                     </div>
                                 </div>
                             </div>
@@ -161,6 +134,7 @@ export default { name: "ext_cggl_cggl" }
 <script lang="ts" setup>
     import { ref, nextTick, onMounted } from "vue"
     import type { cform_options, cfunc_boolean } from "@/inc/eotypes";
+    import { type cflow_type, type cflow_point } from "@/inc/eoflow";
 
     import eocore from "@/inc/eocore"
     import eolib from "@/inc/eolib";
@@ -177,8 +151,13 @@ export default { name: "ext_cggl_cggl" }
     import TLogic from "@/logic/TLogic";
     import TGlobal from "@/logic/TGlobal";
 
+    import user_input from "@/views/platform/user_input.vue"
+    import tflow_button from "@/views/frame/ext/comm/tflow_button.vue";
+
     import cdgrk from "./cdgrk.vue"
     import cgdcp from "./cgdcp.vue"
+
+
 
     const v_cdgrk = ref<InstanceType<typeof cdgrk>>();
     const v_cgdcp = ref<InstanceType<typeof cgdcp>>();
@@ -192,20 +171,7 @@ export default { name: "ext_cggl_cggl" }
     type t_cgd_xx = InstanceType<typeof cgd_xx>;
     const v_cgd_xx = ref<t_cgd_xx>();
 
-    // 按钮状态
-    const x_flow_status_button = ref({
-        "新建": false,
-        "作废": false,
-        "退回": false,
-        "提交": false,
-        "审核": false,
-        "核准": false,
-        "发货": false,
-        "入库": false,
-        "归档": false,
-    });
-
-    const x_edit_cgd = ref(false);
+    const v_flow_button = ref<InstanceType<typeof tflow_button>>();
 
     // 查询条件
     const x_query_cgdh = ref("");
@@ -222,86 +188,45 @@ export default { name: "ext_cggl_cggl" }
 
     onMounted(async () => {
         
-        // 判断是否能够创建采购
-        const point = v_flow_cgd.value?.get_point_by_name("新建");
-        if (point != undefined) {
-            x_flow_status_button.value["新建"] = TLogic.checkRoleString(point.role);
-        }
+        v_flow_button.value?.init_flow(v_flow_cgd.value);
 
         // 初始化加载数据
         netLoad_cgd_query(-1);        
     });
 
-    const updateFlowStatusButton = (cgdData: any) => { 
-
-        let flowPointId = 0;
-        let yxbz = 0;
-        if (cgdData != undefined) {
-            flowPointId = cgdData["f_flow_point_id"];
-            yxbz = cgdData["f_yxbz"];
-        }
-
-        const statusButton = x_flow_status_button.value;
-        //statusButton["新建"] = false; // 初始设置
-        statusButton["作废"] = false;
-        statusButton["退回"] = false;
-        statusButton["提交"] = false;
-        statusButton["审核"] = false;
-        statusButton["核准"] = false;
-        statusButton["发货"] = false;
-        statusButton["入库"] = false;
-        statusButton["归档"] = false;
-        x_flow_status_button.value = statusButton;
+    const updateFlowStatus = (cgdData: any) => { 
 
         v_cdgrk.value?.setEditFields(0, []);
         v_cgdcp.value?.setEditFields(0, []);
 
-        if (flowPointId <= 0) return;
+        //const sel = v_table_cgd.value?.get_select_data(false);
+        //console.log("updateFlowStatus", cgdData, sel);
+
+        if (cgdData == undefined) return;
+        let yxbz = cgdData["f_yxbz"];
         if (yxbz == 0) return;
-        
-        let point = v_flow_cgd.value?.get_point_by_id(flowPointId);
-        if (point == undefined) return;
 
-        // 检查角色
-        const role = TGlobal.userData["f_role"];
-        const pointRole = point.role;
-        //console.log("updateFlowStatusButton", flowPointId, yxbz, point, role);
-        // 判断角色是否满足条件
-        if (!eolib.list_any_list(role, pointRole)) return;
-
-        const pointName = point.name;
-        //const ret = v_flow_cgd.value?.check_point_back(pointName);
-        //console.log("point", point, role, pointRole, ret);
-
-        // 需要作废权限
-        //statusButton["CGZF"] = ret.first;
+        const flowStatus = v_flow_button.value?.update_flow_status(cgdData);
+        if (!flowStatus) return;
 
         // 核准之后无法退回
-        let isCGTH = v_flow_cgd.value?.check_point_order(point.flow_point_id, "已审核") || false;
-        statusButton["退回"] = !isCGTH;
+        v_flow_button.value?.set_flow_back("已核准");
 
-        statusButton["提交"] = pointName == "新建";
-        statusButton["审核"] = pointName == "待审核";
-        statusButton["核准"] = pointName == "已审核";
-        statusButton["发货"] = pointName == "已核准";
-        statusButton["入库"] = pointName == "已发货";
-        statusButton["归档"] = pointName == "已入库";
-
-        x_edit_cgd.value = false;
+        // 只允许编辑自己
+        if (cgdData["f_xsy_id"] == TGlobal.userData["f_user_id"]) {
+            v_flow_button.value?.set_flow_edit(["新建"]);
+        }
+        const pointName = v_flow_button.value?.get_point_name();
 
         let editMode1 = 0;
         let editMode2 = 0;
         let fields1: string[] = [];
         let fields2: string[] = [];
 
-        console.log("updateFlowStatusButton", pointName);
-
         switch (pointName) { 
             case "新建":
                 editMode1 = 1;
                 fields1 = ["*"];
-                x_edit_cgd.value = true;
-                statusButton["退回"] = false;
                 break;
             case "待审核":
             case "已审核":
@@ -319,6 +244,42 @@ export default { name: "ext_cggl_cggl" }
 
         v_cgdcp.value?.setEditFields(editMode1, fields1);
         v_cdgrk.value?.setEditFields(editMode2, fields2);
+    };
+
+
+    const onButtonClick_Flow = (point: cflow_point, data0: any) => {
+
+        const pointName = point?.name;
+        if (pointName == undefined) return;
+
+        let cgdData = v_table_cgd.value?.get_select_data(true);
+        if (cgdData == undefined) return;
+
+        console.log("onButtonClick_Flow", point, cgdData);
+
+        switch (pointName) {
+            case "新建":
+                onButtonClick_Flow_CGTJ(cgdData);
+                break;
+            case "待审核":
+                v_flow_button.value?.show_flow_dialog(cgdData, (data1: any) => {
+                    updateFlowStatus(data1);
+                });
+                break;
+            case "已审核":
+                v_flow_button.value?.show_flow_dialog(cgdData, (data1: any) => {
+                    updateFlowStatus(data1);
+                });
+                break;
+            case "已核准":
+                onButtonClick_Flow_CGFH(cgdData);
+                break;
+            case "已发货":
+                onButtonClick_Flow_CGRK(cgdData);
+                break;
+            case "完成":
+                break;
+        }
     };
 
     /**
@@ -363,7 +324,7 @@ export default { name: "ext_cggl_cggl" }
 
         v_flow_cgd.value?.load_List(0);
         
-        updateFlowStatusButton(undefined);
+        updateFlowStatus(undefined);
     }
 
     const netLoad_cgd_upd = async (data: any): Promise<any> => { 
@@ -485,7 +446,7 @@ export default { name: "ext_cggl_cggl" }
         await v_flow_cgd.value?.load_List(data["f_cgd_id"]);
         x_show_loading.value = false;
 
-        updateFlowStatusButton(data);
+        updateFlowStatus(data);
     }
 
     /**
@@ -502,71 +463,6 @@ export default { name: "ext_cggl_cggl" }
      */
     const onButtonClick_Load_cgd = () => {
         netLoad_cgd_query(-1);
-    }
-
-    const onButtonClick_Get_cgd = () => { 
-
-        let cgdData = v_table_cgd.value?.get_select_data(true);
-        if (cgdData == undefined) return;
-        
-        v_cgd_xx.value?.showDialog(cgdData, false);
-    }
-
-    /**
-     * 添加采购单
-     */
-    const onButtonClick_Add_cgd = async () => {
-        
-        let cgdData = {
-            "f_cgd_id": 0,
-            "f_cgdh": "",          // 采购入库单号
-            "f_gys_id": 0,         // 供应商ID
-            "f_gys_id_s": "",         // 供应商名称
-            "f_cgy_id": TGlobal.userData['f_user_id'], // 采购员ID
-            "f_cgy_id_s": TGlobal.userData['f_name'], // 采购员姓名
-            "f_cgjh_id": 0, // 采购计划ID
-            "f_cgjhdh": "", // 采购计划单号
-            "f_lxr": "", // 联系人
-            "f_lxdh": "", // 联系电话
-            "f_wlgs_id": 0, // 物流公司ID
-            "f_wlgs_id_s": "", // 物流公司名称
-            "f_wldh": "", // 物流单号
-            "f_shr_id": 0, // 收货人ID
-            "f_shr_id_s": "", // 收货人姓名
-            "f_fklb": 1, // 付款类别
-            "f_zje": 0.0, // 总金额
-            "f_sfje": 0.0, // 实付金额
-            "f_cjsj": "", // 创建时间
-            "f_shsj": "1970-01-01 00:00:00", // 收货时间
-            "f_yxbz": 1, // 有效标志
-            "f_flow_point_id": 0,
-            "f_flow_process_id": 0,
-            "f_beizhu": "" // 备注
-        };
-        
-        v_cgd_xx.value?.showDialog(cgdData);
-    }
-
-    /**
-     * 删除采购单
-     */
-    const onButtonClick_Del_cgd = async () => {
-        await v_table_cgd.value?.remove_data_proc_select("p_cgd_del", async (data: any) => {
-            return {
-                "v_cgd_id": data["f_cgd_id"],
-                "v_rklb": "采购入库"
-            };
-        });
-    }
-
-    /**
-     * 修改采购单
-     */
-    const onButtonClick_Upd_cgd = () => {
-        let cgdData = v_table_cgd.value?.get_select_data(true);
-        if (cgdData == undefined) return;
-        
-        v_cgd_xx.value?.showDialog(cgdData);
     }
 
     /**
@@ -617,10 +513,7 @@ export default { name: "ext_cggl_cggl" }
             v_flow_cgd.value?.clear_list(dataNew["f_cgd_id"]);
             
             // 添加一个流程
-            let processData = await v_flow_cgd.value?.add_process_data(
-                "", "新建", "-", 
-                eoflow.OP_FLAG_NORMAL,
-                "tcgd", "f_cgd_id", dataNew["f_cgd_id"]);
+            let processData = await v_flow_cgd.value?.process_add_data(dataNew["f_cgd_id"], "-");
 
             if (processData != undefined) {
                 dataNew["f_flow_point_id"] = processData["f_flow_point_id"];
@@ -637,95 +530,33 @@ export default { name: "ext_cggl_cggl" }
         // 更新表格        
         v_table_cgd.value?.update_data(dataNew, -1, isAdd, true);
         // 更新流程按钮
-        updateFlowStatusButton(dataNew);
+        updateFlowStatus(dataNew);
 
         cb(true);
     }
 
     /**
-     * 流程操作：采购作废
+     * 流程操作：提交采购
      */
-    const onButtonClick_Flow_CGZF = async () => {
-               
-        let cgdData = v_table_cgd.value?.get_select_data(true);
-        if (cgdData == undefined) return;
+    const onButtonClick_Flow_CGTJ = async (data0: any) => {
 
-        let ret = await eocore.show_confirm("采购单 " + cgdData["f_cgdh"] + " 是否作废？");
-        if (!ret) return;
+        let dataNew = await netLoad_cgd_count(data0);
+        if (dataNew == undefined) return;
 
-        cgdData["f_yxbz"] = 0;
-        netLoad_cgd_upd(cgdData);
-    }
-
-    /**
-     * 流程操作：采购退回
-     */
-    const onButtonClick_Flow_CGTH = () => {
+        // 更新表格        
+        const dataRow = v_table_cgd.value?.update_data(dataNew, -1, false, true);
+        if (dataRow == undefined) return;
         
-        let cgdData = v_table_cgd.value?.get_select_data(true);
-        if (cgdData == undefined) return;
-
-        v_flow_cgd.value?.back_process((cancel: boolean, data: any, cb: cfunc_boolean) => {
-
-            if (cancel) { 
-                cb(true); return;
-            }
-
-            cgdData["f_flow_point_id"] = data["f_flow_point_id"];
-            cgdData["f_flow_point_id_s"] = data["f_flow_point_id_s"];
-
-            // 更新表格流程状态
-            v_table_cgd.value?.update_data(cgdData, -1, false, false);
-            // 更新按钮状态
-            updateFlowStatusButton(cgdData);
-
-            cb(true);
+        v_flow_button.value?.show_flow_dialog(dataRow, async (data1: any) => {
+            updateFlowStatus(data1);
         });
     }
 
-    /**
-     * 流程操作：提交采购
-     */
-    const onButtonClick_Flow_CGTJ = async () => {
-
-        let cgdData = v_table_cgd.value?.get_select_data(true);
-        if (cgdData == undefined) return;
-
-        let dataNew = await netLoad_cgd_count(cgdData);
-        if (dataNew == undefined) return;
-        
-        showFlowDialog(dataNew, "待审核");
-    }
-
-    /**
-     * 流程操作：采购审核
-     */
-    const onButtonClick_Flow_CGSH = () => {
-        
-        let cgdData = v_table_cgd.value?.get_select_data(true);
-        if (cgdData == undefined) return;
-
-        showFlowDialog(cgdData, "已审核");
-    }
-
-    /**
-     * 流程操作：财务核对
-     */
-    const onButtonClick_Flow_CGHZ = () => {
-        
-        let cgdData = v_table_cgd.value?.get_select_data(true);
-        if (cgdData == undefined) return;
-
-        showFlowDialog(cgdData, "已核准");
-    }
 
     /**
      * 流程操作：商家发货
      */
-    const onButtonClick_Flow_CGFH = () => {
-        
-        let cgdData = v_table_cgd.value?.get_select_data(true);
-        if (cgdData == undefined) return;
+    const onButtonClick_Flow_CGFH = (data0: any) => {
 
         // 判断物流公司和单号        
         const list = v_cgdcp.value?.getList() || [];
@@ -745,25 +576,36 @@ export default { name: "ext_cggl_cggl" }
             }
         }
 
-        showFlowDialog(cgdData, "已发货");
+        v_flow_button.value?.show_flow_dialog(data0, async (data1: any) => {
+            updateFlowStatus(data1);
+        });
     }
 
     /**
      * 流程操作：收货入库
      */
-    const onButtonClick_Flow_CGRK = () => {
+    const onButtonClick_Flow_CGRK = async (data0: any) => {
        
-        let cgdData = v_table_cgd.value?.get_select_data(true);
-        if (cgdData == undefined) return;
-
+        const cgdId = data0["f_cgd_id"];
         // 检查是否标记入库
-        const list1 = v_cgdcp.value?.getList() || [];
+        x_show_loading.value = true;
+        let ret = await eocore.proc("p_cgdcp_list", { 
+            "v_cgd_id": cgdId,
+        });
+        x_show_loading.value = false;
+        const list1 = eocore.check_net_array(ret) || [];
         if (eocore.check_empty(list1)) {
             eocore.show_info("无产品清单");
             return;
         }
 
-        const list2 = v_cdgrk.value?.getList() || [];
+        x_show_loading.value = true;
+        ret = await eocore.proc("p_cgdrk_list", {
+            "v_cgd_id": cgdId,
+            "v_cgdcp_id": 0            
+        });
+        x_show_loading.value = false;
+        const list2 = eocore.check_net_array(ret) || [];
         if (eocore.check_empty(list2)) {
             eocore.show_info("无入库产品");
             return;
@@ -784,28 +626,89 @@ export default { name: "ext_cggl_cggl" }
             }
         }
 
-        showFlowDialog(cgdData, "已入库");
+        v_flow_button.value?.show_flow_dialog(data0, async (data1: any) => {
+            updateFlowStatus(data1);
+        });
+    }
+
+    const onButtonClick_Flow_Get = () => { 
+
+        let cgdData = v_table_cgd.value?.get_select_data(true);
+        if (cgdData == undefined) return;
+        
+        v_cgd_xx.value?.showDialog(cgdData, false);
     }
 
     /**
-     * 流程操作：采购归档
+     * 添加采购单
      */
-    const onButtonClick_Flow_CGGD = () => {
+    const onButtonClick_Flow_Add = async (point: cflow_point, data0: any) => {
+             
+        let cgdData = {
+            "f_cgd_id": 0,
+            "f_cgdh": "",          // 采购入库单号
+            "f_gys_id": 0,         // 供应商ID
+            "f_gys_id_s": "",         // 供应商名称
+            "f_cgy_id": TGlobal.userData['f_user_id'], // 采购员ID
+            "f_cgy_id_s": TGlobal.userData['f_name'], // 采购员姓名
+            "f_cgjh_id": 0, // 采购计划ID
+            "f_cgjhdh": "", // 采购计划单号
+            "f_lxr": "", // 联系人
+            "f_lxdh": "", // 联系电话
+            "f_wlgs_id": 0, // 物流公司ID
+            "f_wlgs_id_s": "", // 物流公司名称
+            "f_wldh": "", // 物流单号
+            "f_shr_id": 0, // 收货人ID
+            "f_shr_id_s": "", // 收货人姓名
+            "f_fklb": 1, // 付款类别
+            "f_zje": 0.0, // 总金额
+            "f_sfje": 0.0, // 实付金额
+            "f_cjsj": "", // 创建时间
+            "f_shsj": "1970-01-01 00:00:00", // 收货时间
+            "f_yxbz": 1, // 有效标志
+            "f_flow_point_id": 0,
+            "f_flow_process_id": 0,
+            "f_beizhu": "" // 备注
+        };
+        
+        v_cgd_xx.value?.showDialog(cgdData, true);
+    }
+
+    /**
+     * 修改订单
+     */
+    const onButtonClick_Flow_Upd = (point: cflow_point, data0: any) => {
+        let cgdData = v_table_cgd.value?.get_select_data(true);
+        if (cgdData == undefined) return;
+        
+        v_cgd_xx.value?.showDialog(cgdData);
+    }
+    
+
+    /**
+     * 流程操作：订单作废
+     */
+    const onButtonClick_Flow_Cancel = async (point: cflow_point, data0: any) => {
+               
+        let cgdData = v_table_cgd.value?.get_select_data(true);
+        if (cgdData == undefined) return;
+
+        let ret = await eocore.show_confirm("采购单 " + cgdData["f_cgdh"] + " 是否作废？");
+        if (!ret) return;
+
+        cgdData["f_yxbz"] = 0;
+        netLoad_cgd_upd(cgdData);
+    }
+
+    /**
+     * 流程操作：订单退回
+     */
+    const onButtonClick_Flow_Back = (point: cflow_point, data0: any) => {
         
         let cgdData = v_table_cgd.value?.get_select_data(true);
         if (cgdData == undefined) return;
 
-        showFlowDialog(cgdData, "完成");
-    }
-
-    /**
-     * 显示流程操作对话框
-     * @param cgdData 采购单数据
-     * @param pointName 流程节点名称
-     */
-    const showFlowDialog = (cgdData: any, pointName: string) => {
-        
-        v_flow_cgd.value?.add_process(pointName, async (cancel: boolean, data: any, cb: cfunc_boolean) => {
+        v_flow_cgd.value?.process_back_dialog((cancel: boolean, data: any, cb: cfunc_boolean) => {
 
             if (cancel) { 
                 cb(true); return;
@@ -816,27 +719,9 @@ export default { name: "ext_cggl_cggl" }
 
             // 更新表格流程状态
             v_table_cgd.value?.update_data(cgdData, -1, false, false);
-            // 更新流程按钮
-            updateFlowStatusButton(cgdData);
-            
+            // 更新按钮状态
+            updateFlowStatus(cgdData);
 
-            if (pointName == "已入库") {
-
-                const list = v_cdgrk.value?.getList() || [];
-                const kcmxIds = list.map((item: any) => item["f_kcmx_id"]).join(",");
-
-                // 入库到库存
-                x_show_loading.value = true;                
-                const ret = await eocore.proc("p_kcmx_kcbz", {
-                    "v_kcmx_ids": kcmxIds,
-                    "v_kcbz": TLogic.kcbzCodes["正常"]
-                });
-                eocore.check_net_object(ret);
-                x_show_loading.value = false;
-
-            }
-
-            eocore.show_success("操作成功");
             cb(true);
         });
     }

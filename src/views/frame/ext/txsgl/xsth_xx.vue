@@ -171,6 +171,7 @@
 
     // 表单数据
     let x_data_xsth: any = reactive({});
+    let m_edit_mode = 0;
 
     const x_edit_fields = ref<any>({
         "f_kcbh": false,
@@ -203,6 +204,11 @@
      * 对话框关闭事件
      */
     const onDialogClose = (cancel: boolean, data: any, cb: cfunc_boolean) => {
+
+        // 不编辑不提交
+        if (m_edit_mode == 0) {
+            cb(true); return;
+        }
 
         console.log(x_data_xsth);
 
@@ -257,6 +263,7 @@
      * @param fieldArray 
      */
     const setEditFields = (mode: number, fieldArray: string[]) => {
+        m_edit_mode = mode;
         x_edit_fields.value = TLogic.checkEditFields(x_edit_fields.value, fieldArray);
     }
 

@@ -134,9 +134,9 @@ const router = createRouter({
           component: () => import('@/views/frame/ext/tkcgl/kctj.vue')
         },
         { /** 库存变更 */
-          path: '/ext/kcgl/kczljl',
-          name: 'ext_kcgl_kczljl',
-          component: () => import('@/views/frame/ext/tkcgl/kczljl.vue')
+          path: '/ext/kcgl/kcbg',
+          name: 'ext_kcgl_kcbg',
+          component: () => import('@/views/frame/ext/tkcgl/kcbg.vue')
         },
         { /** 库存整理 */
           path: '/ext/kcgl/kczl',
@@ -157,6 +157,11 @@ const router = createRouter({
           path: '/ext/cggl/cgth',
           name: 'ext_cggl_cgth',
           component: () => import('@/views/frame/ext/tcggl/cgth.vue')
+        },
+        { /** 采购查询 */
+          path: '/ext/cggl/cgcx',
+          name: 'ext_cggl_cgcx',
+          component: () => import('@/views/frame/ext/tcggl/cgcx.vue')
         },
         { /** 物流公司 */
           path: '/ext/cwgl/wlgs',
@@ -183,6 +188,11 @@ const router = createRouter({
           name: 'ext_xsgl_xsth',
           component: () => import('@/views/frame/ext/txsgl/xsth.vue')
         },
+        { /** 销售查询 */
+          path: '/ext/xsgl/xscx',
+          name: 'ext_xsgl_xscx',
+          component: () => import('@/views/frame/ext/txsgl/xscx.vue')
+        },
         { /** 生产工艺 */
           path: '/ext/scgl/scgy',
           name: 'ext_scgl_scgy',
@@ -198,20 +208,15 @@ const router = createRouter({
           name: 'ext_scgl_scwl',
           component: () => import('@/views/frame/ext/tscgl/scwl.vue')
         },
+        { /** 生产记录 */
+          path: '/ext/scgl/scjl',
+          name: 'ext_scgl_scjl',
+          component: () => import('@/views/frame/ext/tscgl/scjl.vue')
+        },
         { /** 借用管理 */
           path: '/ext/kcgl/jygl',
           name: 'ext_kcgl_jygl',
           component: () => import('@/views/frame/ext/tkcgl/jygl.vue')
-        },
-        { /** 入库记录 */
-          path: '/ext/kcgl/rkjl',
-          name: 'ext_kcgl_rkjl',
-          component: () => import('@/views/frame/ext/tkcgl/rkjl.vue')
-        },
-        { /** 出库记录 */
-          path: '/ext/kcgl/ckjl',
-          name: 'ext_kcgl_ckjl',
-          component: () => import('@/views/frame/ext/tkcgl/ckjl.vue')
         },
       ]
     },
@@ -229,15 +234,28 @@ const router = createRouter({
 router.beforeEach((to, from, next)=>{
 
   let toNext = true;
-  let menu = TGlobal.menuMap[to.name as string | ""];
+
+  const filterList = [
+    "index", "login", "main"
+  ]
+  const toName = to.name as string | "";
+  if (filterList.includes(toName)) {
+    next();
+    return;
+  }
+
+  const menu = TGlobal.menuMap[toName];
   //console.log(from, to, menu);
-  if (menu) {
-    if (menu.role_list.length > 0) {
-      if (TGlobal.userData["f_user_id"] > 0) {
-        toNext = TLogic.checkRoleList(menu.role_list);
-      } else {
-        toNext = false;
-      }
+  if (menu == undefined) {
+    router.replace({name: "index"});
+    return;
+  }
+    
+  if (menu.role_list.length > 0) {
+    if (TGlobal.userData["f_user_id"] > 0) {
+      toNext = TLogic.checkRoleList(menu.role_list);
+    } else {
+      toNext = false;
     }
   }
 

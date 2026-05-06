@@ -233,6 +233,7 @@
         // 更改标识为冻结
         ret = await eocore.proc("p_kcmx_kcbz", {
             "v_kcmx_ids": "" + data["f_kcmx_id"],
+            "v_cpdy_ids": "" + data["f_cpdy_id"],
             "v_kcbz": TLogic.kcbzCodes["临时"]
         });
         if (eocore.check_net_object(ret) == undefined) return;

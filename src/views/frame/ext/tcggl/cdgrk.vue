@@ -110,7 +110,7 @@
 
         let ret = await eocore.proc("p_cgdrk_list", {
             "v_cgd_id": cgdId,
-            "v_cgdcp_id": cgdcpId            
+            "v_cgdcp_id": cgdcpId
         });
         let list = eocore.check_net_array(ret);
         if (list == undefined) return;

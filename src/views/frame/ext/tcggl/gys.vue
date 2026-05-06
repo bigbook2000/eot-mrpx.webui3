@@ -251,7 +251,7 @@ export default { name: "ext_cggl_gys" }
      * @param data 行数据
      */
     const onTableRowClick_gys = (data: any) => {
-        // 点击行后的操作，如选中高亮等
+        v_gys_ex.value?.loadData(data);
     }
 
     /**

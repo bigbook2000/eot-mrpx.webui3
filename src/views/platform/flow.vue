@@ -67,6 +67,7 @@
                             <el-table-column prop="f_name" label="名称" width="160" />
                             <el-table-column prop="f_role_s" label="角色" width="240" />
                             <el-table-column prop="f_title" label="标题" width="160" show-overflow-tooltip />
+                            <el-table-column prop="f_user" label="用户" width="100" />
                             <el-table-column prop="f_text" label="描述" width="200" show-overflow-tooltip />
                             <el-table-column />
                         </vtable>
@@ -231,7 +232,8 @@ export default { name: "platform_flow" }
             f_flow_point_id: 0,
             f_flow_type_id: flowTypeData["f_flow_type_id"],
             f_name: "",          // 名称
-            f_permit: "",    // 权限
+            f_role: "",    // 角色
+            f_user: "",      // 用户            
             f_order: orderValue, // 顺序
             f_title: "",      // 标题
             f_text: "",         // 描述

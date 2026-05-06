@@ -5,7 +5,7 @@
             <vtable ref="v_table_cgjl" 
                 name="采购记录"
                 id-field="f_kcmx_id"
-                @loading="onTableLoading_cgjl"
+                @loading="onTableLoading"
                 :on-item="onTableItem_cgjl"
                 @row-click="onTableRowClick_cgjl">
                 <el-table-column prop="f_cjsj_s" label="时间" width="140" />                
@@ -28,19 +28,39 @@
                 <div class="eo_form">
                     <div class="cell">
                         <vbuttonk type="primary" class="input_w" permit="" 
-                            @click="onButtonClick_Add_gyszl">添加资料</vbuttonk>
+                            @click="onButtonClick_Add_wjzl">添加资料</vbuttonk>
+                        <vbuttonk type="default" class="input_w" permit="" 
+                            @click="onButtonClick_Del_wjzl">删除资料</vbuttonk>
+                        <vbuttonk type="primary" class="input_w" permit="" 
+                            @click="onButtonClick_Upd_wjzl">修改资料</vbuttonk>
                     </div>
                 </div>
             </div>
             <div class="eo_col_f">
-
+                <vtable ref="v_table_wjzl" 
+                    name="文件资料"
+                    id-field="f_wdzl_id"
+                    @loading="onTableLoading"
+                    :on-item="onTableItem_wdzl"
+                    @row-click="onTableRowClick_wdzl">
+                    <el-table-column prop="f_xgsj_s" label="时间" width="140" />                
+                    <el-table-column prop="f_url_s" label="文件" width="200" show-overflow-tooltip>
+                        <template #default="scope">
+                            <a target="_blank" :href="scope.row['f_url_s']">{{ scope.row['f_name'] }}</a>
+                        </template>
+                    </el-table-column> 
+                    <el-table-column prop="f_wdms" label="描述" width="400" show-overflow-tooltip /> 
+                    <el-table-column />
+                </vtable>
             </div>
-        </div>        
+        </div>
     </vtab>
     
-    <!-- 沟通信息对话框 -->
-    <vformd ref="v_formd_khgt" title="沟通信息" width="700px"
-        :form-types="x_form_types_khgt" @close="onFormdClose_khgt"/>
+    <!-- 文件对话框 -->
+    <wdzl_xx ref="v_wdzl_xx" title="文件信息" width="600px"
+        :file-type="TLogic.fileTypes['业务_供应商资料']" 
+        @close="onFiledClose_wdzl"/>
+
 </template>
 
 
@@ -54,69 +74,44 @@
 
     import vbuttonk from "@/logic/common/vbuttonk.vue"
     import vtable from "@/logic/common/vtable.vue"
-    import vformd from "@/logic/common/vformd.vue"
-    import vdialog from "@/logic/common/vdialog.vue"
     import vdic from "@/logic/common/vdic.vue"
-    import vregion from "@/logic/common/vregion.vue"
     import vtab from "@/logic/common/vtab.vue"
-    import { Edit } from '@element-plus/icons-vue'
+
 
     import TGlobal from "@/logic/TGlobal";
     import TLogic from "@/logic/TLogic";
 
+    import wdzl_xx from "./wdzl_xx.vue";
+
     type t_table = InstanceType<typeof vtable>;
     const v_table_cgjl = ref<t_table>();
+    const v_table_wjzl = ref<t_table>();
 
-    type t_formd = InstanceType<typeof vformd>;
-    const v_formd_khgt = ref<t_formd>();
+    const v_wdzl_xx = ref<InstanceType<typeof wdzl_xx>>();
 
     const x_tab_index = ref(0);
-    const x_khgt_list = ref<any[]>([]);
-    const v_khgt_ref = ref<HTMLElement>();
 
     const x_show_loading = ref(false);
-    let m_khgt_data: any = undefined; // 选中的沟通记录
 
-    let m_gys_data: any = {};
-
-    // 沟通信息表单字段定义
-    const x_form_types_khgt = ref<cform_options[]>([
-        { type: "datetime", name: "f_gtsj", span: 2, label: "沟通时间" },
-        { type: "number", name: "f_gtsc", span: 2, label: "沟通时长", precision: 0, min: 0 },
-        { type: "input", name: "f_gtdz", span: 100, label: "沟通地点" },
-        { type: "text2", name: "f_gtnr", span: 100, label: "沟通内容", row: 10 },
-        { type: "dic", name: "f_gtfs", span: 2, label: "沟通方式", dic: "沟通方式", all: false, field: "label" },
-        { type: "label", name: "f_xsy_id_s", span: 2, label: "销售员" },
-    ]);
+    const x_gys_data = ref<any>({});
 
     // 加载供应商记录
     const loadData = async (gysData: any) => {
 
-        m_gys_data = gysData;
-        x_khgt_list.value = [];
-        m_khgt_data = undefined;
+        x_gys_data.value = { ...gysData };
 
         if (gysData == undefined) {
             return;
         }
 
         await netLoad_cgdrk_query();
-    };
-
-    const updateItemData_khgt = (data: any): any => {
-        
-        data["f_gtsj_s"] = eolib.datetime_2_short(data["f_gtsj"]);
-        data["f_gtnr_s"] = data["f_gtnr"];
-        data["f_gtnr"] = eolib.decode_string(data["f_gtnr_s"]);
-        TLogic.updateDicUserData(data, ["f_xsy_id"]);
-
-        return data;
+        await netLoad_wjzl_query();
     };
 
     const netLoad_cgdrk_query = async () => {
 
         v_table_cgjl.value?.load_list_proc("p_cgdrk_query", { 
-            "v_gys_id": m_gys_data["f_gys_id"],
+            "v_gys_id": x_gys_data.value["f_gys_id"],
             "v_gysmc": "",
             "v_cgdh": "", 
             "v_cjsj1": "", 
@@ -127,18 +122,47 @@
             "s_page_row_index": 0,
             "s_page_row_count": 200
         });
-    }    
+    }
 
-    const onViewClick_kght = (index: number) => {
-        // 点击聊天记录，设置为选中状态并打开编辑对话框
-        m_khgt_data = x_khgt_list.value[index];
-        v_formd_khgt.value?.show_dialog(m_khgt_data);
-    };
+    const netLoad_wjzl_query = async () => {
+
+        let ret = await eocore.proc("p_wdzl_query", {             
+            "v_type": "业务_供应商资料",
+            "v_keyid": x_gys_data.value["f_gys_id"],
+            "v_wdlx": "", 
+            "v_wdly": "", 
+            "v_yxbz": -1, 
+            "v_wdms": "", 
+            "v_user_id": -1, 
+            "v_xgsj1": "", 
+            "v_xgsj2": "", 
+            "s_page_row_index": 0,
+            "s_page_row_count": 200
+        });
+        const list1 = eocore.check_net_array(ret);
+        if (list1 == undefined) return;
+
+        if (list1.length > 0) {
+            const keyIds = list1.map((item: any) => item["f_wdzl_id"]).join(",");        
+            ret = await eocore.post("/framework/hdata/file/list", [{
+                "v_type": TLogic.fileTypes["业务_供应商资料"],
+                "v_keyids": keyIds,
+                "v_index": -1
+            }]);
+            const list2 = eocore.check_net_array(ret);
+            if (list2 == undefined) return;
+
+            eolib.list_merge(list1, list2, "f_wdzl_id", "f_keyid");
+
+            //console.log(list1, list2);
+        }
+        v_table_wjzl.value?.load_list(list1);
+    }
 
     // 成交记录表格相关
-    const onTableLoading_cgjl = (loading: boolean) => {
+    const onTableLoading = (loading: boolean) => {
+        x_show_loading.value = loading;
     };
-
     const onTableItem_cgjl = (item: any) => {
         // 日期格式化
         item["f_cjsj_s"] = eolib.datetime_2_short(item["f_cjsj"]);
@@ -150,67 +174,74 @@
         TLogic.updateDicUserData(item, ["f_xsy_id"]);
     };
     
-    const onTableRowClick_cgjl = (item: any) => {
+    const onTableRowClick_wdzl = (item: any) => {
     };
+    const onTableItem_wdzl = (item: any) => {
+        // 日期格式化
+        item["f_xgsj_s"] = eolib.datetime_2_short(item["f_xgsj"]);
+
+        item["f_url_s"] = TLogic.getXSaveDataUrl(item["f_file_id"]);
+    };
+    
+    const onTableRowClick_cgjl = (item: any) => {
+    };    
 
     // 沟通信息对话框关闭事件
-    const onFormdClose_khgt = async (cancel: boolean, data: any, cb: cfunc_boolean) => {
+    const onFiledClose_wdzl = async (cancel: boolean, data0: any, cb: cfunc_boolean) => {
         if (cancel) {
             cb(true);
             return;
         }
 
-        // 验证必填字段
-        if (!data["f_gtsj"]) {
-            eocore.show_info('请选择沟通时间');
-            cb(false);
-            return;
-        }
-        if (!data["f_gtnr"]) {
-            eocore.show_info('请输入沟通内容');
-            cb(false);
-            return;
-        }
+        v_table_wjzl.value?.update_data(data0, -1, true, true);
 
-        data["f_gtnr"] = eolib.encode_string(data["f_gtnr"]);
-
-        x_show_loading.value = true;
-        // 调用存储过程保存沟通记录
-        const ret = await eocore.proc("p_khgt_upd", {
-            "v_khgt_id": data["f_khgt_id"],
-            "v_khgl_id": data["f_khgl_id"],
-            "v_gtsj": data["f_gtsj"],
-            "v_gtfs": data["f_gtfs"],
-            "v_gtdz": data["f_gtdz"],
-            "v_gtsc": data["f_gtsc"],
-            "v_gtnr": data["f_gtnr"],
-            "v_xsy_id": data["f_xsy_id"],
-        });
-
-        const dataNew = eocore.check_net_object(ret);
-        x_show_loading.value = false;
-
-        if (dataNew == undefined) {
-            cb(false);
-            return;
-        }
-
-        updateItemData_khgt(dataNew);
-        x_khgt_list.value.splice(0, 0, dataNew);
-
-        eocore.show_success('修改成功');
         cb(true);
     };
     
 
-    const onButtonClick_Add_gyszl = () => {
+    const onButtonClick_Add_wjzl = () => {
 
-        const dt = new Date();
-        const gysId = eocore.to_int(m_gys_data["f_gys_id"]);
+        const dts = eolib.date_2_string(new Date());
+        const gysId = eocore.to_int(x_gys_data.value["f_gys_id"]);
         if (gysId <= 0) {
             eocore.show_info('请先选择供应商');
             return;
         }
+
+        v_wdzl_xx.value?.showDialog({
+            "f_wdzl_id": 0,
+            "f_type": "业务_供应商资料",
+            "f_keyid": gysId,            
+            "f_wdlx": "",
+            "f_wdms": "",
+            "f_wdly": "",
+            "f_xgsj": dts,
+            "f_xgsj_s": dts,
+            "f_yxbz": 1,
+            "f_user_id": TGlobal.userData["f_user_id"],
+            "f_user_id_s": TGlobal.userData["f_name"],
+            "f_file_id": 0,
+        });
+    };
+
+    const onButtonClick_Del_wjzl = () => {
+
+        const wdzlData = v_table_wjzl.value?.get_select_data(true);
+        if (wdzlData == undefined) return;
+
+        v_table_wjzl.value?.remove_data_proc("p_wdzl_del", async (data: any) => {
+            return {
+                "v_wdzl_id": data["f_wdzl_id"]
+            };
+        })
+    };
+
+    const onButtonClick_Upd_wjzl = () => {
+
+        const wdzlData = v_table_wjzl.value?.get_select_data(true);
+        if (wdzlData == undefined) return;
+
+        v_wdzl_xx.value?.showDialog(wdzlData);
     };
     
     // 组件挂载时加载数据

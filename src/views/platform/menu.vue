@@ -25,15 +25,15 @@
                     id-field="f_menu_id" 
                     @item="onTableItem_menu"
                     @loading="onTableLoading_menu">
+                    <el-table-column prop="f_status" label="状态" width="80" />
                     <el-table-column prop="f_name" label="名称" width="160" />
                     <el-table-column prop="f_menu_pid_s" label="上级" width="160" />
                     <el-table-column prop="f_level" label="层级" width="80" />
                     <el-table-column prop="f_order" label="顺序" width="80" />
+                    <el-table-column prop="f_role_s" label="角色" width="300" />
                     <el-table-column prop="f_type" label="类型" width="100" />
                     <el-table-column prop="f_path" label="路径" width="180" />
-                    <el-table-column prop="f_role_s" label="角色" width="180" />
-                    <el-table-column prop="f_icon" label="图标" width="160" />
-                    <el-table-column prop="f_status" label="状态" width="80" />
+                    <el-table-column prop="f_icon" label="图标" width="160" />                    
                     <el-table-column />
                 </vtable>
             </div>
@@ -79,7 +79,7 @@ export default { name: "platform_menu" }
         let list = eocore.check_net_array(ret);
         if (list != undefined) m_role_list = list;
 
-        v_table_menu.value!.load_list_net("/framework/menu/list", {
+        v_table_menu.value!.load_list_net("/framework/menu/query", {
             "v_status": -1
         });
     });
@@ -108,7 +108,7 @@ export default { name: "platform_menu" }
     }
 
     const onButtonClick_Load = () => {
-        v_table_menu.value!.load_list_net("/framework/menu/list", {
+        v_table_menu.value!.load_list_net("/framework/menu/query", {
             "v_status": -1
         });
     }

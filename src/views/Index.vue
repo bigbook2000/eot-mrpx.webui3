@@ -44,25 +44,6 @@
         console.log(TGlobal.settingList);
     }
 
-    const netLoad_menu_list = async () => {
-
-        let ret = await eocore.post("/framework/menu/list", [{
-            "v_status": 1
-        }]);
-
-        let array = eocore.check_net_array(ret);
-        if (array == undefined) array = new Array();
-
-        for (let d of array) {
-            // 兼容
-            d.path = d["f_path"];
-            d.role_list = d["f_role"].split(",").filter((item: any) => item != "");
-            TGlobal.menuMap[d.path] = d;
-        }
-            
-        TGlobal.menuList = array;
-    }
-
     onMounted(async () => {
 
         TLogic.init();
@@ -80,7 +61,6 @@
         eocore.base_url = TGlobal.appData["api_url"];
 
         await netLoad_setting_list();
-        await netLoad_menu_list();
 
         await eodic.net_load_dic(TGlobal.settingList["dic_version"]);
 

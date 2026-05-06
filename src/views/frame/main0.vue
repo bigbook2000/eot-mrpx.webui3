@@ -81,7 +81,7 @@
     import TLogic from "@/logic/TLogic"
 
     import type { TabPaneName, TabsPaneContext } from "element-plus"
-import eolib from "@/inc/eolib"
+    import eolib from "@/inc/eolib"
 
     var x_main_title = ref("");
     var x_user_name = ref("");
@@ -92,7 +92,7 @@ import eolib from "@/inc/eolib"
     var x_current_menu = ref("m1");
     var x_menu_list = ref(new Array<any>());
 
-    onMounted(() => {       
+    onMounted(async () => {       
         
         x_main_title.value = TGlobal.appData["main_title"];
         x_user_name.value = TGlobal.userData["f_name"];
@@ -141,7 +141,7 @@ import eolib from "@/inc/eolib"
 
             //console.log(d);
             // 通过角色判断
-            if (!TLogic.checkRoleList(d.role_list)) continue;
+            // if (!TLogic.checkRoleList(d.role_list)) continue;
 
             let menuPid = d['f_menu_pid'];
             if (menuPid == 1) {

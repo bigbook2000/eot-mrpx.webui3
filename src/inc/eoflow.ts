@@ -11,12 +11,17 @@ export interface cflow_point {
     name: string, 
     /** 节点角色 */
     role: string, 
+    /** 节点用户 */
+    user: string, 
     /** 节点顺序 */
     order: number, 
     /** 节点标题 */
     title: string, 
     /** 节点描述 */
-    text: string
+    text: string,
+
+    is_first: boolean,
+    is_last: boolean,
 }
 
 /** 流程类型 */
@@ -98,15 +103,26 @@ export default {
                 flow_type_id: d["f_flow_type_id"],
                 name: d["f_name"],
                 role: d["f_role"],
+                user: d["f_user"],
                 order: d["f_order"],
                 title: d["f_title"],
-                text: d["f_text"]
+                text: d["f_text"],
+                is_first: false,
+                is_last: false,
             });
+        }
+
+        for (let d of this.flow_type_list) {
+            if (d.points.length > 0) {
+                d.points[0].is_first = true;
+                d.points[d.points.length - 1].is_last = true;
+            }
         }
 
         console.log(this.flow_type_list);
         return this.flow_type_list;
-    }, 
+    },
+ 
     
     /**
      * 根据id获取流程类型

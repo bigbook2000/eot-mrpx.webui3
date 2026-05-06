@@ -1,34 +1,47 @@
 <template>
-    <!-- 库存选择列表 -->
-    <vdialog ref="v_dialog"
-        width="1200px" title="选择库存"
-        @close="onDialogClose"
-        @open="onDialogOpen">
-        <div class="eo_col" style="height:500px;">
+    <!-- 库存变更 -->
+    <div class="eo_page" v-loading="x_show_loading">
+        <div class="eo_col">
             <!-- 查询工具栏 -->
             <div class="eo_tool_bar">
                 <div class="eo_form">
-                    <div class="cell" style="width:400px;">
-                        <div class="label_n">产品类别</div>
-                        <div class="input">
-                            <tcplb v-model="x_query_cplb_d" :cplb-list="x_cplb_list" 
-                            :disabled="x_query_fixed"/>
-                        </div>
-                    </div>
-                    <div class="cell eo_w240p">
-                        <div class="label_n">产品名称</div>
-                        <div class="input">
-                            <el-input style="width:100%" maxlength="32"
-                                v-model="x_query_cpmc" placeholder="产品名称"
-                                :disabled="x_query_fixed"></el-input>
-                        </div>
-                    </div>
-                    <div class="cell eo_w240p">
+                    <div class="cell eo_w280p">
                         <div class="label_n">批次</div>
                         <div class="input">
                             <el-input style="width:100%" maxlength="32"
-                                v-model="x_query_kcbh" placeholder="批次"
-                                :disabled="x_query_fixed"></el-input>
+                                v-model="x_query_kcbh" placeholder="批次"></el-input>
+                        </div>
+                    </div>
+                    
+                    <div class="cell" style="width:400px;">
+                        <div class="label_n">产品类别</div>
+                        <div class="input">
+                            <tcplb v-model="x_query_cplb" :cplb-list="x_cplb_list"></tcplb>
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="eo_form">                    
+                    <div class="cell eo_w280p">
+                        <div class="label_n">产品名称</div>
+                        <div class="input">
+                            <el-input style="width:100%" maxlength="32"
+                                v-model="x_query_cpmc" placeholder="产品名称"></el-input>
+                        </div>
+                    </div>
+                    <div class="cell eo_w240p">
+                        <div class="label_n">变更类别</div>
+                        <div class="input">
+                            <el-select style="width:100%" v-model="x_query_bglb" placeholder="变更类别">
+                                <el-option label="-" value=""></el-option>
+                                <el-option label="采购入库" value="采购入库"></el-option>
+                                <el-option label="生产入库" value="生产入库"></el-option>
+                                <el-option label="整理入库" value="整理入库"></el-option>
+                                <el-option label="销售出库" value="销售出库"></el-option>
+                                <el-option label="生产出库" value="生产出库"></el-option>
+                                <el-option label="整理出库" value="整理出库"></el-option>
+
+                            </el-select>
                         </div>
                     </div>
                     <div class="cell">
@@ -40,32 +53,50 @@
             </div>
             
             <div class="eo_col_sp"></div>
-            
-            <!-- 产品表格 -->
+
             <div class="eo_col_f">
+                <!-- 库存明细表格 -->
                 <vtable ref="v_table_kcmx" 
                     name="库存明细"
-                    check="single" 
                     id-field="f_kcmx_id"
+                    check="single" 
                     @loading="onTableLoading"
                     :on-item="onTableItem_kcmx"
                     :on-page="onTablePage_kcmx"
                     @row-click="onTableRowClick_kcmx"
-                    @sort-change="onTableSortChange">
-                    <el-table-column prop="f_jyzt_s" label="状态" width="80" />
+                    @sort-change="onTableSortChange">                            
+                    
+                    <el-table-column prop="f_kcbz" label="状态" width="80">
+                        <template #default="scope">
+                            <div v-if="scope.row.f_kcbz==0">临时</div>
+                            <div v-if="scope.row.f_kcbz==-1">历史</div>
+                            <div v-else></div>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="f_kcbh" label="批次" width="200" />
-                    <el-table-column prop="f_cpmc" label="产品名称" width="200" show-overflow-tooltip sortable />
-                    <el-table-column prop="f_kcdj_s" label="单价" width="120" align="right" sortable />
-                    <el-table-column prop="f_kcsl_s" label="数量" width="120" align="right" sortable />
-                    <el-table-column prop="f_rksj_s" label="入库时间" width="160" sortable />
-                    <el-table-column prop="f_dlmc" label="大类" width="120" show-overflow-tooltip />
-                    <el-table-column prop="f_xlmc" label="小类" width="140" show-overflow-tooltip />
+                    <el-table-column prop="f_rksj_s" label="变更时间" width="160" />
+                    <el-table-column prop="f_rklb" label="变更类别" width="120" />
+                    <el-table-column prop="f_cpmc" label="产品名称" width="200" show-overflow-tooltip />
+                    <el-table-column prop="f_jyzt_s" label="调拨" width="120">
+                        <template #default="scope">
+                            <div v-if="scope.row.f_jyzt==0">-</div>
+                            <div v-else>{{ scope.row.f_jyzt_s+'-'+scope.row.f_jyyg_id_s }}</div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="f_kcdj_s" label="单价" width="120" align="right" />
+                    <el-table-column prop="f_kcsl" label="数量" width="100" />
+                    <el-table-column prop="f_cpgg" label="规格" width="180" show-overflow-tooltip />
+                    <el-table-column prop="f_cpcc" label="尺寸" width="160" show-overflow-tooltip />
+                    <el-table-column prop="f_cpzl" label="重量" width="160" show-overflow-tooltip />                            
+                    <el-table-column prop="f_cpdw" label="单位" width="100" show-overflow-tooltip />
+                    
+                    <el-table-column prop="f_pksj_s" label="盘库时间" width="160" />
                     <el-table-column prop="f_hwck_s" label="仓库" width="100" />
                     <el-table-column prop="f_beizhu" label="备注" width="200" show-overflow-tooltip />
                     <el-table-column />
                 </vtable>
             </div>
-            
+                    
             <!-- 分页 -->
             <div class="eo_page_bar">
                 <el-pagination
@@ -78,44 +109,51 @@
                 </el-pagination>
             </div>
         </div>
-    </vdialog>
+        <!-- 库存明细编辑对话框 -->
+        <kcmx ref="v_kcmx" @close="onDialogClose_kcmx"/>
+    </div>
 </template>
 
+<script lang="ts">
+/** KeepAlive */
+export default { name: "ext_kcgl_kczl" }
+</script>
 
 <script lang="ts" setup>
-    import { ref } from "vue"
+
+    import { ref, onMounted } from "vue"
     import type { cfunc_boolean } from "@/inc/eotypes";
 
     import eocore from "@/inc/eocore"
     import eolib from "@/inc/eolib";
     import eodic from "@/inc/eodic";
-    
-    import vdialog from "@/logic/common/vdialog.vue"
+
+    import vbuttonk from "@/logic/common/vbuttonk.vue"
     import vtable from "@/logic/common/vtable.vue"
+    import vdic from "@/logic/common/vdic.vue"
+    import TLogic from "@/logic/TLogic";
+    import TGlobal from "@/logic/TGlobal";
+    import kcmx_cf from "@/views/frame/ext/tkcgl/kcmx_cf.vue";
 
     import tcplb from "@/views/frame/ext/comm/tcplb.vue"
-    import TLogic from "@/logic/TLogic";
+    import kcmx from "./kcmx.vue"
+    import kcjy_xx from "./kcjy_xx.vue"
 
-    type t_dialog = InstanceType<typeof vdialog>;
-    const v_dialog = ref<t_dialog>();
-    
     type t_table = InstanceType<typeof vtable>;
     const v_table_kcmx = ref<t_table>();
 
-    // 定义组件事件
-    const emit = defineEmits<{
-        close: [cancel: boolean, data: any, cb: cfunc_boolean]
-    }>();
-
+    type t_kcmx = InstanceType<typeof kcmx>;
+    const v_kcmx = ref<t_kcmx>();
+    
+    // 产品类别列表
     const x_cplb_list = ref<any[]>([]);
 
     // 查询条件
-    const x_query_cplb_d = ref([0, 0]);
+    const x_query_cplb = ref([0, 0]);
     const x_query_cpmc = ref("");
-    const x_query_kcbh = ref("");
     const x_query_cpbm = ref("");
-
-    const x_query_fixed = ref(false);
+    const x_query_kcbh = ref("");    
+    const x_query_bglb = ref("");
 
     // 分页变量
     const x_page_index = ref(1);
@@ -126,12 +164,17 @@
     const x_show_loading = ref(false);
 
     // 排序数组
-    const m_orderby = ref([{
+    const m_orderby = ref<any[]>([{
         name: "f_kcmx_id",
         order: " DESC"
     }]);
+
     // 排序映射
     const m_orderby_list = [
+        {
+            name: "f_kcmx_id",
+            field: "`f_kcmx_id`"
+        },
         {
             name: "f_cpbm",
             field: "`f_cpbm`"
@@ -152,30 +195,16 @@
             name: "f_rksj_s",
             field: "`f_rksj`"
         }
-    ];    
+    ];
 
-    /**
-     * 显示对话框
-     * @param data 数据对象
-     */
-    const show_dialog = async (data: any) => {
-        // 先打开对话框
-        v_dialog.value!.show_dialog(undefined);
-        v_table_kcmx.value?.load_list([]);
-        
-        x_query_fixed.value = !eocore.check_empty(data["f_cpbm"]);
-        // 初始化查询条件
-        x_query_cpmc.value = "";
-        x_query_cpbm.value = data["f_cpbm"];
-
+    onMounted(async () => {
+                
+        // 加载产品类别列表
         x_cplb_list.value = await TLogic.netload_Tree_cplb(true);
-    }
-    const onDialogOpen = (data: any) => {
-
-        // 加载产品数据
-        netLoad_kcmx_query(-1);
-    }
-
+        
+        // 初始化加载数据
+        netLoad_kcmx_query(-1);        
+    });
 
     /**
      * 获取排序字符串
@@ -186,43 +215,42 @@
         for (let d of m_orderby.value) {
             df = "";
             for (let d1 of m_orderby_list) {
-                if (d.name == d1.name) df = d1.field;
+                if (d["name"] == d1["name"]) df = d1["field"];
             }
 
             if (df == "") continue;
 
-            s += "," + df + d.order;
+            s += "," + df + d["order"];
         }
 
         if (s.length > 0) {
             // ORDER BY 前面必须有空格
             s = " ORDER BY " + s.substring(1);
         }
-        
+
         return s;
     }
 
     /**
-     * 查询产品数据
+     * 查询库存明细数据
      * @param pageIndex 页码索引，-1表示重置到第1页
      */
-    const netLoad_kcmx_query = async (pageIndex: number = -1) => {
-
+    const netLoad_kcmx_query = (pageIndex: number = -1) => {
         let pageRowCount = x_page_row_count.value;
         let rowIndex = pageIndex * pageRowCount;
         if (pageIndex < 0) x_page_index.value = 1;
 
         let orderBy = getOrderByString();
 
-        await v_table_kcmx.value?.load_list_proc("p_kcmx_query", { 
-            "v_kcbz": TLogic.kcbzCodes["正常"],
-            "v_cpdl_id": x_query_cplb_d.value[0],
-            "v_cpxl_id": x_query_cplb_d.value[1],
+        v_table_kcmx.value?.load_list_proc("p_kcmx_query", { 
+            "v_kcbz": -9,
+            "v_cpdl_id": x_query_cplb.value[0],
+            "v_cpxl_id": x_query_cplb.value[1],
             "v_cpmc": x_query_cpmc.value,
             "v_cpbm": x_query_cpbm.value,
             "v_kcbh": x_query_kcbh.value,
             "v_jyzt": -1,
-            "v_rklb": "",
+            "v_rklb": x_query_bglb.value,
             "v_cklb": "",
             "v_rksj1": "",
             "v_rksj2": "",
@@ -234,7 +262,6 @@
         });
     }
 
-    
     /**
      * 表格排序变化处理
      * @param evt 排序事件参数
@@ -244,9 +271,6 @@
         console.log(evt.column, evt.prop, evt.order);
 
         let dn = evt.prop;
-
-        let ds = "";
-        if (evt.order == "descending") ds = " DESC";
 
         // 先移除以前的
         let i = 0;
@@ -258,10 +282,14 @@
             m_orderby.value.splice(i, 1);
         }
 
-        m_orderby.value.unshift({
-            name: dn,
-            order: ds
-        })
+        if (evt.order != undefined) {
+            let ds = "";
+            if (evt.order == "descending") ds = " DESC";
+            m_orderby.value.unshift({
+                name: dn,
+                order: ds
+            })
+        }
 
         console.log(m_orderby.value);
         netLoad_kcmx_query(-1);
@@ -272,24 +300,22 @@
      * @param data 表格行数据
      */
     const onTableItem_kcmx = (data: any) => {
-
-        data["f_cpzt_s"] = "";
-        if (data["f_cpzt"] == 0) data["f_cpzt_s"] = "停产";
-        else if (data["f_cpzt"] == 1) data["f_cpzt_s"] = "正常";
-
         // 调拨状态显示
         data["f_jyzt_s"] = eodic.get_dic_label("调拨状态", data["f_jyzt"]);
         
-        // 格式化价格
-        data["f_cpjg_s"] = eolib.fixed_num(data["f_cpjg"], 3);
+        // 日期格式化
+        data["f_rksj_s"] = eolib.datetime_2_short(data["f_rksj"], true);
+        data["f_cksj_s"] = eolib.datetime_2_short(data["f_cksj"], true);
+        data["f_pksj_s"] = eolib.datetime_2_short(data["f_pksj"], true);
 
-        data["f_kcsl_s"] = eolib.fixed_num(data["f_kcsl"], 3);
+        // 价格格式化
         data["f_kcdj_s"] = eolib.fixed_num(data["f_kcdj"], 3);
-
-        data["f_rksj_s"] = eolib.date_2_string(data["f_rksj"]);
-
+        
         // 仓库显示
         data["f_hwck_s"] = eodic.get_dic_label("产品仓库", data["f_hwck"]);
+        
+        // 用户转换
+        TLogic.updateDicUserData(data, ["f_jyyg_id"]);
     }
 
     /**
@@ -314,7 +340,7 @@
      * @param data 行数据
      */
     const onTableRowClick_kcmx = (data: any) => {
-        // 点击行后的操作，如选中高亮等
+        // 可以在这里添加行点击后的处理逻辑
     }
 
     /**
@@ -325,7 +351,7 @@
         x_page_index.value = pageIndex;
         netLoad_kcmx_query(pageIndex - 1);
     }
-
+    
     /**
      * 查找按钮点击
      */
@@ -333,30 +359,43 @@
         netLoad_kcmx_query(-1);
     }
 
+
     /**
-     * 对话框关闭事件
+     * 修改库存明细
      */
-    const onDialogClose = (cancel: boolean, tag: any, cb: cfunc_boolean) => {
-
-        if (cancel) {
-            emit('close', true, {}, cb);
-            return;
-        }
+    const onButtonClick_Upd_kcmx = () => {
+        let kcmxData = v_table_kcmx.value?.get_select_data(true);
+        if (kcmxData == undefined) return;
         
-        // 获取选中的产品
-        let selectedData = v_table_kcmx.value?.get_select_data(true);
-        if (selectedData == undefined) {
-            cb(false); return;
-        }
-
-        emit('close', false, selectedData, cb);
+        v_kcmx.value?.showDialog(kcmxData);
     }
 
-    // 暴露方法给父组件使用
-    defineExpose({
-        show_dialog
-    });
+    /**
+     * 库存明细保存事件处理
+     */
+    const onDialogClose_kcmx = async (cancel: boolean, list: any, cb: cfunc_boolean) => {
+
+        if (cancel) { 
+            cb(true); return;
+        }
+
+        // 回写数据库
+        for (const d of list) {
+            v_table_kcmx.value?.update_data(d, -1, d["_is_add"], false);
+        }
+
+        eocore.show_success(list.length + " 项入库成功");
+
+        cb(true);
+    }
+
 </script>
 
 <style lang="scss" scoped>
+    .div_jyzt1 {    
+        color: #111;
+    }
+    .div_jyzt0 {
+        color: #999;
+    }
 </style>

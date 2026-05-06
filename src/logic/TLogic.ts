@@ -18,17 +18,21 @@ export default {
 		"硬件_版本文件": "file_eotapp_bin",
 		"系统_流程文件": "file_platform_flow",
 		"应用_知识库": "file_logic_zsk",
+
+		"业务_供应商资料": "file_logic_gys_wdzl",
 	},
 	
 	codeTypes: [
 		"采购入库",
 		"采购退货",
-		"销售退货",
-		"销售订单",
+		"销售出库",
+		"销售退货",		
 
-		"生产加工",
+		"生产入库",
+		"生产出库",
 
-		"盘库整理",
+		"整理入库",
+		"整理出库",
 		
 		"库存拆分",
 		"库存合并",
@@ -36,7 +40,7 @@ export default {
 
 	flowTypes: {
 		"采购入库": "采购入库",
-		"销售订单": "销售订单",
+		"销售出库": "销售出库",
 	},
 
 	flowPoints: {
@@ -49,7 +53,7 @@ export default {
 			"已入库": "已入库",
 			"完成": "完成",
 		},
-		"销售订单": {
+		"销售出库": {
 			"新建": "新建",
 			"待审核": "待审核",
 			"已审核": "已审核",
@@ -77,7 +81,6 @@ export default {
 	kcbzCodes: {
 		"临时": 0,
 		"正常": 1,
-		"冻结": 9,
 		"历史": -1
 	},
 
@@ -193,6 +196,28 @@ export default {
             "roleIds": roleIds,
         }
     },
+
+
+	/**
+	 * 加载菜单列表
+	 */
+	async netLoad_menu_list(): Promise<void> {
+
+		let ret = await eocore.post("/framework/menu/list", [{
+		}]);
+
+		let array = eocore.check_net_array(ret);
+		if (array == undefined) array = new Array();
+
+		for (let d of array) {
+			// 兼容
+			d.path = d["f_path"];
+			d.role_list = d["f_role"].split(",").filter((item: any) => item != "");
+			TGlobal.menuMap[d.path] = d;
+		}
+			
+		TGlobal.menuList = array;
+	},   	
 
 	/**
 	 * 获取用户id和name之间的关系
@@ -539,9 +564,10 @@ export default {
         }
         if (keyids.length > 0) keyids = keyids.substring(1);
 
-        ret = await eocore.post("/common/file/list", [{
-            "f_type": this.fileTypes["硬件_版本文件"],
-            "f_keyids": keyids
+        ret = await eocore.post("/framework/hdata/file/list", [{
+            "v_type": this.fileTypes["硬件_版本文件"],
+            "v_keyids": keyids,
+            "v_index": -1
         }]);
         list2 = eocore.check_net_array(ret);
 
@@ -763,7 +789,7 @@ export default {
 	 * @param f_kgy_id 库管员
 	 * @returns 
 	 */
-	async netLoad_kcmx_ck(
+	async netLoad_kcmx_ck2(
 		f_kcmx_id: number,
 		f_kcmx_pid: number,
 		f_cpdy_id: number,
@@ -800,10 +826,10 @@ export default {
 		// 修改原有的
         let dataNew1 = await this.netLoad_kcmx_upd(
 			kcmxId,
-			data["f_kcmx_pid"],
+			kcmxId,
 			data["f_cpdy_id"],
 			data["f_kcbh"],
-			"", // 忽略
+			"库存拆分", // 忽略
 			0, // 忽略
 			data["f_hwck"],
 			data["f_kcdj"],
@@ -821,14 +847,14 @@ export default {
 			kcmxId, // 关联
 			data["f_cpdy_id"],
 			kcbh2,
-			data["f_rklb"], // 不要变
-			data["f_rkid"], // 不要变
+			"库存拆分",
+			0,
 			data["f_hwck"],
 			data["f_kcdj"],
 			kcsl2,
 			kgyId,
 			data["f_beizhu"],
-			data["f_kcbz"]
+			this.kcbzCodes["正常"]
 		);
         if (dataNew2 == undefined) return undefined;
 
@@ -880,8 +906,8 @@ export default {
             kcmxId, // 关联
             data0["f_cpdy_id"],
             data0["f_kcbh"],
-            "", // 忽略
-            0, // 忽略
+            "库存合并",
+            0,
             data0["f_hwck"],
             kczj / kcsl,
             kcsl,
@@ -894,14 +920,20 @@ export default {
 		// 其他的都出库
         for (i=1; i<list.length; i++) {
             const d = list[i];
-            dataNew = await this.netLoad_kcmx_ck(
-                d["f_kcmx_id"],
-                kcmxId,
-                d["f_cpdy_id"],
-                "库存合并",
-                0,
-                kgyId
-            );
+            dataNew = await this.netLoad_kcmx_upd(
+				d["f_kcmx_id"],
+				kcmxId, // 关联
+				d["f_cpdy_id"],
+				d["f_kcbh"],
+				"库存合并",
+				0,
+				d["f_hwck"],
+				d["f_kcdj"],
+				d["f_kcsl"],
+				kgyId,
+				d["f_beizhu"],
+				this.kcbzCodes["历史"]
+			);
             if (dataNew == undefined) return undefined;
         }
 

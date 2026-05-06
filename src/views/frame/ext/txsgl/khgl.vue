@@ -10,6 +10,7 @@
                         <div class="input">
                             <user_input v-model="x_query_xsy_id" 
                                 :userName="x_query_xsy_id_s" 
+                                :disabled="!x_query_xsy"
                                 style="width:100%"></user_input>
                         </div>
                     </div>
@@ -104,13 +105,14 @@
                                     <el-table-column prop="f_hzdj_s" label="等级" width="80" />
                                     <el-table-column prop="f_khmc" label="名称" width="280" show-overflow-tooltip />                    
                                     <el-table-column prop="f_lxr" label="联系人" width="100" />
-                                    <el-table-column prop="f_lxdh" label="联系方式" width="120" />
+                                    <el-table-column prop="f_lxfh" label="联系方式" width="120" />
                                     <el-table-column prop="f_khlb_s" label="类别" width="80" />
                                     <el-table-column prop="f_khly_s" label="来源" width="120" />
                                     <el-table-column prop="f_gsgm_s" label="规模" width="80" />
                                     <el-table-column prop="f_jyfs_s" label="经营方式" width="120" />
                                     <el-table-column prop="f_xzds" label="地市" width="80" show-overflow-tooltip />
                                     <el-table-column prop="f_xzqx" label="区县" width="80" show-overflow-tooltip />                    
+                                    <el-table-column prop="f_gsdz" label="公司地址" width="200" show-overflow-tooltip />
                                     <el-table-column prop="f_jdsj_s" label="创建时间" width="140" />
                                     <el-table-column prop="f_gtsj_s" label="沟通时间" width="140" />
                                     <el-table-column prop="f_cjsj_s" label="成交时间" width="140" />
@@ -186,6 +188,8 @@ export default { name: "ext_xsgl_khgl" }
     type t_khgl_ex = InstanceType<typeof khgl_ex>;
     const v_khgl_ex = ref<t_khgl_ex>();
 
+    const x_query_xsy = ref(false);
+
     // 使用公共逻辑（isGh=false 表示客户管理）
     const {
         x_query_xsy_id,
@@ -215,6 +219,14 @@ export default { name: "ext_xsgl_khgl" }
     } = useKhglCommon(v_table_khgl, v_khgl_ex, v_kehu_xx, TLogic.ghbzCodes["私有"])
 
     onMounted(async () => {
+
+        x_query_xsy_id.value = TGlobal.userData["f_user_id"];
+        x_query_xsy_id_s.value = TGlobal.userData["f_name"];
+
+        if (TLogic.checkPermit("platform.user.dept")) {
+            x_query_xsy.value = true;
+        }
+
         // 初始化加载数据
         netLoad_khgl_query(-1)
     })

@@ -82,37 +82,13 @@
                             <div class="eo_tool_bar">
                                 <div class="eo_form">
                                     <div class="cell">
-                                        <vbuttonk type="primary" class="input_w" permit="" 
-                                            v-show="x_flow_status_button['新建']"
-                                            @click="onButtonClick_Add_xsth">新建退货</vbuttonk>
-                                        <vbuttonk type="primary" class="input_w" permit="" 
-                                            v-show="x_edit_xsth"
-                                            @click="onButtonClick_Upd_xsth">修改退货</vbuttonk>
-                                        <vbuttonk type="default" class="input_w" permit="" 
-                                            v-show="!x_edit_xsth"
-                                            @click="onButtonClick_Get_xsth">退货详情</vbuttonk>
-                                        <div class="split"></div>
-                                        <vbuttonk type="warning" class="input_w" permit="" 
-                                            v-show="x_flow_status_button['作废']"
-                                            @click="onButtonClick_Flow_THZF">退货作废</vbuttonk>
-                                        <vbuttonk type="warning" class="input_w" permit="" 
-                                            v-show="x_flow_status_button['退回']"
-                                            @click="onButtonClick_Flow_THTH">退货退回</vbuttonk>
-                                        <vbuttonk type="warning" class="input_w" permit="" 
-                                            v-show="x_flow_status_button['提交']"
-                                            @click="onButtonClick_Flow_THTJ">提交退货</vbuttonk>
-                                        <vbuttonk type="warning" class="input_w" permit="" 
-                                            v-show="x_flow_status_button['审核']"
-                                            @click="onButtonClick_Flow_THSH">退货审核</vbuttonk>
-                                        <vbuttonk type="warning" class="input_w" permit="" 
-                                            v-show="x_flow_status_button['收货']"
-                                            @click="onButtonClick_Flow_THRK">收货入库</vbuttonk>
-                                        <vbuttonk type="warning" class="input_w" permit="" 
-                                            v-show="x_flow_status_button['退款']"
-                                            @click="onButtonClick_Flow_THTK">财务退款</vbuttonk>
-                                        <vbuttonk type="warning" class="input_w" permit="" 
-                                            v-show="x_flow_status_button['归档']"
-                                            @click="onButtonClick_Flow_THGD">退货归档</vbuttonk>
+                                        <tflow_button ref="v_flow_button"
+                                            @on-new="onButtonClick_Flow_Add"
+                                            @on-back="onButtonClick_Flow_Back"
+                                            @on-edit="onButtonClick_Flow_Upd"
+                                            @on-get="onButtonClick_Flow_Get"
+                                            @on-cancel="onButtonClick_Flow_Cancel"
+                                            @on-flow="onButtonClick_Flow" />
                                     </div>
                                 </div>
                             </div>
@@ -178,8 +154,9 @@ export default { name: "ext_xsgl_xsth" }
 </script>
 
 <script lang="ts" setup>
-    import { ref, onMounted } from "vue"
+    import { ref, nextTick, onMounted } from "vue"
     import type { cfunc_boolean } from "@/inc/eotypes";
+    import { type cflow_type, type cflow_point } from "@/inc/eoflow";
 
     import eocore from "@/inc/eocore"
     import eolib from "@/inc/eolib";
@@ -196,6 +173,7 @@ export default { name: "ext_xsgl_xsth" }
     import TGlobal from "@/logic/TGlobal";
 
     import user_input from "@/views/platform/user_input.vue"
+    import tflow_button from "@/views/frame/ext/comm/tflow_button.vue";
 
     type t_table = InstanceType<typeof vtable>;
     const v_table_xsth = ref<t_table>();
@@ -206,19 +184,7 @@ export default { name: "ext_xsgl_xsth" }
     type t_xsth_xx = InstanceType<typeof xsth_xx>;
     const v_xsth_xx = ref<t_xsth_xx>();
 
-    // 按钮状态
-    const x_flow_status_button = ref({
-        "新建": false,
-        "作废": false,
-        "退回": false,
-        "提交": false,
-        "审核": false,
-        "收货": false,
-        "退款": false,
-        "归档": false,
-    });
-
-    const x_edit_xsth = ref(false);
+    const v_flow_button = ref<InstanceType<typeof tflow_button>>();
 
     // 查询条件
     const x_query_khmc = ref("");
@@ -241,68 +207,39 @@ export default { name: "ext_xsgl_xsth" }
     onMounted(async () => {
 
         await TLogic.netLoad_Wlgs_list();
-        
-        const point = v_flow_xsth.value?.get_point_by_name("新建");
-        if (point != undefined) {
-            x_flow_status_button.value["新建"] = TLogic.checkRoleString(point.role);
-        }
-        
-        // 初始化加载数据
+
+        v_flow_button.value?.init_flow(v_flow_xsth.value);
+
         netLoad_xsth_query(-1);
     });
 
-    const updateFlowStatusButton = (xsthData: any) => { 
+    const updateFlowStatus = (xsthData: any) => {
 
-        let flowPointId = 0;
-        let yxbz = 0;
-        if (xsthData != undefined) {
-            flowPointId = xsthData["f_flow_point_id"];
-            yxbz = xsthData["f_yxbz"];
-        }
-
-        const statusButton = x_flow_status_button.value;
-        statusButton["作废"] = false;
-        statusButton["退回"] = false;
-        statusButton["提交"] = false;
-        statusButton["审核"] = false;
-        statusButton["收货"] = false;
-        statusButton["退款"] = false;
-        statusButton["归档"] = false;
-        x_flow_status_button.value = statusButton;
-
-        if (flowPointId <= 0) return;
+        if (xsthData == undefined) return;
+        let yxbz = xsthData["f_yxbz"];
         if (yxbz == 0) return;
-        
-        let point = v_flow_xsth.value?.get_point_by_id(flowPointId);
-        if (point == undefined) return;
 
-        // 检查权限
-        const role = TGlobal.userData["f_role"];
-        const pointRole = point.role;
-        if (!eolib.list_any_list(role, pointRole)) return;
+        const flowStatus = v_flow_button.value?.update_flow_status(xsthData);
+        if (!flowStatus) return;
 
-        const pointName = point.name;
+        v_flow_button.value?.set_flow_back("已审核");
 
-        // 审核之后无法退回
-        let isXSTH = v_flow_xsth.value?.check_point_order(point.flow_point_id, "待审核") || false;
-        statusButton["退回"] = !isXSTH;
+        if (xsthData["f_xsy_id"] == TGlobal.userData["f_user_id"]) {
+            v_flow_button.value?.set_flow_edit(["新建", "待发货"]);
+        }
+        const pointName = v_flow_button.value?.get_point_name();
 
-        statusButton["提交"] = pointName == "新建";
-        statusButton["审核"] = pointName == "待审核";
-        statusButton["收货"] = pointName == "待收货";
-        statusButton["退款"] = pointName == "待退款";
-        statusButton["归档"] = pointName == "完成";
+        let editMode = 0;
+        let fields: string[] = [];
 
-        x_edit_xsth.value = false;
-                
-        switch (pointName) { 
+        switch (pointName) {
             case "新建":
-                v_xsth_xx.value?.setEditFields(1, ["*"]);
-                x_edit_xsth.value = true;
-                statusButton["退回"] = false;
+                editMode = 1;
+                fields = ["*"];
                 break;
             case "待审核":
-                v_xsth_xx.value?.setEditFields(1, [
+                editMode = 1;
+                fields = [
                     "f_wlgs_id",
                     "f_wldh",
                     "f_thje",
@@ -311,26 +248,25 @@ export default { name: "ext_xsgl_xsth" }
                     "f_fhdz",
                     "f_thyy",
                     "f_beizhu"
-                ]);
-                x_edit_xsth.value = true;
+                ];
                 break;
-            case "已审核":
-                v_xsth_xx.value?.setEditFields(1, [
+            case "待发货":
+                editMode = 1;
+                fields = [
                     "f_wlgs_id",
                     "f_wldh",
                     "f_beizhu"
-                ]);
-                x_edit_xsth.value = true;
+                ];
                 break;
-            case "已收货":                
-            case "已退款":                
-            case "已完成":                
-                v_xsth_xx.value?.setEditFields(1, [
-                    "f_beizhu"
-                ]);
-                x_edit_xsth.value = false;
+            case "已发货":
+            case "待退款":
+            case "完成":
+                editMode = 1;
+                fields = ["f_beizhu"];
                 break;
         }
+
+        v_xsth_xx.value?.setEditFields(editMode, fields);
     };
 
     /**
@@ -356,8 +292,8 @@ export default { name: "ext_xsgl_xsth" }
         });
 
         v_flow_xsth.value?.load_List(0);
-        
-        updateFlowStatusButton(undefined);
+
+        updateFlowStatus(undefined);
     }
 
     /**
@@ -375,12 +311,13 @@ export default { name: "ext_xsgl_xsth" }
 
         // 用户转换
         TLogic.updateDicUserData(data, ["f_xsy_id"]);
-
         // 显示物流公司名称
         data["f_wlgs_id_s"] = TLogic.getLabel_wlgs(data["f_wlgs_id"]);
 
         // 流程
         data["f_flow_point_id_s"] = v_flow_xsth.value?.get_point_name_by_id(data["f_flow_point_id"]);
+
+        //console.log(data);
     }
 
     /**
@@ -407,10 +344,8 @@ export default { name: "ext_xsgl_xsth" }
     const onTableRowClick_xsth = async (data: any) => {
 
         x_show_loading.value = true;
-
         await v_flow_xsth.value?.load_List(data["f_xsth_id"]);
-
-        updateFlowStatusButton(data);
+        updateFlowStatus(data);
 
         x_show_loading.value = false;
     }
@@ -448,76 +383,66 @@ export default { name: "ext_xsgl_xsth" }
     /**
      * 添加退货
      */
-    const onButtonClick_Add_xsth = async () => {
-        
-        let xsthData = {  
+    const onButtonClick_Flow_Add = async () => {
 
-            "f_xsth_id": 0, // 退货ID
-            "f_xsdh": "", // 销售单号
-            "f_xsdck_id": 0, // 销售c产品出库编号
+        let xsthData = {
+
+            "f_xsth_id": 0,
+            "f_xsdh": "",
+            "f_xsdck_id": 0,
             "f_kcmx_id": 0,
             "f_cpdy_id": 0,
-            "f_cpmc": "", // 产品名称
-            "f_kcbh": "", // 货物批次
-            "f_khgl_id": 0, // 客户ID
-            "f_khmc": "", // 客户名称
-            "f_xsy_id": TGlobal.userData["f_user_id"], // 销售员ID
-            "f_xsy_id_s": TGlobal.userData["f_name"], // 销售员姓名
-            "f_xsje": 0.0, // 销售金额
-            "f_thje": 0.0, // 退货金额
-            "f_wlgs_id": 0, // 物流公司ID
-            "f_wlgs_id_s": "", // 物流公司名称
-            "f_wldh": "", // 物流单号
-            "f_fhr": "", // 对方发货人姓名
-            "f_fhdh": "", // 对方发货人电话
-            "f_fhdz": "", // 对方发货人地址
-            "f_thyy": "", // 退货原因
+            "f_cpmc": "",
+            "f_kcbh": "",
+            "f_khgl_id": 0,
+            "f_khmc": "",
+            "f_xsy_id": TGlobal.userData["f_user_id"],
+            "f_xsy_id_s": TGlobal.userData["f_name"],
+            "f_xsje": 0.0,
+            "f_thje": 0.0,
+            "f_wlgs_id": 0,
+            "f_wlgs_id_s": "",
+            "f_wldh": "",
+            "f_fhr": "",
+            "f_fhdh": "",
+            "f_fhdz": "",
+            "f_thyy": "",
             "f_thbz": 0,
-            "f_cjsj": "", // 创建时间
-            "f_beizhu": "", // 备注
+            "f_cjsj": "",
+            "f_beizhu": "",
             "f_flow_point_id": 0,
             "f_flow_process_id": 0
         };
-        
+
         v_xsth_xx.value?.setEditFields(1, ["*"]);
         v_xsth_xx.value?.showDialog(xsthData);
     }
 
     /**
-     * 删除退货
-     */
-    const onButtonClick_Del_xsth = async () => {
-        // let xsthData = v_table_xsth.value?.get_select_data(true);
-    }
-
-    /**
      * 退货详情
      */
-    const onButtonClick_Get_xsth = () => { 
+    const onButtonClick_Flow_Get = () => {
         let xsthData = v_table_xsth.value?.get_select_data(true);
         if (xsthData == undefined) return;
-        
+
+        v_xsth_xx.value?.setEditFields(0, [""]);
         v_xsth_xx.value?.showDialog(xsthData);
     }
 
     /**
      * 修改退货
      */
-    const onButtonClick_Upd_xsth = () => {
+    const onButtonClick_Flow_Upd = () => {
         let xsthData = v_table_xsth.value?.get_select_data(true);
         if (xsthData == undefined) return;
-        
+
         v_xsth_xx.value?.showDialog(xsthData);
     }
 
     const addProcessData = async (data: any, tableName: string, idField: string) => {
 
         v_flow_xsth.value?.clear_list(data[idField]);
-        // 添加一个流程
-        let processData = await v_flow_xsth.value?.add_process_data(
-            "", "新建", "-", 
-            eoflow.OP_FLAG_NORMAL,
-            tableName, idField, data[idField]);
+        let processData = await v_flow_xsth.value?.process_add_data(data[idField], "-");
 
         if (processData != undefined) {
             data["f_flow_point_id"] = processData["f_flow_point_id"];
@@ -531,10 +456,6 @@ export default { name: "ext_xsgl_xsth" }
     const onDialogClose_xsth_xx = async (cancel: boolean, data: any, cb: cfunc_boolean) => {
 
         if (cancel) { 
-            cb(true); return;
-        }
-
-        if (!x_edit_xsth.value) {
             cb(true); return;
         }
 
@@ -575,10 +496,10 @@ export default { name: "ext_xsgl_xsth" }
             await addProcessData(dataNew, "txsth", "f_xsth_id");
         }
 
-        // 更新表格        
+        // 更新表格
         v_table_xsth.value?.update_data(dataNew, -1, isAdd, true);
         // 更新流程按钮
-        updateFlowStatusButton(dataNew);
+        updateFlowStatus(dataNew);
 
         x_show_loading.value = false;
 
@@ -588,7 +509,7 @@ export default { name: "ext_xsgl_xsth" }
     /**
      * 流程操作：退货作废
      */
-    const onButtonClick_Flow_THZF = async () => {
+    const onButtonClick_Flow_Cancel = async () => {
                
         let xsthData = v_table_xsth.value?.get_select_data(true);
         if (xsthData == undefined) return;
@@ -605,14 +526,14 @@ export default { name: "ext_xsgl_xsth" }
     /**
      * 流程操作：退货退回
      */
-    const onButtonClick_Flow_THTH = () => {
-        
+    const onButtonClick_Flow_Back = () => {
+
         let xsthData = v_table_xsth.value?.get_select_data(true);
         if (xsthData == undefined) return;
 
-        v_flow_xsth.value?.back_process((cancel: boolean, data: any, cb: cfunc_boolean) => {
+        v_flow_xsth.value?.process_back_dialog((cancel: boolean, data: any, cb: cfunc_boolean) => {
 
-            if (cancel) { 
+            if (cancel) {
                 cb(true); return;
             }
 
@@ -622,41 +543,91 @@ export default { name: "ext_xsgl_xsth" }
             // 更新表格流程状态
             v_table_xsth.value?.update_data(xsthData, -1, false, false);
             // 更新按钮状态
-            updateFlowStatusButton(xsthData);
+            updateFlowStatus(xsthData);
 
             cb(true);
         });
     }
 
     /**
+     * 统一流程处理函数
+     */
+    const onButtonClick_Flow = async (point: cflow_point) => {
+
+        let xsthData = v_table_xsth.value?.get_select_data(true);
+        if (xsthData == undefined) return;
+    
+        const pointName = point?.name;
+        if (pointName == undefined) return;
+        
+        console.log("onButtonClick_Flow", point, xsthData);
+
+        switch (pointName) {
+            case "新建":
+                onButtonClick_Flow_THTJ(xsthData);
+                break;
+            case "待审核":
+                v_flow_button.value?.show_flow_dialog(xsthData, (data1: any) => {
+                    updateFlowStatus(data1);
+                });
+                break;
+            case "待发货":
+                onButtonClick_Flow_THFH(xsthData);
+                break;
+            case "已发货":
+                onButtonClick_Flow_THRK(xsthData);
+                break;
+            case "待退款":
+                v_flow_button.value?.show_flow_dialog(xsthData, (data1: any) => {
+                    updateFlowStatus(data1);
+                });
+                break;
+            case "完成":
+                break;
+        }
+    }
+
+    const processFlow_THRK = async (xsthData: any) => {
+
+        x_show_loading.value = true;
+        const dataNew = await TLogic.netLoad_kcmx_upd(
+            xsthData["f_kcmx_id"],
+            0, // 关联
+            xsthData["f_cpdy_id"],
+            xsthData["f_kcbh"],
+            "销售退货",
+            0,
+            xsthData["f_hwck"],
+            xsthData["f_thje"],
+            xsthData["f_kcsl"],
+            TGlobal.userData["f_user_id"],
+            xsthData["f_beizhu"],
+            TLogic.kcbzCodes["正常"]
+        );
+        x_show_loading.value = false;
+        if (dataNew == undefined) return;
+
+        x_show_loading.value = true;
+        const ret = await eocore.proc("p_xsdck_ckbz", {
+            "v_xsdck_id": xsthData["f_xsdck_id"],
+            "v_ckbz": 2
+        });
+        x_show_loading.value = false;
+        eocore.check_net_object(ret)
+    }
+
+    
+    /**
      * 流程操作：提交退货
      */
-    const onButtonClick_Flow_THTJ = () => {
+    const onButtonClick_Flow_THTJ = (xsthData: any) => {
 
-        let xsthData = v_table_xsth.value?.get_select_data(true);
-        if (xsthData == undefined) return;
-        
-        showFlowDialog(xsthData, "待审核");
+        v_flow_button.value?.show_flow_dialog(xsthData, (data1: any) => {
+            updateFlowStatus(data1);
+        });
     }
-
-    /**
-     * 流程操作：退货审核
-     */
-    const onButtonClick_Flow_THSH = () => {
-        
-        let xsthData = v_table_xsth.value?.get_select_data(true);
-        if (xsthData == undefined) return;
-
-        showFlowDialog(xsthData, "待发货");
-    }
-
-    /**
-     * 流程操作：仓库收货
-     */
-    const onButtonClick_Flow_THRK = () => {
-        
-        let xsthData = v_table_xsth.value?.get_select_data(true);
-        if (xsthData == undefined) return;
+    
+    const onButtonClick_Flow_THFH = (xsthData: any) => {
 
         if (!eocore.check_id(xsthData, "f_wlgs_id")) {
             eocore.show_info("请选择物流公司");
@@ -667,68 +638,19 @@ export default { name: "ext_xsgl_xsth" }
             return;
         }
 
-        showFlowDialog(xsthData, "待退款");
-    }
-
-    /**
-     * 流程操作：退款处理
-     */
-    const onButtonClick_Flow_THTK = () => {
-        
-        let xsthData = v_table_xsth.value?.get_select_data(true);
-        if (xsthData == undefined) return;
-
-        showFlowDialog(xsthData, "已退款");
-    }
-
-    /**
-     * 流程操作：退货归档
-     */
-    const onButtonClick_Flow_THGD = () => {
-        
-        let xsthData = v_table_xsth.value?.get_select_data(true);
-        if (xsthData == undefined) return;
-
-        showFlowDialog(xsthData, "完成");
-    }
-
-    const processFlow_THRK = async (xsthData: any) => {
-
-         x_show_loading.value = true;
-        const ret = await eocore.proc("p_xsdck_ckbz", { 
-            "v_xsdck_id": xsthData["f_xsdck_id"],
-            "v_ckbz": 2 // 标记为退货
+        v_flow_button.value?.show_flow_dialog(xsthData, async (data1: any) => {
+            updateFlowStatus(data1);
         });
-        x_show_loading.value = false;
-        eocore.check_net_object(ret)
     }
 
     /**
-     * 显示流程操作对话框
-     * @param xsthData 退货数据
-     * @param pointName 流程节点名称
+     * 流程操作：仓库出库
      */
-    const showFlowDialog = (xsthData: any, pointName: string) => {
-        
-        v_flow_xsth.value?.add_process(pointName, async (cancel: boolean, data: any, cb: cfunc_boolean) => {
+    const onButtonClick_Flow_THRK = (xsthData: any) => {
 
-            if (cancel) { 
-                cb(true); return;
-            }
-
-            xsthData["f_flow_point_id"] = data["f_flow_point_id"];
-            xsthData["f_flow_point_id_s"] = data["f_flow_point_id_s"];
-
-            // 更新表格流程状态
-            v_table_xsth.value?.update_data(xsthData, -1, false, false);
-            // 更新流程按钮
-            updateFlowStatusButton(xsthData);
-
-            if (pointName == "待退款") {
-                await processFlow_THRK(xsthData);
-            }
-
-            cb(true);
+        v_flow_button.value?.show_flow_dialog(xsthData, async (data1: any) => {
+            updateFlowStatus(data1);
+            await processFlow_THRK(data1);
         });
     }
 </script>

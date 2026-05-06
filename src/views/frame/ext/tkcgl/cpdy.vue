@@ -326,6 +326,7 @@ export default { name: "ext_kcgl_cpdy" }
             "f_cpmc": "",     // 产品名称
             "f_cpgg": "",     // 产品规格
             "f_cpcc": "",     // 产品尺寸
+            "f_cpzl": "",     // 产品重量
             "f_cpdw": "",     // 产品单位
             "f_bzsl": 1,      // 产品数量
             "f_cpjg": 0,      // 产品价格
@@ -394,6 +395,7 @@ export default { name: "ext_kcgl_cpdy" }
                 "v_cpmc": data["f_cpmc"],
                 "v_cpgg": data["f_cpgg"],
                 "v_cpcc": data["f_cpcc"],
+                "v_cpzl": data["f_cpzl"],                
                 "v_cpdw": data["f_cpdw"],
                 "v_bzsl": data["f_bzsl"],
                 "v_cpjg": data["f_cpjg"],

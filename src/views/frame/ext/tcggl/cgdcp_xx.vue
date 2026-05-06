@@ -308,7 +308,7 @@
                 rkdcpData["f_bzsl"], // 单件数量                
                 kgyId,
                 rkdcpData["f_beizhu"],
-                TLogic.kcbzCodes["临时"], // 库存标识
+                TLogic.kcbzCodes["正常"], // 库存标识，采购单直接入库
             );
             if (dataNew == undefined) return undefined;
 
@@ -371,7 +371,7 @@
 
     
     /**
-     * 自动计算总价
+     * 自动计算总价，总价=单价*包装数量*件数
      */
     const onNumberChange_jszj = () => {
 
@@ -381,7 +381,7 @@
         x_data_cgdcp['f_cgzj'] = Number((cpsl * bzsl * cpdj).toFixed(2));
     }
     /**
-     * 自动计算单价
+     * 自动计算单价，单价为最小单元的价格，不是整包的价格
      */
     const onNumberChange_jsdj = () => {
 
@@ -415,8 +415,8 @@
         x_data_cgdcp['f_cpbm'] = data['f_cpbm'];
         x_data_cgdcp['f_cpjg'] = data['f_cpjg'];
         x_data_cgdcp['f_bzsl'] = data['f_bzsl'];
-        x_data_cgdcp['f_kcsl'] = data['f_kcsl'];
-        x_data_cgdcp['f_kcdj'] = eolib.divide_num(data['f_kczj'], data['f_kcsl']);
+        x_data_cgdcp['f_kcsl'] = data['f_cpsl'];
+        x_data_cgdcp['f_kcdj'] = eolib.divide_num(data['f_cpzj'], data['f_cpsl']);
 
         x_data_cgdcp['f_cgdj'] = x_data_cgdcp['f_kcdj'];
 

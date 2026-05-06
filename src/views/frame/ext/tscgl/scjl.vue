@@ -1,19 +1,9 @@
 <template>
-    <!-- 生产管理 -->
+    <!-- 生产记录 -->
     <div class="eo_page" v-loading="x_show_loading">    
         <div class="eo_col">
             <div class="eo_tool_bar">
                 <div class="eo_form">
-                    <div class="cell eo_w200p">
-                        <div class="label_n">生产状态</div>
-                        <div class="input">
-                            <el-select style="width:100%" v-model="x_query_yxbz">
-                                <el-option label="所有" :value="-1"></el-option>
-                                <el-option label="进行中" :value="0"></el-option>
-                                <el-option label="已完成" :value="1"></el-option>
-                            </el-select>
-                        </div>
-                    </div>
                     <div class="cell eo_w200p">
                         <div class="label_n">产品名称</div>
                         <div class="input">
@@ -175,6 +165,7 @@ export default { name: "ext_scgl_scgl" }
     import scdcp_xx from "./scdcp_xx.vue";
     import scd_xx from "./scd_xx.vue";
     import scwl_list from "./scwl_list.vue";
+import { da } from "element-plus/es/locales.mjs";
 
     type t_table = InstanceType<typeof vtable>;
     const v_table_sccp = ref<t_table>();
@@ -185,7 +176,6 @@ export default { name: "ext_scgl_scgl" }
 
     let x_show_loading = ref(false);
 
-    const x_query_yxbz = ref(0);
     const x_query_cpmc = ref("");
     const x_query_jhsj = ref<[string, string] | null>(null);
 
@@ -217,7 +207,6 @@ export default { name: "ext_scgl_scgl" }
             "v_cpmc": x_query_cpmc.value,
             "v_kssj": kssj,
             "v_jssj": jssj,
-            "v_yxbz": x_query_yxbz.value,
             "s_page_row_index": rowIndex,
             "s_page_row_count": pageRowCount
         });
@@ -447,7 +436,7 @@ export default { name: "ext_scgl_scgl" }
                 "v_dqsl": bzsl,
                 "v_wcsj": eolib.datetime_2_string(dt),
                 "v_yxdj": sccpData["f_yxdj"],
-                "v_yxbz": 1, // 1:完成 0:未完成
+                "v_yxbz": sccpData["f_yxbz"],
                 "v_beizhu": sccpData["f_beizhu"]
             });
         dataNew = eocore.check_net_object(ret);
@@ -610,7 +599,6 @@ export default { name: "ext_scgl_scgl" }
         x_show_loading.value = true;                
         const ret = await eocore.proc("p_kcmx_kcbz", {
             "v_kcmx_ids": "" + data["f_kcmx_id"],
-            "v_cpdy_ids": "" + data["f_cpdy_id"],
             "v_kcbz": TLogic.kcbzCodes["正常"]
         });
         eocore.check_net_object(ret);

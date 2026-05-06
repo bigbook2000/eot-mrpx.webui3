@@ -25,6 +25,13 @@
                 </div>
             </div>
             <div class="cell eo_w100">
+                <div class="label_n">用户</div>
+                <div class="input">
+                    <el-input v-model="x_point_data['f_user']" style="width:100%"
+                        maxlength="32"></el-input>
+                </div>
+            </div>
+            <div class="cell eo_w100">
                 <div class="label_n">备注</div>
                 <div class="input">
                     <el-input v-model="x_point_data['f_text']" style="width:100%"

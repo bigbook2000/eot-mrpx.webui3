@@ -101,16 +101,21 @@
         TGlobal.userData.role_list = role.split(",").filter((item: any) => item != "");
         TGlobal.permitString = permits;
 
+
         // 初始化流程
         await eoflow.net_load_flow_List();
 
         // 加载用户字典
         await TLogic.netLoad_UserDic();
+        // 加载菜单列表
+        await TLogic.netLoad_menu_list();
 
         x_login_disable.value = false;
         
         router.replace({ name:'main' });
     }
+    
+     
 
 </script>
 <style scoped lang="scss">

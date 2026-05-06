@@ -30,7 +30,7 @@
                     :file-list="x_file_list"
                     :auto-upload="true">
                     <div class="upload" slot="trigger">
-                        <el-icon size="14" color="#c01020">
+                        <el-icon size="14" color="#00b077">
                             <Edit />
                         </el-icon>
                     </div>
@@ -190,7 +190,7 @@
         clear_file();
     }
 
-    const update_key_id = async (keyId: number): Promise<void> => {
+    const update_key_id = async (keyId: number): Promise<any> => {
         m_key_id = keyId;
         
         let fileId = props.modelValue;
@@ -201,14 +201,45 @@
                 "v_file_id": fileId,
                 "v_keyid": keyId
             }]);
-            let data = eocore.check_net_object(ret);
-            if (data == undefined) return;
+            eocore.check_net_object(ret);            
         }
+
+        return {
+            "f_file_id": fileId,
+            "f_name": x_file_name.value,
+            "f_type": props.type,
+            "f_keyid": keyId,
+            "f_index": props.index,
+            "f_url_s": x_file_url.value
+        }
+    }
+
+    const set_file = (fileId: number, fileName: string): void => {
+        x_file_url.value = TLogic.getXSaveDataUrl(fileId);
+        x_file_name.value = fileName;
+
+        //console.log("set_file", x_file_url.value, x_file_name.value);
+    }
+
+    const get_file = async (fileType: string, keyId: number, index: number): Promise<any> => {
+        
+        const ret = await eocore.post("/framework/hdata/file/get", [{
+            "f_type": fileType,
+            "f_keyid": keyId,
+            "f_index": index
+        }]);
+        let data = eocore.check_net_object(ret);
+        if (data == undefined) return undefined;
+
+        set_file(data["f_file_id"], data["f_name"]);
+
+        return data;
     }
 
     defineExpose({
         clear_file,
-        update_key_id
+        update_key_id,
+        set_file,
     })
 
 </script>

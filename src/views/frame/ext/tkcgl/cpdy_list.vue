@@ -52,8 +52,8 @@
                     <el-table-column prop="f_cpbm" label="编码" width="160" />
                     <el-table-column prop="f_cpmc" label="名称" width="180" show-overflow-tooltip />
                     <el-table-column prop="f_cpjg_s" label="定价" width="120" align="right" />
-                    <el-table-column prop="f_kcsl" label="库存数量" width="120" align="right" />
-                    <el-table-column prop="f_kcdj_s" label="库存单价" width="120" align="right" />
+                    <el-table-column prop="f_cpsl" label="库存数量" width="120" align="right" />
+                    <el-table-column prop="f_cpdj_s" label="库存单价" width="120" align="right" />
                     <el-table-column prop="f_cpgg" label="规格" width="180" show-overflow-tooltip />
                     <el-table-column prop="f_cpcc" label="尺寸" width="160" show-overflow-tooltip />
                     <el-table-column prop="f_cpzl" label="重量" width="160" show-overflow-tooltip />
@@ -172,10 +172,10 @@
         
         // 格式化价格
         data["f_cpjg_s"] = eolib.fixed_num(data["f_cpjg"], 3);
-        let kcsl = eocore.to_float(data["f_kcsl"]);
-        let kcdj = eocore.to_float(data["f_kczj"]);
-        if (kcsl > 0.0) kcdj = kcdj / kcsl;
-        data["f_kcdj_s"] = eolib.fixed_num(kcdj, 3);
+        let cpsl = eocore.to_float(data["f_cpsl"]);
+        let cpdj = eocore.to_float(data["f_cpzj"]);
+        if (cpsl > 0.0) cpdj = cpdj / cpsl;
+        data["f_cpdj_s"] = eolib.fixed_num(cpdj, 3);
     }
 
     /**

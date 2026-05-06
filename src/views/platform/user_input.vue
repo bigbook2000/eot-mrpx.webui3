@@ -6,7 +6,7 @@
             clearable
             @clear="">
             <template #append>
-                <el-button :icon="Close" @click="onClearInput" />
+                <el-button :icon="Close" @click="onClearInput" v-if="!disabled" />
             </template>
         </el-input>
         <user_list ref="v_user_list" @close="onDialogClose_userlist"/>
@@ -24,11 +24,14 @@
     import user_list from "@/views/platform/user_list.vue"
     const v_user_list = ref<InstanceType<typeof user_list>>();
 
-    const props = defineProps<{
+    const props = withDefaults(defineProps<{
         modelValue: number,
         /** 单向输入 */
-        userName: string
-    }>();
+        userName: string,
+        disabled?: boolean,
+    }>(), {
+        disabled: false
+    });
 
     const emits = defineEmits<{
         (e: 'update:modelValue', value: number|string): void

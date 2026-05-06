@@ -59,7 +59,7 @@
                     :on-page="onTablePage_kh"
                     @loading="onTableLoading">
                     <el-table-column prop="f_jyzt_s" label="状态" width="70" />
-                    <el-table-column prop="f_khmc" label="名称" width="200" show-overflow-tooltip />
+                    <el-table-column prop="f_khmc" label="名称" width="280" show-overflow-tooltip />
                     <el-table-column prop="f_hzdj_s" label="等级" width="80" />
                     <el-table-column prop="f_fzr" label="负责人" width="100" show-overflow-tooltip />
                     <el-table-column prop="f_gsdh" label="公司电话" width="120" show-overflow-tooltip />
@@ -112,7 +112,11 @@
 
     import vtable from "@/logic/common/vtable.vue"
     import vdic from "@/logic/common/vdic.vue"
+
+    import TGlobal from "@/logic/TGlobal";
+
     type t_table = InstanceType<typeof vtable>
+
     
     const x_show_loading = ref(false);
 
@@ -188,7 +192,7 @@
         if (pageIndex < 0) x_page_index.value = 1;
 
         v_table_kh.value?.load_list_proc("p_khgl_query", { 
-            "v_xsy_id": -1,
+            "v_xsy_id": TGlobal.userData["f_user_id"],
             "v_khmc": x_query_khmc.value,
             "v_lxxx": x_query_lxxx.value,
             "v_khlb": x_query_khlb.value,

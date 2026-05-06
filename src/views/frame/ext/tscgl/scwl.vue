@@ -21,6 +21,16 @@
                             </el-date-picker>
                         </div>
                     </div>
+                    <div class="cell eo_w240p">
+                        <div class="label_n">使用状态</div>
+                        <div class="input">
+                            <el-select style="width:100%" v-model="x_query_kcbz">
+                                <el-option label="未用" :value="1"></el-option>
+                                <el-option label="已用" :value="-1"></el-option>
+                                <el-option label="全部" :value="-9"></el-option>
+                            </el-select>
+                        </div>
+                    </div>
                 </div>
                 <div class="eo_form">
                     <div class="cell eo_w240p">
@@ -130,6 +140,7 @@ export default { name: "ext_scgl_scwl" }
 
     let x_show_loading = ref(false);
 
+    const x_query_kcbz = ref(1);    
     const x_query_kcbh = ref("");
     const x_query_kssj = ref("");
     const x_query_jssj = ref("");
@@ -156,7 +167,7 @@ export default { name: "ext_scgl_scwl" }
         const jssj = eolib.datetime_2_string(x_query_jssj.value);
         
         v_table_kcjy.value?.load_list_proc("p_kcjy_query", { 
-            "v_kcbz": TLogic.kcbzCodes["正常"],
+            "v_kcbz": x_query_kcbz.value,
             "v_kcbh": x_query_kcbh.value, 
             "v_kssj": kssj, 
             "v_jssj": jssj, 
@@ -182,7 +193,7 @@ export default { name: "ext_scgl_scwl" }
         data["f_jysj_s"] = eolib.datetime_2_short(data["f_jysj"]);
 
         // 用户转换
-        TLogic.updateDicUserData(data, ["f_yg_id", "f_kgy_id"]);
+        TLogic.updateDicUserData(data, ["f_jyyg_id", "f_kgy_id"]);
     }
     const onTablePage_kcjy = (n: number): number => {
         x_row_total.value = n;
@@ -204,19 +215,6 @@ export default { name: "ext_scgl_scwl" }
         netLoad_kcjy_query(pageIndex);
     }
 
-    const onButtonClick_Add_jyd = () => {
-    }
-    const onButtonClick_Del_jyd = () => {
-    }
-    const onButtonClick_Upd_jyd = () => {
-    }
-
-    /**
-     * 保存事件处理
-     */
-    const onDialogClose_jygl_xx = async (data: any, isAdd: boolean) => {
-
-    }
 </script>
 
 <style lang="scss" scoped>

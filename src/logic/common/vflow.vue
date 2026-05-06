@@ -85,6 +85,17 @@
         return m_last_error;
     }
 
+    const get_first_point = (): cflow_point|undefined => {
+        if (m_flow_type == undefined) return undefined;
+        if (m_flow_type.points.length == 0) return undefined;
+        return m_flow_type.points[0];
+    }
+    const get_last_point = (): cflow_point|undefined => {
+        if (m_flow_type == undefined) return undefined;
+        if (m_flow_type.points.length == 0) return undefined;
+        return m_flow_type.points[m_flow_type.points.length - 1];
+    }
+
     const get_point_by_name = (pointName: string): cflow_point|undefined => {
 
         if (m_flow_type == undefined) {
@@ -128,6 +139,50 @@
     }
 
     /**
+     * 获取下一个节点
+     * @param pointId 当前节点
+     */
+    const get_next_point = (pointId: number): cflow_point|undefined => {
+
+        if (m_flow_type == undefined) {
+            console.log("******** ********", "eoflow::get_next_point: type", pointId);
+            return undefined;
+        }
+
+        let i;
+        for (i = 0; i < m_flow_type.points.length-1; i++) {
+            if (m_flow_type.points[i].flow_point_id == pointId) {
+                return m_flow_type.points[i+1];
+            }
+        }
+
+        console.log("******** ********", "eoflow::get_next_point: undefined", pointId);
+        return undefined;
+    }
+
+    /**
+     * 获取上一个节点
+     * @param pointId 当前节点
+     */
+    const get_prev_point = (pointId: number): cflow_point|undefined => {
+
+        if (m_flow_type == undefined) {
+            console.log("******** ********", "eoflow::get_prev_point: type", pointId);
+            return undefined;
+        }
+
+        let i;
+        for (i = 1; i < m_flow_type.points.length; i++) {
+            if (m_flow_type.points[i].flow_point_id == pointId) {
+                return m_flow_type.points[i-1];
+            }
+        }
+
+        console.log("******** ********", "eoflow::get_prev_point: undefined", pointId);
+        return undefined;
+    }
+
+    /**
      * 判断节点是否为开始或结束节点
      * @param pointName 
      * @returns 
@@ -146,7 +201,7 @@
     }
 
     /**
-     * 判断2个节点顺序
+     * 判断2个节点顺序 point1 < point2
      * @param pointId1 
      * @param pointName2 
      * @returns 
@@ -171,8 +226,8 @@
             return false;
         }
 
-        //console.log((point1.order > point2.order), point1, point2);
-        return point1.order > point2.order;
+        //console.log((point1.order < point2.order), point1, point2);
+        return point1.order < point2.order;
     }
 
     const on_row_data = (row: any) => { 
@@ -237,56 +292,71 @@
         m_data_id = dataId;
     }
 
-    /**
-     * 
-     * @param typeName 流程名
-     * @param pointPrevName 前一个节点名
-     * @param pointName 节点名 
-     * @param text // 描述
-     * @param opFlag // 操作标识
-     * @param tableName // 表名
-     * @param idField  // 字段名
-     * @param idValue // 字段值
-     * @returns 
-     */
-    const add_process_data = async (
-        pointPrevName: string,
-        pointName: string,
-        text: string,
-        opFlag: number,
-        tableName: string, 
-        idField: string, 
-        idValue: number): Promise<any> => {
+    const get_process_point = () => {
 
         if (m_flow_type == undefined) {
-            return undefined;
-        }
-        const points = m_flow_type.points;
-
-        let pointPrevId = 0;
-        let pointId = 0;
-
-        for (let d2 of points) {
-            if (d2.name == pointPrevName) pointPrevId = d2.flow_point_id;
-            if (d2.name == pointName) pointId = d2.flow_point_id;            
-        }
-
-        if (pointId == 0) {
-            m_last_error = "流程错误: " + pointName;
+            m_last_error = "流程未定义";
             console.log(m_last_error);
             return undefined;
         }
 
+        // x_process_list是倒序，所以取第一个即最新的节点
+        let pointId = 0;
+        if (!eocore.check_empty(x_process_list.value)) {
+            pointId = x_process_list.value[0]['f_flow_point_id'];
+        }
+
+        let pointPrev = undefined;
+        let point = undefined;
+        let pointNext = undefined;
+
+        if (pointId > 0) {
+            // 追加
+            for (let i = 0; i < m_flow_type.points.length; i++) {
+                let d2 = m_flow_type.points[i];
+                if (d2.flow_point_id == pointId) {
+                    point = d2;
+                    if (i > 0) pointPrev = m_flow_type.points[i - 1];
+                    if (i < m_flow_type.points.length - 1) pointNext = m_flow_type.points[i + 1];
+                }
+            }
+        } else {
+            // 新增
+            pointNext = get_first_point();
+        }
+
+        return {
+            pointPrev: pointPrev,
+            point: point,
+            pointNext: pointNext,
+        }
+    }
+
+    /**
+     * 追加一个新的流程，不弹出对话框
+     * @param idValue // 字段值
+     * @param text // 描述
+     * @returns 
+     */
+    const process_add_data = async (idValue: number, text: string): Promise<any> => {
+
+        m_last_error = "";
+        const process = get_process_point(); // 获取当前流程点
+        if (process == undefined) return undefined;
+        if (m_flow_type == undefined) return undefined;
+
+        if (process.pointNext == undefined) return undefined;
+
         let ret = await eocore.post("/framework/flow/process/upd", [{
             f_fprocess_id: 0,
             f_flow_type_id: m_flow_type.flow_type_id,
-            f_flow_point_pid: pointPrevId,
-            f_flow_point_id: pointId,
+            f_flow_point_pid: process.point?.flow_point_id || 0,
+            f_flow_point_id: process.pointNext.flow_point_id,
             f_data_id: idValue,
-            f_op_flag: opFlag,
+            f_op_flag: eoflow.OP_FLAG_NORMAL,
             f_text: text,
-            v_table: tableName,
-            v_id_field: idField,
+            v_table: m_flow_type.table,
+            v_id_field: m_flow_type.field,
             v_id_value: idValue,
         }]);
         let data = eocore.check_net_object(ret);
@@ -302,120 +372,70 @@
 
     /**
      * 增加一个流程实例
-     * @param pointName 
      * @param callback 
      */
-    const add_process = (pointName: string, callback: cfunc_close): boolean => {
+    const process_add_dialog = (callback: cfunc_close): boolean => {
 
         m_callback_close = callback;
 
         m_last_error = "";
-        if (m_flow_type == undefined) { 
-            m_last_error = "流程未定义";
-            console.log(m_last_error);
-            return false;
-        }
+        const process = get_process_point(); // 获取当前流程点
+        if (process == undefined) return false;
+        if (m_flow_type == undefined) return false;
 
-        if (m_data_id <= 0) {            
-            m_last_error = "流程数据不存在";
-            console.log(m_last_error);
-            return false;
-        }
-
-        // x_process_list是倒序，所以取第一个即最新的节点
-        let pointPrevId = 0;
-        if (!eocore.check_empty(x_process_list.value)) {
-            pointPrevId = x_process_list.value[0]['f_flow_point_id'];
-        }
-
-        let flowPoint = get_point_by_name(pointName);
-        if (flowPoint == undefined) return false;
-        let pointId = flowPoint.flow_point_id;
-        if (pointId <= 0) {
-            m_last_error = "流程错误: " + pointName;
-            console.log(m_last_error);
-            return false;
-        }
+        if (process.point == undefined) return false;
+        if (process.pointNext == undefined) return false;
 
         let processData = {
             f_flow_process_id: 0,
             f_user_id: TGlobal.userData["f_user_id"],
             f_flow_type_id: m_flow_type.flow_type_id,
-            f_flow_point_pid: pointPrevId,
-            f_flow_point_id: pointId,
-            f_flow_point_id_s: flowPoint.name,
+            f_flow_point_pid: process.point.flow_point_id || 0,
+            f_flow_point_id: process.pointNext.flow_point_id,
+            f_flow_point_id_s: process.pointNext.name,
             f_data_id: m_data_id,
             f_op_time: "",
             f_op_flag: eoflow.OP_FLAG_NORMAL,
             f_text: "已确认",
-            f_title: flowPoint.title,
             v_table: m_flow_type.table,
             v_id_field: m_flow_type.field,
             v_id_value: m_data_id,
         }
 
-        v_flowd.value?.show_dialog(processData);
+        // 标题为当前节点标题，数据为下一节点
+        v_flowd.value?.show_dialog(process.point.title, processData);
         return true;
-    }
+    }    
 
-    const back_process = (callback: cfunc_close): boolean => {
+    const process_back_dialog = (callback: cfunc_close): boolean => {
 
         m_callback_close = callback;
 
         m_last_error = "";
-        if (m_flow_type == undefined) { 
-            m_last_error = "流程未定义";
-            console.log(m_last_error);
-            return false;
-        }
+        const process = get_process_point(); // 获取当前流程点
+        if (process == undefined) return false;
+        if (m_flow_type == undefined) return false;
 
-        m_last_error = "";
-        if (m_data_id <= 0) {            
-            m_last_error = "流程数据不存在";
-            console.log(m_last_error);
-            return false;
-        }
-
-        // x_process_list是倒序，所以取第一个即最新的节点        
-        if (eocore.check_empty(x_process_list.value)) {
-            m_last_error = "流程数据错误";
-            console.log(m_last_error);
-            return false;
-        }
-        if (x_process_list.value.length <= 1) {
-            m_last_error = "流程数据错误1";
-            console.log(m_last_error);
-            return false;
-        }
-
-        let pointPrevId = x_process_list.value[0]['f_flow_point_id'];
-        let pointId = x_process_list.value[1]['f_flow_point_id'];
-
-        let flowPoint = get_point_by_id(pointId);
-        if (flowPoint == undefined) {
-            m_last_error = "流程错误: " + pointId;
-            console.log(m_last_error);
-            return false;
-        }
+        if (process.point == undefined) return false;
+        if (process.pointPrev == undefined) return false;
 
         let processData = {
             f_flow_process_id: 0,
             f_user_id: TGlobal.userData["f_user_id"],
             f_flow_type_id: m_flow_type.flow_type_id,
-            f_flow_point_pid: pointPrevId,
-            f_flow_point_id: pointId,
-            f_flow_point_id_s: flowPoint.name,
+            f_flow_point_pid: process.point.flow_point_id,
+            f_flow_point_id: process.pointPrev.flow_point_id,
+            f_flow_point_id_s: process.pointPrev.name,
             f_data_id: m_data_id,
             f_op_time: "",
             f_op_flag: eoflow.OP_FLAG_GOBACK,
             f_text: "退回修订",
-            f_title: "退回" + flowPoint.title,
             v_table: m_flow_type.table,
             v_id_field: m_flow_type.field,
             v_id_value: m_data_id,
         }
 
-        v_flowd.value?.show_dialog(processData);
+        v_flowd.value?.show_dialog("退回 " + process.pointPrev.title, processData);
         return true;
     }
     
@@ -433,6 +453,7 @@
             let ret = await eocore.post("/framework/hdata/file/list", [{
                 v_type: TLogic.fileTypes["系统_流程文件"],
                 v_keyids: "" + data["f_flow_process_id"], 
+                v_index: -1
             }]);
             let listFile = eocore.check_net_array(ret);
             if (listFile == undefined) return [];
@@ -459,17 +480,21 @@
     defineExpose({
         last_error,
 
+        get_first_point,
+        get_last_point,
         get_point_name_by_id,
         get_point_by_name,
         get_point_by_id,
+        get_prev_point,
+        get_next_point,
         check_point_back,
         check_point_order,
 
         load_List,
         clear_list,
-        add_process_data,
-        add_process,
-        back_process
+        process_add_data,
+        process_add_dialog,
+        process_back_dialog
     })
 </script>
 

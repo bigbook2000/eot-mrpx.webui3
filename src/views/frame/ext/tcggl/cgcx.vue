@@ -1,10 +1,7 @@
 <template>
-    <!-- 采购入库货物选择列表 -->
-    <vdialog ref="v_dialog"
-        width="1200px" title="选择采购入库"
-        @close="onDialogClose"
-        @open="onDialogOpen">
-        <div class="eo_col" style="height:500px;">
+    <div class="eo_page">
+        <!-- 采购查询 -->
+        <div class="eo_col">
             <!-- 查询工具栏 -->
             <div class="eo_tool_bar">
                 <div class="eo_form">
@@ -15,18 +12,11 @@
                                 v-model="x_query_kcbh" placeholder="产品批次"></el-input>
                         </div>
                     </div>
-                    <div class="cell eo_w240p">
-                        <div class="label_n">名称</div>
-                        <div class="input">
-                            <el-input style="width:100%" maxlength="32"
-                                v-model="x_query_cpmc" placeholder="产品名称"></el-input>
-                        </div>
-                    </div>
                     <div class="cell" style="width:320px;">
                         <div class="label_n">创建日期</div>
                         <div class="input">
                             <el-date-picker style="width:100%"
-                                v-model="x_query_cjrq"
+                                v-model="x_query_cjsj"
                                 type="daterange"
                                 range-separator="至"
                                 start-placeholder="开始日期"
@@ -35,12 +25,29 @@
                             </el-date-picker>
                         </div>
                     </div>
+                </div>
+                <div class="eo_form">
+                    <div class="cell eo_w240p">
+                        <div class="label_n">产品名称</div>
+                        <div class="input">
+                            <el-input style="width:100%" maxlength="32"
+                                v-model="x_query_cpmc" placeholder="产品名称"></el-input>
+                        </div>
+                    </div>
+                    <div class="cell eo_w240p">
+                        <div class="label_n">供应商</div>
+                        <div class="input">
+                            <el-input style="width:100%" maxlength="32"
+                                v-model="x_query_gysmc" placeholder="供应商名称"></el-input>
+                        </div>
+                    </div>                    
+
                     <div class="cell">
                         <div class="input_w">
                             <el-button type="primary" class="eo_w80p" @click="onButtonClick_Load_kcmx">查找</el-button>
                         </div>                        
                     </div>
-                </div>
+                </div>                
             </div>
             
             <div class="eo_col_sp"></div>
@@ -49,7 +56,6 @@
             <div class="eo_col_f">
                 <vtable ref="v_table_xsdck" 
                     name="库存明细"
-                    check="single" 
                     id-field="f_kcmx_id"
                     @loading="onTableLoading"
                     :on-item="onTableItem_cgdrk"
@@ -66,7 +72,7 @@
                     <el-table-column prop="f_cpzl" label="重量" width="160" show-overflow-tooltip />
                     <el-table-column prop="f_cpdw" label="单位" width="100" show-overflow-tooltip />
                     <el-table-column prop="f_beizhu" label="备注" width="200" show-overflow-tooltip />
-                    <el-table-column prop="f_cgdh" label="采购单" width="160" />  
+                    <el-table-column prop="f_cgdh" label="采购单" width="160" />                    
                     <el-table-column />
                 </vtable>
             </div>
@@ -83,38 +89,33 @@
                 </el-pagination>
             </div>
         </div>
-    </vdialog>
+    </div>
 </template>
 
 
+<script lang="ts">
+/** KeepAlive */
+export default { name: "ext_cggl_cgcx" }
+</script>
+
 <script lang="ts" setup>
-    import { ref } from "vue"
-    import type { cfunc_boolean } from "@/inc/eotypes";
+    import { ref, onMounted } from "vue"
 
     import eocore from "@/inc/eocore"
     import eolib from "@/inc/eolib";
-    import vdialog from "@/logic/common/vdialog.vue"
     import vtable from "@/logic/common/vtable.vue"
 
-    import tcplb from "@/views/frame/ext/comm/tcplb.vue"
     import TLogic from "@/logic/TLogic";
     import TGlobal from "@/logic/TGlobal";
 
-    type t_dialog = InstanceType<typeof vdialog>;
-    const v_dialog = ref<t_dialog>();
-    
     type t_table = InstanceType<typeof vtable>;
     const v_table_xsdck = ref<t_table>();
-
-    // 定义组件事件
-    const emit = defineEmits<{
-        close: [cancel: boolean, data: any, cb: cfunc_boolean]
-    }>();
 
     // 查询条件
     const x_query_kcbh = ref("");
     const x_query_cpmc = ref("");
-    const x_query_cjrq = ref<[string, string] | null>(null);
+    const x_query_gysmc = ref("");
+    const x_query_cjsj = ref<[string, string] | null>(null);
 
     // 分页变量
     const x_page_index = ref(1);
@@ -124,25 +125,20 @@
     // 加载状态
     const x_show_loading = ref(false);
 
-    /**
-     * 显示对话框
-     * @param data 数据对象
-     */
-    const show_dialog = async (data: any) => {
+    onMounted(() => {
+        
+        let dt = new Date();
+        const jssj = eolib.date_end(dt);
+        dt.setMonth(dt.getMonth() - 1);
+        const kssj = eolib.date_start(dt);
+        x_query_cjsj.value = [kssj, jssj];
 
-        // 先打开对话框
-        v_dialog.value!.show_dialog(undefined);
-        v_table_xsdck.value?.load_list([]);
-    }
-    const onDialogOpen = (data: any) => {
-
-        // 加载产品数据
+        // 加载数据
         netLoad_cgdrk_query(-1);
-    }
-
+    });
 
     /**
-     * 查询产品数据
+     * 查询采购入库数据
      * @param pageIndex 页码索引，-1表示重置到第1页
      */
     const netLoad_cgdrk_query = async (pageIndex: number = -1) => {
@@ -151,12 +147,15 @@
         let rowIndex = pageIndex * pageRowCount;
         if (pageIndex < 0) x_page_index.value = 1;
 
+        let cjsj1 = eolib.date_start(x_query_cjsj.value?.[0]);
+        let cjsj2 = eolib.date_end(x_query_cjsj.value?.[1]);
+
         v_table_xsdck.value?.load_list_proc("p_cgdrk_query", { 
             "v_gys_id": -1,
-            "v_gysmc": "",
+            "v_gysmc": x_query_gysmc.value,
             "v_cgdh": "", 
-            "v_cjsj1": "", 
-            "v_cjsj2": "", 
+            "v_cjsj1": cjsj1, 
+            "v_cjsj2": cjsj2, 
             "v_kcbh": x_query_kcbh.value, 
             "v_cpmc": x_query_cpmc.value, 
             "v_order_by": " ORDER BY f_cgdrk_id DESC",
@@ -218,30 +217,6 @@
     const onButtonClick_Load_kcmx = () => {
         netLoad_cgdrk_query(-1);
     }
-
-    /**
-     * 对话框关闭事件
-     */
-    const onDialogClose = (cancel: boolean, tag: any, cb: cfunc_boolean) => {
-
-        if (cancel) {
-            emit('close', true, {}, cb);
-            return;
-        }
-        
-        // 获取选中的产品
-        let selectedData = v_table_xsdck.value?.get_select_data(true);
-        if (selectedData == undefined) {
-            cb(false); return;
-        }
-
-        emit('close', false, selectedData, cb);
-    }
-
-    // 暴露方法给父组件使用
-    defineExpose({
-        show_dialog
-    });
 </script>
 
 <style lang="scss" scoped>

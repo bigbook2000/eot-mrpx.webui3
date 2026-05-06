@@ -174,11 +174,11 @@
         data: any, 
         index: number, 
         insert: boolean, 
-        showMsg: boolean) => {
+        showMsg: boolean) : any => {
 
         if (data == undefined) {
             console.log("**** ****", "vtable::update_data: undefined");
-            return;
+            return undefined;
         }
 
         let dataCopy: any = {};
@@ -210,7 +210,7 @@
             let dataId = dataCopy[props.idField];
             if (dataId == undefined) {
                 console.log("**** ****", "vtable::update_data: no id_field = ", props.idField);
-                return;
+                return undefined;
             }
 
             if (index < 0) {
@@ -234,6 +234,8 @@
         v_table.value?.setCurrentRow(dataCopy);
         //emits("row-click", dataCopy);
         //console.log("------------", m_select_data);
+
+        return dataCopy;
     }
 
     /**

@@ -102,13 +102,14 @@
                                     <el-table-column prop="f_hzdj_s" label="等级" width="80" />
                                     <el-table-column prop="f_khmc" label="名称" width="280" show-overflow-tooltip />                    
                                     <el-table-column prop="f_lxr" label="联系人" width="100" />
-                                    <el-table-column prop="f_lxdh" label="联系方式" width="120" />
+                                    <el-table-column prop="f_lxfh" label="联系方式" width="120" />
                                     <el-table-column prop="f_khlb_s" label="类别" width="80" />
                                     <el-table-column prop="f_khly_s" label="来源" width="120" />
                                     <el-table-column prop="f_gsgm_s" label="规模" width="80" />
                                     <el-table-column prop="f_jyfs_s" label="经营方式" width="120" />
                                     <el-table-column prop="f_xzds" label="地市" width="80" show-overflow-tooltip />
                                     <el-table-column prop="f_xzqx" label="区县" width="80" show-overflow-tooltip />                    
+                                    <el-table-column prop="f_gsdz" label="公司地址" width="200" show-overflow-tooltip />
                                     <el-table-column prop="f_jdsj_s" label="创建时间" width="140" />
                                     <el-table-column prop="f_gtsj_s" label="沟通时间" width="140" />
                                     <el-table-column prop="f_cjsj_s" label="成交时间" width="140" />
