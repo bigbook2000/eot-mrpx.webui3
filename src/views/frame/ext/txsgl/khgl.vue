@@ -211,7 +211,6 @@ export default { name: "ext_xsgl_khgl" }
         onTableItem_khgl,
         onTablePage_khgl,
         onTableLoading,
-        onTableRowClick_khgl,
         onPageChange_khgl,
         onButtonClick_Clear_khgl,
         onButtonClick_Load_khgl
@@ -268,6 +267,14 @@ export default { name: "ext_xsgl_khgl" }
             "f_beizhu": "" // 备注   
         }
     }
+
+    /**
+     * 表格行点击事件
+     * @param data 行数据
+     */
+    const onTableRowClick_khgl = (data: any) => {
+        v_khgl_ex.value?.loadData(data, data["f_xsy_id"] == TGlobal.userData["f_user_id"]);
+    }    
 
     /**
      * 添加客户

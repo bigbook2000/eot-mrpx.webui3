@@ -83,6 +83,7 @@
                             <div v-else>{{ scope.row.f_jyzt_s+'-'+scope.row.f_jyyg_id_s }}</div>
                         </template>
                     </el-table-column>
+                    <el-table-column prop="f_kcbh_p" label="关联批次" width="200" />
                     <el-table-column prop="f_kcdj_s" label="单价" width="120" align="right" />
                     <el-table-column prop="f_kcsl" label="数量" width="100" />
                     <el-table-column prop="f_cpgg" label="规格" width="180" show-overflow-tooltip />
@@ -235,14 +236,15 @@ export default { name: "ext_kcgl_kczl" }
      * 查询库存明细数据
      * @param pageIndex 页码索引，-1表示重置到第1页
      */
-    const netLoad_kcmx_query = (pageIndex: number = -1) => {
-        let pageRowCount = x_page_row_count.value;
-        let rowIndex = pageIndex * pageRowCount;
+    const netLoad_kcmx_query = async (pageIndex: number = -1) => {
+        const pageRowCount = x_page_row_count.value;
+        const rowIndex = pageIndex * pageRowCount;
         if (pageIndex < 0) x_page_index.value = 1;
 
-        let orderBy = getOrderByString();
+        const orderBy = getOrderByString();
 
-        v_table_kcmx.value?.load_list_proc("p_kcmx_query", { 
+        x_show_loading.value = true;
+        let ret = await eocore.proc("p_kcmx_query", { 
             "v_kcbz": -9,
             "v_cpdl_id": x_query_cplb.value[0],
             "v_cpxl_id": x_query_cplb.value[1],
@@ -260,6 +262,40 @@ export default { name: "ext_kcgl_kczl" }
             "s_page_row_index": rowIndex,
             "s_page_row_count": pageRowCount
         });
+        x_show_loading.value = false;
+        let list1 = eocore.check_net_array(ret);
+        if (list1 == undefined) return;
+
+        list1.forEach((item: any) => {
+            item["f_kcbh_p"] = "";
+        });
+
+        if (list1.length > 0) {
+            const kcmxPids = list1?.filter((item: any) => item["f_kcmx_pid"] >0)
+                .map((item: any) => item["f_kcmx_pid"]).join(",");
+            if (kcmxPids.length > 0) {
+
+                x_show_loading.value = true;
+                let ret = await eocore.proc("p_kcmx_ids", { 
+                    "v_kcmx_ids": kcmxPids,
+                });
+                x_show_loading.value = false;
+                let list2 = eocore.check_net_array(ret);
+                if (list2 == undefined) return;
+
+                list1.forEach((item1: any) => {
+                    list2.find((item2: any) => {
+                        if (item1["f_kcmx_pid"] == item2["f_kcmx_id"]) {
+                            item1["f_kcbh_p"] = item2["f_kcbh"];
+                            return true;
+                        }
+                        return false;
+                    });
+                });
+            }
+        }
+
+        v_table_kcmx.value?.load_list(list1);
     }
 
     /**

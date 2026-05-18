@@ -53,6 +53,8 @@
                             <div class="cell">
                                 <vbuttonk type="primary" class="input_w" permit="" 
                                     @click="onButtonClick_Add_kcmx">新增</vbuttonk>
+                                <vbuttonk type="primary" class="input_w" permit="" 
+                                    @click="onButtonClick_Upd_kcmx">修改</vbuttonk>
                                 <vbuttonk type="danger" class="input_w" permit="" 
                                     @click="onButtonClick_Del_kcmx">移除</vbuttonk>
                                 <vbuttonk type="default" class="input_w" permit="" 
@@ -62,7 +64,7 @@
                                 <vbuttonk type="default" class="input_w" permit="" 
                                     @click="onButtonClick_Upd_kchb">并库</vbuttonk>
                                 <vbuttonk type="primary" class="input_w" permit="" 
-                                    @click="onButtonClick_Upd_kcmx">修改</vbuttonk>
+                                    @click="onButtonClick_Get_kcmx">详情</vbuttonk>
                             </div>
                         </div>
                     </div>
@@ -423,33 +425,38 @@ export default { name: "ext_kcgl_kczl" }
      */
     const onButtonClick_Del_kcmx = async () => {
 
-        const data = v_table_kcmx.value?.get_select_data(true);
-        if (data == undefined) return;
-
+        const list = v_table_kcmx.value?.get_check_list() || [];
+        if (eocore.check_empty(list)) {
+            eocore.show_info("请勾选要出库的库存");
+            return;
+        }
+        let kcmxData = list[0];
+        
         // 二次确认
-        let ret = await eocore.show_confirm("是否移除库存货物 " + data["f_kcbh"] + "？一旦操作将造成不可预知的错误");
+        let ret = await eocore.show_confirm(
+            "是否移除库存货物 " + kcmxData["f_kcbh"] + "？一旦操作将造成不可预知的错误");
         if (!ret) return;
         
         // 直接出库
         x_show_loading.value = true;
         const dataNew = await TLogic.netLoad_kcmx_upd(
-            data["f_kcmx_id"],
+            kcmxData["f_kcmx_id"],
             0, // 关联
-            data["f_cpdy_id"],
-            data["f_kcbh"],
+            kcmxData["f_cpdy_id"],
+            kcmxData["f_kcbh"],
             "整理出库",
             0,
-            data["f_hwck"],
-            data["f_kcdj"],
-            data["f_kcsl"],
+            kcmxData["f_hwck"],
+            kcmxData["f_kcdj"],
+            kcmxData["f_kcsl"],
             TGlobal.userData["f_user_id"],
-            data["f_beizhu"],
+            kcmxData["f_beizhu"],
             TLogic.kcbzCodes["历史"]
         );
         x_show_loading.value = false;        
         if (dataNew == undefined) return;
 
-        v_table_kcmx.value?.remove_data(data, "");
+        v_table_kcmx.value?.remove_data(kcmxData, "");
     }
 
     /**
@@ -460,6 +467,13 @@ export default { name: "ext_kcgl_kczl" }
         if (kcmxData == undefined) return;
         
         v_kcmx.value?.showDialog(kcmxData);
+    }
+
+    const onButtonClick_Get_kcmx = () => {
+        let kcmxData = v_table_kcmx.value?.get_select_data(true);
+        if (kcmxData == undefined) return;
+        
+        v_kcmx.value?.showDialog(kcmxData, false);
     }
 
     /**

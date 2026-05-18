@@ -17,7 +17,8 @@ export default {
 	fileTypes: {
 		"硬件_版本文件": "file_eotapp_bin",
 		"系统_流程文件": "file_platform_flow",
-		"应用_知识库": "file_logic_zsk",
+		"应用_产品定义": "file_logic_product",
+		"应用_知识库": "file_logic_knowledge",
 
 		"业务_供应商资料": "file_logic_gys_wdzl",
 	},
@@ -938,5 +939,72 @@ export default {
         }
 
         return dataAdd;
-	}
+	},
+
+	/**
+	 * 过滤菜单选项
+	 * @returns 
+	 */
+    loadMenuList(): any[] {
+
+        const menuList = [];
+        const menuListAll = [];
+        
+        let lastMenu = undefined;
+        for (let d of TGlobal.menuList) {
+
+            if (d["f_type"] != "menu") continue;
+
+            //console.log(d);
+            // 通过角色判断
+            // if (!TLogic.checkRoleList(d.role_list)) continue;
+
+            let menuPid = d['f_menu_pid'];
+            if (menuPid == 1) {
+
+                menuListAll.push({
+                    index: 'm' + d['f_menu_id'],
+                    title: d['f_name'],
+                    icon: d['f_icon'],
+                    icon_path: eocore.get_path("/assets/icon/" + d['f_icon'] + ".png"),
+                    path: d['f_path'],
+                    children: new Array<any>()
+                });
+
+            } else {
+
+                if (lastMenu == undefined || lastMenu.index != menuPid) {
+                    lastMenu = undefined;
+                    for (let d2 of menuListAll) {
+                        if (d2.index == 'm' + menuPid) {
+                            lastMenu = d2;
+                            break;
+                        }
+                    }
+                }
+
+                if (lastMenu == undefined) {
+                    console.log('未找到菜单', d);
+                    continue;
+                }
+
+                lastMenu.children.push({
+                    index: 'm' + d['f_menu_id'],
+                    title: d['f_name'],
+                    icon: d['f_icon'],
+                    icon_path: eocore.get_path("/assets/icon/" + d['f_icon'] + ".png"),
+                    path: d['f_path'],
+                    children: new Array<any>()
+                });
+            }
+        }
+
+        for (let d of menuListAll) {
+            if (eocore.check_empty(d.children)) continue;
+            menuList.push(d);
+        }
+
+        //console.log(TGlobal.menuList, menuList, menuListAll);
+        return menuList;
+    }	
 }

@@ -3,7 +3,9 @@
  * 应用全局对象
  */
 class TGlobal {
-
+    /** 环境类型 */
+    __GPF_: string = "pc";
+    
     /** 全局性标识 */
     appId: number = 0;
     appData: any = {};

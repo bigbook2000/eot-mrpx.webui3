@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { onMounted } from 'vue'
+    import { inject, onMounted } from 'vue'
 
     import eocore from '@/inc/eocore';
     import eodic from '@/inc/eodic';
@@ -48,10 +48,11 @@
 
         TLogic.init();
         
+        TGlobal.__GPF_ = inject("__GPF_") || "pc";
         TGlobal.appId = getMainArgs("deptid");
         console.log("EOT物联网大数据平台", TGlobal.appId);
 
-        let ret = await eocore.json("/rc/app/app" + TGlobal.appId + ".json", "");
+        let ret = await eocore.json("/rc/dept/dept" + TGlobal.appId + "/env.json", "");
         Object.assign(TGlobal.appData, TGlobal.appData, ret.data);
 
         console.log(TGlobal.appData);
@@ -63,7 +64,6 @@
         await netLoad_setting_list();
 
         await eodic.net_load_dic(TGlobal.settingList["dic_version"]);
-
 
         //let router = useRouter();
         router.replace({ name:'login' });

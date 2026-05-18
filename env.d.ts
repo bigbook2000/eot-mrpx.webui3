@@ -7,3 +7,6 @@ declare module '*.vue' {
     const component: DefineComponent<{}, {}, any>
     export default component
 }
+
+/** 环境类型 */
+declare let __GPF_: string;

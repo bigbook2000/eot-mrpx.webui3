@@ -1,4 +1,4 @@
-import { ofetch } from 'ofetch';
+import axios, { type AxiosInstance } from 'axios'
 
 import { nextTick } from "vue"
 import { useRouter } from 'vue-router';
@@ -184,6 +184,20 @@ export default {
 		return (reg.test(val.toString()));
 	},	
 
+	/**
+	 * 参数是一个数组对象
+	 * _d: 0,
+	 * _s: "info",
+	 * _k: "token",
+	 * _t: 9999999,
+	 * _list: [
+	 *     {
+	 *         prop1: value1,
+	 *         prop2: value2,
+	 *         prop3: value3
+	 *     }
+	 * ]
+	 */
 
 	/**
 	 * 网络接口返回信息
@@ -314,6 +328,24 @@ export default {
 		return list[0];
 	},	
 
+	create_axios: function (baseUrl: string, contentType?: string): AxiosInstance {
+
+		let that = this;
+		if (contentType == undefined) contentType = "application/json";
+
+		return axios.create({
+			baseURL: baseUrl,
+			timeout: that.timeout,
+			headers: {
+				"Authorization": that.token,
+				"Content-Type": contentType
+			},
+			validateStatus: function (status) {
+				return status >= 200 && status < 300;
+			}
+		});
+	},
+
 	/**
 	 * 同步 POST 接口
 	 * @param url 
@@ -328,6 +360,7 @@ export default {
 		try {
 
 			let dt = new Date();
+			let request = that.create_axios(that.base_url);
 
 			let data = {
 				_d: 0,
@@ -337,21 +370,17 @@ export default {
 				_list: params
 			}
 
-			const res = await ofetch(that.base_url + url, {
+			await request({
+				url: url,
 				method: 'POST',
-				headers: {
-					"Authorization": that.token,
-					"Content-Type": "application/json"
-				},
-				body: JSON.stringify(data),
-				timeout: that.timeout
-			}).catch(function(err) {
+				data: data
+			}).then (function(res) {
+				ret = res;
+			}, function(err) {
+				ret = { data: { d_: that.RESULT_LOCAL, s_: err.toString() } };
+			}).catch(function (err) {
 				ret = { data: { d_: that.RESULT_LOCAL, s_: err.toString() } };
 			});
-
-			if (res) {
-				ret = { data: res };
-			}
 			
 		} catch (ex: any) {
 			ret = { data: { d_: that.RESULT_LOCAL, s_: ex.toString() } };
@@ -376,6 +405,7 @@ export default {
 		try {
 
 			let dt = new Date();
+			let request = that.create_axios(that.base_url);
 
 			let data = {
 				_d: 0,
@@ -385,21 +415,17 @@ export default {
 				_list: params
 			}
 
-			const res = await ofetch(that.base_url + url, {
+			await request({
+				url: url,
 				method: 'GET',
-				headers: {
-					"Authorization": that.token,
-					"Content-Type": "application/json"
-				},
-				body: JSON.stringify(data),
-				timeout: that.timeout
-			}).catch(function(err) {
+				data: data
+			}).then (function(res) {
+				ret = res;
+			}, function(err) {
+				ret = { data: { d_: that.RESULT_LOCAL, s_: err.toString() } };
+			}).catch(function (err) {
 				ret = { data: { d_: that.RESULT_LOCAL, s_: err.toString() } };
 			});
-
-			if (res) {
-				ret = { data: res };
-			}
 			
 		} catch (ex: any) {
 			ret = { data: { d_: that.RESULT_LOCAL, s_: ex.toString() } };
@@ -408,6 +434,7 @@ export default {
 		console.log("**** get ****", url, params, ret);
 		return ret;
 	},
+
 
 
 	/**
@@ -426,18 +453,20 @@ export default {
 			let dt = new Date();
 
 			if (baseUrl == undefined) baseUrl = that.base_url;
+			let request = that.create_axios(baseUrl);
 
-			const res = await ofetch(baseUrl + url + "?t=" + dt.getTime(), {
-				method: 'GET',
-				timeout: that.timeout
-			}).catch(function(err) {
+			await request({
+				url: url + "?t=" + dt.getTime(),
+				method: 'GET'
+			}).then (function(res) {
+				ret = res;
+			}, function(err) {
+				console.log(err);
+				ret = {};
+			}).catch(function (err) {
 				console.log(err);
 				ret = {};
 			});
-
-			if (res) {
-				ret = { data: res };
-			}
 			
 		} catch (ex: any) {
 			console.log(ex);
@@ -462,20 +491,20 @@ export default {
 
 		try {
 			
-			const res = await ofetch(that.base_url + url, {
+			let request = that.create_axios(that.base_url, "multipart/form-data");
+			//"Content-Type": "application/x-www-form-urlencoded"
+
+			await request({
+				url: url,
 				method: 'POST',
-				headers: {
-					"Authorization": that.token
-				},
-				body: data,
-				timeout: that.timeout
-			}).catch(function(err) {
+				data: data
+			}).then (function(res) {
+				ret = res;
+			}, function(err) {
+				ret = { data: { d_: that.RESULT_LOCAL, s_: err.toString() } };
+			}).catch(function (err) {
 				ret = { data: { d_: that.RESULT_LOCAL, s_: err.toString() } };
 			});
-
-			if (res) {
-				ret = { data: res };
-			}
 			
 		} catch (ex: any) {
 			ret = { data: { d_: that.RESULT_LOCAL, s_: ex.toString() } };
@@ -500,6 +529,7 @@ export default {
 		try {
 
 			let dt = new Date();
+			let request = that.create_axios(that.base_url);
 
 			let data = {
 				_d: 0,
@@ -512,21 +542,17 @@ export default {
 				}]
 			}
 
-			const res = await ofetch(that.base_url + "/common/proc", {
+			await request({
+				url: "/common/proc",
 				method: 'POST',
-				headers: {
-					"Authorization": that.token,
-					"Content-Type": "application/json"
-				},
-				body: JSON.stringify(data),
-				timeout: that.timeout
-			}).catch(function(err) {
+				data: data
+			}).then (function(res) {
+				ret = res;
+			}, function(err) {
+				ret = { data: { d_: that.RESULT_LOCAL, s_: err.toString() } };
+			}).catch(function (err) {
 				ret = { data: { d_: that.RESULT_LOCAL, s_: err.toString() } };
 			});
-
-			if (res) {
-				ret = { data: res };
-			}
 			
 		} catch (ex: any) {
 			ret = { data: { d_: that.RESULT_LOCAL, s_: ex.toString() } };

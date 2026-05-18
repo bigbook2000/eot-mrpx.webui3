@@ -35,7 +35,10 @@
                     <!-- 导航 begin -->
                     <div class="eo_row_d" :class="'div_menu_panel_'+x_menu_collapse">
                         <div class="eo_col">
-                            <div class="eo_col_f eo_scroll_v">
+                            <!--
+                            <div class="eo_col_f" style="overflow-x:hidden;overflow-y:auto;">
+                            -->
+                            <div class="eo_col_f">
                                 <el-menu style="height:100%;"
                                     :collapse-transition="false"
                                     :collapse="x_menu_collapse"
@@ -83,21 +86,21 @@
     import type { TabPaneName, TabsPaneContext } from "element-plus"
     import eolib from "@/inc/eolib"
 
-    var x_main_title = ref("");
-    var x_user_name = ref("");
+    const x_main_title = ref("");
+    const x_user_name = ref("");
 
-    var x_menu_width = ref("200px");
-    var x_menu_collapse = ref(false);
-    var m_current_index = ref("");
-    var x_current_menu = ref("m1");
-    var x_menu_list = ref(new Array<any>());
+    const x_menu_width = ref("200px");
+    const x_menu_collapse = ref(false);
+    const m_current_index = ref("");
+    const x_current_menu = ref("m1");
+    const x_menu_list = ref(new Array<any>());
 
     onMounted(async () => {       
         
         x_main_title.value = TGlobal.appData["main_title"];
         x_user_name.value = TGlobal.userData["f_name"];
 
-        x_menu_list.value = loadMenuList();
+        x_menu_list.value =  TLogic.loadMenuList();
         //console.log(x_menu_list.value);
 
         // 默认选择 home
@@ -127,71 +130,6 @@
 
     const onViewClick_MenuStatus = () => {
         x_menu_collapse.value = !x_menu_collapse.value;
-    }
-
-    const loadMenuList = (): Array<any> => {
-
-        var menuList = new Array<any>();
-        let menuListAll = new Array<any>();
-        
-        let lastMenu = undefined;
-        for (let d of TGlobal.menuList) {
-
-            if (d["f_type"] != "menu") continue;
-
-            //console.log(d);
-            // 通过角色判断
-            // if (!TLogic.checkRoleList(d.role_list)) continue;
-
-            let menuPid = d['f_menu_pid'];
-            if (menuPid == 1) {
-
-                menuListAll.push({
-                    index: 'm' + d['f_menu_id'],
-                    title: d['f_name'],
-                    icon: d['f_icon'],
-                    icon_path: eocore.get_path("/assets/icon/" + d['f_icon'] + ".png"),
-                    path: d['f_path'],
-                    children: new Array<any>()
-                });
-
-            } else {
-
-                if (lastMenu == undefined || lastMenu.index != menuPid) {
-
-                    lastMenu = undefined;
-                    for (let d2 of menuListAll) {
-
-                        if (d2.index == 'm' + menuPid) {
-                            lastMenu = d2;
-                            break;
-                        }
-                    }
-                }
-
-                if (lastMenu == undefined) {
-                    console.log('未找到菜单', d);
-                    continue;
-                }
-
-                lastMenu.children.push({
-                    index: 'm' + d['f_menu_id'],
-                    title: d['f_name'],
-                    icon: d['f_icon'],
-                    icon_path: eocore.get_path("/assets/icon/" + d['f_icon'] + ".png"),
-                    path: d['f_path'],
-                    children: new Array<any>()
-                });
-            }
-        }
-
-        for (let d of menuListAll) {
-            if (eocore.check_empty(d.children)) continue;
-            menuList.push(d);
-        }
-
-        //console.log(TGlobal.menuList, menuList, menuListAll);
-        return menuList;
     }
 
     const onViewClick_logout = async () => {

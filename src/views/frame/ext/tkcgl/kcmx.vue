@@ -11,7 +11,7 @@
                     <kcmx_xx ref="v_kcmx_xx"/>
                 </div>
             </el-tab-pane>
-            <el-tab-pane label="调拨历史" name="jygl">
+            <el-tab-pane label="调拨历史" name="jygl" v-if="!x_edit_mode">
                 <div style="padding:10px;height:350px;">
                     <kcjy_list ref="v_kcjy_list"/>
                 </div>
@@ -50,15 +50,16 @@
     }>();
 
     const x_active_tab = ref("cpxx");
-
     // 表单数据
     const x_data_kcmx: any = reactive({});
+    const x_edit_mode = ref(false);
+
 
     /**
      * 显示对话框
      * @param data 数据对象
      */
-    const showDialog = (data: any) => {
+    const showDialog = (data: any, editMode: boolean = true) => {
 
         // 先打开对话框
         v_dialog.value?.show_dialog(data);
@@ -66,6 +67,7 @@
         Object.assign(x_data_kcmx, data);
 
         x_active_tab.value = "cpxx";
+        x_edit_mode.value = editMode;
     }
   
     const onDialogOpen = (data: any) => {
@@ -80,6 +82,9 @@
     const onDialogClose = async (cancel: boolean, data0: any, cb: cfunc_boolean) => {
 
         if (cancel) {
+            cb(true); return;
+        }
+        if (!x_edit_mode.value) {
             cb(true); return;
         }
 

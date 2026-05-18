@@ -100,7 +100,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="co_row_d" style="width:500px;">
+                    <div class="co_row_d" style="width:600px;">
                         <gys_ex ref="v_gys_ex" />
                     </div>
 

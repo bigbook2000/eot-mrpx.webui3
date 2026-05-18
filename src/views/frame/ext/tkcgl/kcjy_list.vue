@@ -27,7 +27,7 @@
                 :on-item="onTableItem_kcjy">                            
                 <el-table-column prop="f_jyzt_s" label="调拨状态" width="90" />
                 <el-table-column prop="f_jysj_s" label="调拨时间" width="160" />
-                <el-table-column prop="f_yg_id_s" label="调拨员工" width="120" />                    
+                <el-table-column prop="f_jyyg_id_s" label="调拨员工" width="120" />                    
                 <el-table-column prop="f_beizhu" label="备注" width="200" show-overflow-tooltip />
                 <el-table-column prop="f_kgy_id_s" label="库管员" width="120" />
                 <el-table-column />
@@ -87,7 +87,7 @@
         data["f_jysj_s"] = eolib.datetime_2_short(data["f_jysj"]);
 
         // 用户转换
-        TLogic.updateDicUserData(data, ["f_yg_id", "f_kgy_id"]);
+        TLogic.updateDicUserData(data, ["f_jyyg_id", "f_kgy_id"]);
     }
 
     // 暴露方法给父组件使用

@@ -3,7 +3,7 @@ server:
 
 web:
   # Web UI 文件路径
-  wwwPath: D:/hjx/prj/eot-cms/src/web-ui
+  wwwPath: D:/hjx/prj/eot-mrpx.webui3/dist
 
 spring:
   resources:

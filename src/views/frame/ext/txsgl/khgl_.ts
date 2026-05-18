@@ -59,7 +59,7 @@ export function useKhglCommon(v_table_khgl: Ref<any>, v_khgl_ex: Ref<any>, v_keh
             "s_page_row_count": pageRowCount
         })
 
-        v_khgl_ex.value?.loadData(undefined)
+        v_khgl_ex.value?.loadData(undefined, false);
     }
 
     const netLoad_khgl_ghbz = async (khList: any[], ghbz: number) => {
@@ -132,14 +132,6 @@ export function useKhglCommon(v_table_khgl: Ref<any>, v_khgl_ex: Ref<any>, v_keh
     }
 
     /**
-     * 表格行点击事件
-     * @param data 行数据
-     */
-    const onTableRowClick_khgl = (data: any) => {
-        v_khgl_ex.value?.loadData(data)
-    }
-
-    /**
      * 分页点击事件
      * @param pageIndex 页码
      */
@@ -196,7 +188,6 @@ export function useKhglCommon(v_table_khgl: Ref<any>, v_khgl_ex: Ref<any>, v_keh
         onTableItem_khgl,
         onTablePage_khgl,
         onTableLoading,
-        onTableRowClick_khgl,
         onPageChange_khgl,
         onButtonClick_Clear_khgl,
         onButtonClick_Load_khgl

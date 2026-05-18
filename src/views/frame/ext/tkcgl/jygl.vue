@@ -145,7 +145,6 @@ export default { name: "ext_kcgl_jygl" }
     import eolib from "@/inc/eolib";
     import eodic from "@/inc/eodic";
 
-    import { ElTree } from 'element-plus'
     import vbuttonk from "@/logic/common/vbuttonk.vue"
     import vtable from "@/logic/common/vtable.vue"
     import vdic from "@/logic/common/vdic.vue"

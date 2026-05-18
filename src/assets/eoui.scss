@@ -34,22 +34,28 @@ body {
     padding: 0;
 }
 
-@media screen and (max-width: 1440px) {
+/** 移动端适配 */
+@media screen and (max-width: 1200px) {
+    html {
+        font-size: 1vw;
+    }
     #app {    
-        font-size: 10px;
         margin: 0;
         padding: 0;
         width: 100%;
         height: 100%;
-        min-width: 1200px;
+        min-width: 600px;
         min-height: 600px;
         overflow: auto;
     }
 } /* @media screen and (min-width: 800px) */
 
-@media screen and (min-width: 1440px) {
-    #app {
+/** 桌面端适配 */
+@media screen and (min-width: 1200px) {
+    html {
         font-size: 12px;
+    }
+    #app {
         margin: 0;
         padding: 0;
         width: 100%;
@@ -151,7 +157,7 @@ body {
 }
 
 
-@media screen and (max-width: 1440px) {
+@media screen and (max-width: 1200px) {
     /* 处理表单 */
     .eo_form {
         display: flex;
@@ -169,7 +175,7 @@ body {
                 flex: 0 0 auto;
                 display: flex;
                 align-items: center;
-                font-size: 10px;
+                font-size: 1.0rem;
                 color: #333;
             }
 
@@ -207,12 +213,12 @@ body {
                 flex: 1 1 auto;
                 width: 0;
                 padding: 5px 5px;
-                font-size: 10px;
+                font-size: 1.0rem;
                 color: #333;
             }
             .info_w {
                 padding: 5px 10px;
-                font-size: 10px;
+                font-size: 1.0rem;
                 line-height: 2;
                 color: #333;
             }            
@@ -230,8 +236,8 @@ body {
         padding: 5px 10px;
     }
      
-} /* @media screen and (min-width: 800px) */
-@media screen and (min-width: 1440px) {
+} 
+@media screen and (min-width: 1200px) {
 
     /* 处理表单 */
     .eo_form {
@@ -249,19 +255,19 @@ body {
                 flex: 0 0 auto;
                 display: flex;
                 align-items: center;
-                font-size: 12px;
+                font-size: 1.0rem;
                 color: #333;
             }
             .label_n {    
-                width: 60px;
+                width: 5rem;
                 @include form_label_s2;
             }
             .label_b {
-                width: 100px;
+                width: 6rem;
                 @include form_label_s2;
             }
             .label_s {
-                width: 40px;
+                width: 4rem;
                 @include form_label_s2;
             }
             .label_w {    
@@ -270,27 +276,27 @@ body {
             .input {    
                 flex: 1 1 auto;
                 width: 0;
-                padding: 5px 10px 5px 5px;
+                padding: 0.5rem 1rem 0.5rem 0.5rem;
             }
             .input_w {    
-                padding: 5px 10px 5px 5px;
+                padding: 0.5rem 1rem 0.5rem 0.5rem;
             }
             .split {
                 border-left: 1px solid var(--eo_color_grey_light);
-                width: 5px;
+                width: 0.4rem;
                 height: 100%;
             }
 
             .info {    
                 flex: 1 1 auto;
                 width: 0;
-                padding: 10px 10px;
-                font-size: 12px;
+                padding: 1rem 1rem;
+                font-size: 1.0rem;
                 color: #333;
             } 
             .info_w {    
-                padding: 10px 20px;
-                font-size: 12px;
+                padding: 1rem 2rem;
+                font-size: 1.0rem;
                 line-height: 2;
                 color: #333;
             } 
@@ -298,13 +304,13 @@ body {
     }
 
     .eo_tool_bar {
-        padding: 5px 5px 2px 5px;
+        padding: 0.5rem 0.5rem 0.2rem 0.5rem;
     }
     .eo_tab_bar {
-        padding: 0px 0px 2px;
+        padding: 0rem 0rem 0.2rem;
     }
     .eo_page_bar {
-        padding: 10px 20px;
+        padding: 1rem 2rem;
     }
 } /* @media screen and (min-width: 1440px) */
 
@@ -373,29 +379,26 @@ body {
 }
 
 .eo_w80p {
-    width: 80px;
+    width: 10rem;
 }
 .eo_w120p {
-    width: 120px;
+    width: 12rem;
 }
 .eo_w160p {
-    width: 160px;
+    width: 14rem;
 }
 .eo_w200p {
-    width: 200px;
+    width: 16rem;
 }
 .eo_w240p {
-    width: 240px;
-}
-.eo_w280p {
-    width: 280px;
+    width: 18rem;
 }
 .eo_w320p {
-    width: 320px;
+    width: 24rem;
 }
 
 /* 垂直间隔 */
 .eo_space_v {
-    height: 10px;
+    height: 0.8rem;
 }
 

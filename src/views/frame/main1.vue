@@ -78,7 +78,6 @@
                             </div>
                             <div class="eo_col_f">
                                 <router-view v-slot="{ Component }">
-                                    <!-- 需要在组件中定义名称，而不是路由中的名称 -->
                                     <keep-alive :include="x_keep_alive_list">
                                         <component :is="Component" />
                                     </keep-alive>

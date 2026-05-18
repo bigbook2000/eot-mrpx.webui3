@@ -30,6 +30,7 @@
                 <div class="eo_form">
                     <div class="cell">
                         <vbuttonk type="primary" class="input_w" permit="" 
+                            v-if="x_edit_mode"
                             @click="onButtonClick_Add_khgt">新建沟通</vbuttonk>
                     </div>
                 </div>
@@ -37,26 +38,43 @@
 
         </div>
         <div class="eo_fill" v-show="x_tab_index==1">
-            <vtable ref="v_table_cjjl" 
-                name="成交记录"
-                id-field="f_kcmx_id"
-                @loading="onTableLoading_cjjl"
-                :on-item="onTableItem_cjjl"
-                @row-click="onTableRowClick_cjjl">
-                <el-table-column prop="f_cjsj_s" label="时间" width="140" />                
-                <el-table-column prop="f_cpmc" label="产品名称" width="180" show-overflow-tooltip />                    
-                <el-table-column prop="f_xsje_s" label="金额" width="120" align="right" />
-                <el-table-column prop="f_kcsl" label="数量" width="120" />
-                <el-table-column prop="f_kcbh" label="批次" width="200" />
-                <el-table-column prop="f_xsy_id_s" label="销售员" width="120" />
-                <el-table-column prop="f_xsdh" label="订单号" width="160" />
-                <el-table-column prop="f_cpgg" label="规格" width="180" show-overflow-tooltip />
-                <el-table-column prop="f_cpcc" label="尺寸" width="160" show-overflow-tooltip />
-                <el-table-column prop="f_cpzl" label="重量" width="160" show-overflow-tooltip />
-                <el-table-column prop="f_cpdw" label="单位" width="100" show-overflow-tooltip />
-                <el-table-column prop="f_beizhu" label="备注" width="200" show-overflow-tooltip />
-                <el-table-column />
-            </vtable>
+            <div class="eo_col">
+                <div class="eo_col_f">
+                    <vtable ref="v_table_cjjl" 
+                        name="成交记录"
+                        id-field="f_kcmx_id"
+                        @loading="onTableLoading_cjjl"
+                        :on-item="onTableItem_cjjl"
+                        :on-page="onTablePage_cjjl"
+                        @row-click="onTableRowClick_cjjl">
+                        <el-table-column prop="f_cjsj_s" label="时间" width="140" />                
+                        <el-table-column prop="f_cpmc" label="产品名称" width="180" show-overflow-tooltip />                    
+                        <el-table-column prop="f_xsje_s" label="金额" width="120" align="right" />
+                        <el-table-column prop="f_kcsl" label="数量" width="120" />
+                        <el-table-column prop="f_kcbh" label="批次" width="200" />
+                        <el-table-column prop="f_xsy_id_s" label="销售员" width="120" />
+                        <el-table-column prop="f_xsdh" label="订单号" width="160" />
+                        <el-table-column prop="f_cpgg" label="规格" width="180" show-overflow-tooltip />
+                        <el-table-column prop="f_cpcc" label="尺寸" width="160" show-overflow-tooltip />
+                        <el-table-column prop="f_cpzl" label="重量" width="160" show-overflow-tooltip />
+                        <el-table-column prop="f_cpdw" label="单位" width="100" show-overflow-tooltip />
+                        <el-table-column prop="f_beizhu" label="备注" width="200" show-overflow-tooltip />
+                        <el-table-column />
+                    </vtable>
+                </div>
+
+                <!-- 分页 -->
+                <div class="eo_page_bar">
+                    <el-pagination
+                        background
+                        @current-change="onPageChange_cjjl"
+                        :current-page="x_page_index"
+                        :page-size="x_page_row_count"
+                        layout="total, prev, pager, next, jumper"
+                        :total="x_row_total">
+                    </el-pagination>
+                </div>
+            </div>
         </div>
     </vtab>
     
@@ -100,6 +118,12 @@
     let m_khgt_data: any = undefined; // 选中的沟通记录
 
     let m_khgl_data: any = {};
+    const x_edit_mode = ref(false);
+
+    // 分页变量
+    const x_page_index = ref(1);
+    const x_page_row_count = ref(50);
+    const x_row_total = ref(0);
 
     // 沟通信息表单字段定义
     const x_form_types_khgt = ref<cform_options[]>([
@@ -112,11 +136,12 @@
     ]);
 
     // 加载沟通记录数据
-    const loadData = async (khglData: any) => {
+    const loadData = async (khglData: any, editMode: boolean) => {
 
         m_khgl_data = khglData;
         x_khgt_list.value = [];
         m_khgt_data = undefined;
+        x_edit_mode.value = editMode;
 
         if (khglData == undefined) {
             return;
@@ -141,7 +166,7 @@
             }
         });
 
-        await netLoad_xsdck_query();
+        await netLoad_xsdck_query(-1);
     };
 
     const updateItemData_khgt = (data: any): any => {
@@ -154,7 +179,11 @@
         return data;
     };
 
-    const netLoad_xsdck_query = async () => {
+    const netLoad_xsdck_query = async (pageIndex: number = -1) => {
+
+        const pageRowCount = x_page_row_count.value;
+        const rowIndex = pageIndex * pageRowCount;
+        if (pageIndex < 0) x_page_index.value = 1;
 
         v_table_cjjl.value?.load_list_proc("p_xsdck_query", { 
             "v_xsy_id": -1, 
@@ -166,8 +195,8 @@
             "v_kcbh": "", 
             "v_cpmc": "", 
             "v_order_by": " ORDER BY f_xsdck_id DESC",
-            "s_page_row_index": 0,
-            "s_page_row_count": 200
+            "s_page_row_index": rowIndex,
+            "s_page_row_count": pageRowCount
         });
     }    
 
@@ -191,6 +220,24 @@
         // 用户转换
         TLogic.updateDicUserData(item, ["f_xsy_id"]);
     };
+
+    /**
+     * 分页处理
+     * @param n 总记录数
+     */
+    const onTablePage_cjjl = (n: number): number => {
+        x_row_total.value = n;
+        return n;
+    }
+
+    /**
+     * 分页点击事件
+     * @param pageIndex 页码
+     */
+    const onPageChange_cjjl = (pageIndex: number) => {
+        x_page_index.value = pageIndex;
+        netLoad_xsdck_query(pageIndex - 1);
+    }
     
     const onTableRowClick_cjjl = (item: any) => {
     };
@@ -248,9 +295,9 @@
     const onButtonClick_Add_khgt = () => {
 
         const dt = new Date();
-        const khglId = eocore.to_int(m_khgl_data["f_khgl_id"]);
+        const khglId = eocore.to_int(m_khgl_data?.["f_khgl_id"]);
         if (khglId <= 0) {
-            eocore.show_info('请先选择客户');
+            eocore.show_info('请先勾选客户');
             return;
         }
         

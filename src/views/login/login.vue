@@ -59,7 +59,7 @@
     var x_copyright = ref("");
     var x_version = ref("");
 
-    onMounted(async () => {        
+    onMounted(async () => {
         x_main_title.value = TGlobal.appData["main_title"];
         x_copyright.value = TGlobal.appData["copyright"];
         x_version.value = TGlobal.appData["version"];
@@ -112,7 +112,11 @@
 
         x_login_disable.value = false;
         
-        router.replace({ name:'main' });
+        if (TGlobal.__GPF_ == "app") {
+            router.replace({ name:'app_main' });
+        } else {
+            router.replace({ name:'main' });
+        }
     }
     
      
@@ -124,37 +128,88 @@
     height: 100%;
     background-color: var(--eo_color_back);
 }
+
+/** 桌面端适配 */
+@media screen and (min-width: 1200px) {
 .div_login {
     width: 100%;
-    height: 100%;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
 
     .border {        
-        width: 360px;
+        width: 32rem;
         border: 1px solid var(--eo_color_dark1);
-        border-radius: 20px;
+        border-radius: 1rem;
 
         .panel {
             .title {
                 text-align: center;
                 background-color: var(--eo_color_dark1);
-                padding: 10px;
-                font-size: 18px;
+                padding: 1rem;
+                font-size: 1.5rem;
                 color: #fff;
-                border-top-left-radius: 20px;
-                border-top-right-radius: 20px;
+                border-top-left-radius: 1rem;
+                border-top-right-radius: 1rem;
                 box-sizing: border-box;
             }
             .row {
-                padding: 10px 25px;
+                padding: 1rem 2rem;
                 box-sizing: border-box;
             }
             .info {
-                padding: 10px 25px;
+                padding: 1rem 2rem;
                 box-sizing: border-box;
-                height: 80px;
+                height: 6rem;
+                color: #4099ff;
+                word-break: break-all;
+                word-wrap: break-word;
+            }
+        }
+    }
+}
+.div_copyright {
+    font-size: 1.2rem;
+    color: #666;
+    padding: 0.5rem;
+    text-align: center;
+}
+}
+
+/** 移动端适配 */
+@media screen and (max-width: 1200px) {
+.div_login {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .border {        
+        width: 60rem;
+        border: 1px solid var(--eo_color_dark1);
+        border-radius: 5rem;
+
+        .panel {
+            .title {
+                text-align: center;
+                background-color: var(--eo_color_dark1);
+                padding: 2rem;
+                font-size: 2rem;
+                color: #fff;
+                border-top-left-radius: 5rem;
+                border-top-right-radius: 5rem;
+                box-sizing: border-box;
+            }
+            .row {
+                padding: 2rem 4rem;
+                box-sizing: border-box;
+            }
+            .info {
+                padding: 2rem 4rem;
+                box-sizing: border-box;
+                height: 10rem;
                 color: #4099ff;
                 word-break: break-all;
                 word-wrap: break-word;
@@ -167,5 +222,6 @@
     color: #333;
     padding: 5px;
     text-align: center;
+}
 }
 </style>

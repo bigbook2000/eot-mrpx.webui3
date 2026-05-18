@@ -115,11 +115,11 @@ export default { name: "ext_cggl_cgcx" }
     const x_query_kcbh = ref("");
     const x_query_cpmc = ref("");
     const x_query_gysmc = ref("");
-    const x_query_cjsj = ref<[string, string] | null>(null);
+    const x_query_cjsj = ref<[string, string] | undefined>(undefined);
 
     // 分页变量
     const x_page_index = ref(1);
-    const x_page_row_count = ref(20);
+    const x_page_row_count = ref(50);
     const x_row_total = ref(0);
 
     // 加载状态
@@ -143,8 +143,8 @@ export default { name: "ext_cggl_cgcx" }
      */
     const netLoad_cgdrk_query = async (pageIndex: number = -1) => {
 
-        let pageRowCount = x_page_row_count.value;
-        let rowIndex = pageIndex * pageRowCount;
+        const pageRowCount = x_page_row_count.value;
+        const rowIndex = pageIndex * pageRowCount;
         if (pageIndex < 0) x_page_index.value = 1;
 
         let cjsj1 = eolib.date_start(x_query_cjsj.value?.[0]);
@@ -170,13 +170,10 @@ export default { name: "ext_cggl_cgcx" }
      * @param data 表格行数据
      */
     const onTableItem_cgdrk = (data: any) => {
-
         data["f_cjsj_s"] = eolib.date_2_string(data["f_cjsj"]);
-
         data["f_cgdj_s"] = 
             eolib.fixed_num(eocore.to_float(data["f_cgdj"]), 3);
     }
-
     /**
      * 分页处理
      * @param n 总记录数

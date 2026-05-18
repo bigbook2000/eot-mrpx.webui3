@@ -2,25 +2,42 @@
     <vtab :itemList="['采购记录', '资料文档']" v-model="x_tab_index" item-width="80px">
 
         <div class="eo_fill" v-show="x_tab_index==0">
-            <vtable ref="v_table_cgjl" 
-                name="采购记录"
-                id-field="f_kcmx_id"
-                @loading="onTableLoading"
-                :on-item="onTableItem_cgjl"
-                @row-click="onTableRowClick_cgjl">
-                <el-table-column prop="f_cjsj_s" label="时间" width="140" />                
-                <el-table-column prop="f_cpmc" label="产品名称" width="180" show-overflow-tooltip />                    
-                <el-table-column prop="f_xsje_s" label="金额" width="120" align="right" />
-                <el-table-column prop="f_kcsl" label="数量" width="120" />
-                <el-table-column prop="f_kcbh" label="批次" width="200" />
-                <el-table-column prop="f_cgdh" label="采购单" width="160" />
-                <el-table-column prop="f_cpgg" label="规格" width="180" show-overflow-tooltip />
-                <el-table-column prop="f_cpcc" label="尺寸" width="160" show-overflow-tooltip />
-                <el-table-column prop="f_cpzl" label="重量" width="160" show-overflow-tooltip />
-                <el-table-column prop="f_cpdw" label="单位" width="100" show-overflow-tooltip />
-                <el-table-column prop="f_beizhu" label="备注" width="200" show-overflow-tooltip />
-                <el-table-column />
-            </vtable>
+            <div class="eo_col">
+                <div class="eo_col_f">
+                    <vtable ref="v_table_cgjl" 
+                        name="采购记录"
+                        id-field="f_kcmx_id"
+                        @loading="onTableLoading"
+                        :on-item="onTableItem_cgdrk"
+                        :on-page="onTablePage_cgdrk"
+                        @row-click="onTableRowClick_cgdrk">
+                        <el-table-column prop="f_cjsj_s" label="时间" width="140" />                
+                        <el-table-column prop="f_cpmc" label="产品名称" width="180" show-overflow-tooltip />                    
+                        <el-table-column prop="f_cgdj_s" label="单价" width="120" align="right" />
+                        <el-table-column prop="f_bzsl" label="数量" width="120" />
+                        <el-table-column prop="f_kcbh" label="批次" width="200" />
+                        <el-table-column prop="f_cgdh" label="采购单" width="160" />
+                        <el-table-column prop="f_cpgg" label="规格" width="180" show-overflow-tooltip />
+                        <el-table-column prop="f_cpcc" label="尺寸" width="160" show-overflow-tooltip />
+                        <el-table-column prop="f_cpzl" label="重量" width="160" show-overflow-tooltip />
+                        <el-table-column prop="f_cpdw" label="单位" width="100" show-overflow-tooltip />
+                        <el-table-column prop="f_beizhu" label="备注" width="200" show-overflow-tooltip />
+                        <el-table-column />
+                    </vtable>
+                </div>
+
+                <!-- 分页 -->
+                <div class="eo_page_bar">
+                    <el-pagination
+                        background
+                        @current-change="onPageChange_cgdrk"
+                        :current-page="x_page_index"
+                        :page-size="x_page_row_count"
+                        layout="total, prev, pager, next, jumper"
+                        :total="x_row_total">
+                    </el-pagination>
+                </div>                
+            </div>
         </div>
 
         <div class="eo_col" v-show="x_tab_index==1">
@@ -95,6 +112,11 @@
 
     const x_gys_data = ref<any>({});
 
+    // 分页变量
+    const x_page_index = ref(1);
+    const x_page_row_count = ref(50);
+    const x_row_total = ref(0);
+
     // 加载供应商记录
     const loadData = async (gysData: any) => {
 
@@ -104,12 +126,16 @@
             return;
         }
 
-        await netLoad_cgdrk_query();
+        await netLoad_cgdrk_query(-1);
         await netLoad_wjzl_query();
     };
 
-    const netLoad_cgdrk_query = async () => {
+    const netLoad_cgdrk_query = async (pageIndex: number = -1) => {
 
+        const pageRowCount = x_page_row_count.value;
+        const rowIndex = pageIndex * pageRowCount;
+        if (pageIndex < 0) x_page_index.value = 1;
+        
         v_table_cgjl.value?.load_list_proc("p_cgdrk_query", { 
             "v_gys_id": x_gys_data.value["f_gys_id"],
             "v_gysmc": "",
@@ -119,8 +145,8 @@
             "v_kcbh": "", 
             "v_cpmc": "", 
             "v_order_by": " ORDER BY f_cgdrk_id DESC",
-            "s_page_row_index": 0,
-            "s_page_row_count": 200
+            "s_page_row_index": rowIndex,
+            "s_page_row_count": pageRowCount
         });
     }
 
@@ -159,20 +185,40 @@
         v_table_wjzl.value?.load_list(list1);
     }
 
-    // 成交记录表格相关
-    const onTableLoading = (loading: boolean) => {
-        x_show_loading.value = loading;
-    };
-    const onTableItem_cgjl = (item: any) => {
-        // 日期格式化
-        item["f_cjsj_s"] = eolib.datetime_2_short(item["f_cjsj"]);
-        
-        // 金额格式化
-        item["f_xsje_s"] = eolib.fixed_num(item["f_xsdj"] * item["f_kcsl"], 3);
-        
-        // 用户转换
-        TLogic.updateDicUserData(item, ["f_xsy_id"]);
-    };
+    /**
+     * 加载状态处理
+     * @param show 是否显示加载状态
+     */
+    const onTableLoading = (show: boolean) => {
+        x_show_loading.value = show;
+    }
+
+    /**
+     * 表格数据格式化
+     * @param data 表格行数据
+     */
+    const onTableItem_cgdrk = (data: any) => {
+        data["f_cjsj_s"] = eolib.date_2_string(data["f_cjsj"]);
+        data["f_cgdj_s"] = 
+            eolib.fixed_num(eocore.to_float(data["f_cgdj"]), 3);
+    }
+    /**
+     * 分页处理
+     * @param n 总记录数
+     */
+    const onTablePage_cgdrk = (n: number): number => {
+        x_row_total.value = n;
+        return n;
+    }
+
+    /**
+     * 分页点击事件
+     * @param pageIndex 页码
+     */
+    const onPageChange_cgdrk = (pageIndex: number) => {
+        x_page_index.value = pageIndex;
+        netLoad_cgdrk_query(pageIndex - 1);
+    }    
     
     const onTableRowClick_wdzl = (item: any) => {
     };
@@ -183,7 +229,7 @@
         item["f_url_s"] = TLogic.getXSaveDataUrl(item["f_file_id"]);
     };
     
-    const onTableRowClick_cgjl = (item: any) => {
+    const onTableRowClick_cgdrk = (item: any) => {
     };    
 
     // 沟通信息对话框关闭事件

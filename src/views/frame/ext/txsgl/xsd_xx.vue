@@ -87,7 +87,14 @@
                     <el-input v-model="x_data_xsd['f_ssje']" style="width:100%"
                         maxlength="50" :disabled="true"></el-input>
                 </div>
-            </div>            
+            </div>
+            <div class="cell eo_w2">
+                <div class="label_n">截止日期</div>
+                <div class="input">
+                    <el-date-picker v-model="x_data_xsd['f_jzrq']" style="width:100%"
+                        type="date" value-format="YYYY-MM-DD"></el-date-picker>
+                </div>
+            </div> 
             <div class="cell eo_w100">
                 <div class="label_n">备注</div>
                 <div class="input">

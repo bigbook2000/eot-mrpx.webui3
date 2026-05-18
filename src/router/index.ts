@@ -1,8 +1,8 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Index from '@/views/Index.vue'
-import Login from '@/views/frame/login.vue'
-import Main from '@/views/frame/main0.vue'
-import Home from '@/views/frame/home.vue'
+import Login from '@/views/login/login.vue'
+import Main from '@/views/frame/main.vue'
+import AppMain from '@/views/app/main.vue'
 
 import TGlobal from '@/logic/TGlobal'
 import TLogic from '@/logic/TLogic'
@@ -25,6 +25,13 @@ const router = createRouter({
       component: Login
     },
     {
+      path: '/app/main',
+      name: 'app_main',
+      component: AppMain,
+      children: [
+      ]
+    },
+    {
       path: '/main',
       name: 'main',
       component: Main,
@@ -32,9 +39,8 @@ const router = createRouter({
         {
           path: '/home',
           name: 'home',
-          component: Home
+          component: () => import('@/views/frame/home.vue')
         },
-
         {
           path: '/platform/menu',
           name: 'platform_menu',
@@ -76,6 +82,11 @@ const router = createRouter({
           component: () => import('@/views/platform/file.vue')
         },
         {
+          path: '/platform/log',
+          name: 'platform_log',
+          component: () => import('@/views/platform/log.vue')
+        },
+        {
           path: '/platform/flow',
           name: 'platform_flow',
           component: () => import('@/views/platform/flow.vue')
@@ -113,6 +124,16 @@ const router = createRouter({
           component: () => import('@/views/frame/data/sensorview.vue')
         },
         /** 应用 */
+        { /** AI */
+          path: '/ext/tgzt/eotai',
+          name: 'ext_tgzt_eotai',
+          component: () => import('@/views/frame/ext/tgzt/eotai.vue')
+        },
+        { /** 产品类别 */
+          path: '/ext/kcgl/cplb',
+          name: 'ext_kcgl_cplb',
+          component: () => import('@/views/frame/ext/tkcgl/cplb.vue')
+        },
         { /** 产品类别 */
           path: '/ext/kcgl/cplb',
           name: 'ext_kcgl_cplb',
@@ -236,7 +257,7 @@ router.beforeEach((to, from, next)=>{
   let toNext = true;
 
   const filterList = [
-    "index", "login", "main"
+    "index", "login" 
   ]
   const toName = to.name as string | "";
   if (filterList.includes(toName)) {
@@ -244,23 +265,24 @@ router.beforeEach((to, from, next)=>{
     return;
   }
 
+  if (TGlobal.userData["f_user_id"] <= 0) {
+    next();
+    return;
+  }
+
   const menu = TGlobal.menuMap[toName];
   //console.log(from, to, menu);
   if (menu == undefined) {
-    router.replace({name: "index"});
+    next();
     return;
   }
     
   if (menu.role_list.length > 0) {
-    if (TGlobal.userData["f_user_id"] > 0) {
-      toNext = TLogic.checkRoleList(menu.role_list);
-    } else {
-      toNext = false;
-    }
+    toNext = TLogic.checkRoleList(menu.role_list);
   }
 
   if (toNext) {
-    next();    
+    next();
   } else {
     router.replace({name: "index"});
   }

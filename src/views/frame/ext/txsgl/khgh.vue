@@ -205,7 +205,6 @@ export default { name: "ext_xsgl_khgh" }
         onTableItem_khgl,
         onTablePage_khgl,
         onTableLoading,
-        onTableRowClick_khgl,
         onPageChange_khgl,
         onButtonClick_Clear_khgl,
         onButtonClick_Load_khgl
@@ -216,6 +215,14 @@ export default { name: "ext_xsgl_khgh" }
         // 初始化加载数据
         netLoad_khgl_query(-1)
     })
+
+    /**
+     * 表格行点击事件
+     * @param data 行数据
+     */
+    const onTableRowClick_khgl = (data: any) => {
+        v_khgl_ex.value?.loadData(data, false);
+    } 
 
     /**
      * 修改客户
