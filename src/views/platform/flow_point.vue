@@ -50,7 +50,7 @@
 
     import type {cfunc_boolean} from "@/inc/eotypes";
 
-    import vdialog from "@/logic/common/vdialog.vue"
+    import vdialog from "@/components/web/vdialog.vue"
     import role_input from "@/views/platform/role_input.vue"
 
     type t_dialog = InstanceType<typeof vdialog>;

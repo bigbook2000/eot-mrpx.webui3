@@ -101,7 +101,7 @@ export default { name: "platform_menu" }
     import TGlobal from "@/logic/TGlobal"
     import TLogic from "@/logic/TLogic"
 
-    import vtable from "@/logic/common/vtable.vue"
+    import vtable from "@/components/web/vtable.vue"
 
     type t_table = InstanceType<typeof vtable>;
     const v_table_file = ref<t_table>();

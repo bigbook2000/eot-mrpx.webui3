@@ -108,10 +108,10 @@ export default { name: "platform_flow" }
     import eolib from "@/inc/eolib";
     import eodic from "@/inc/eodic";
 
-    import vbuttonk from "@/logic/common/vbuttonk.vue"
-    import vtable from "@/logic/common/vtable.vue"
-    import vdic from "@/logic/common/vdic.vue"
-    import vformd from "@/logic/common/vformd.vue"
+    import vbuttonk from "@/components/web/vbuttonk.vue"
+    import vtable from "@/components/web/vtable.vue"
+    import vdic from "@/components/web/vdic.vue"
+    import vformd from "@/components/web/vformd.vue"
 
     import flow_point from "@/views/platform/flow_point.vue"
 

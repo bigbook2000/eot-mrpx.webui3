@@ -1,7 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Index from '@/views/Index.vue'
 import Login from '@/views/login/login.vue'
-import Main from '@/views/frame/main.vue'
+import Main from '@/views/web/main.vue'
 import AppMain from '@/views/app/main.vue'
 
 import TGlobal from '@/logic/TGlobal'
@@ -24,13 +24,40 @@ const router = createRouter({
       name: 'login',
       component: Login
     },
+    
+    /** App Begin */
     {
       path: '/app/main',
       name: 'app_main',
-      component: AppMain,
-      children: [
-      ]
+      component: AppMain
     },
+    {
+      path: '/app/cggl/cggl',
+      name: 'app_cggl_cggl',
+      component: () => import('@/views/app/pcggl/cggl.vue')
+    },
+    {
+      path: '/app/xsgl/xsgl',
+      name: 'app_xsgl_xsgl',
+      component: () => import('@/views/app/pxsgl/xsgl.vue')
+    },
+    {
+      path: '/app/kcgl/kczl',
+      name: 'app_kcgl_kczl',
+      component: () => import('@/views/app/pkcgl/kczl.vue')
+    },
+    {
+      path: '/app/kcgl/kcmx',
+      name: 'app_kcgl_kcmx',
+      component: () => import('@/views/app/pkcgl/kcmx.vue')
+    },
+    {
+      path: '/app/kcgl/cpdy',
+      name: 'app_kcgl_cpdy',
+      component: () => import('@/views/app/pkcgl/cpdy.vue')
+    },
+    /** App End */
+
     {
       path: '/main',
       name: 'main',
@@ -39,7 +66,7 @@ const router = createRouter({
         {
           path: '/home',
           name: 'home',
-          component: () => import('@/views/frame/home.vue')
+          component: () => import('@/views/web/home.vue')
         },
         {
           path: '/platform/menu',
@@ -100,144 +127,144 @@ const router = createRouter({
         {
           path: '/device/list',
           name: 'device_list',
-          component: () => import('@/views/frame/device/device.vue')
+          component: () => import('@/views/web/device/device.vue')
         },        
         {
           path: '/device/version',
           name: 'device_version',
-          component: () => import('@/views/frame/device/version.vue')
+          component: () => import('@/views/web/device/version.vue')
         },
         /** 数据 */
         {
           path: '/data/datalist',
           name: 'data_datalist',
-          component: () => import('@/views/frame/data/datalist.vue')
+          component: () => import('@/views/web/data/datalist.vue')
         },
         {
           path: '/data/sensorfield',
           name: 'data_sensorfield',
-          component: () => import('@/views/frame/data/sensorfield.vue')
+          component: () => import('@/views/web/data/sensorfield.vue')
         },
         {
           path: '/data/sensorview',
           name: 'data_sensorview',
-          component: () => import('@/views/frame/data/sensorview.vue')
+          component: () => import('@/views/web/data/sensorview.vue')
         },
         /** 应用 */
         { /** AI */
           path: '/ext/tgzt/eotai',
           name: 'ext_tgzt_eotai',
-          component: () => import('@/views/frame/ext/tgzt/eotai.vue')
+          component: () => import('@/views/web/ext/tgzt/eotai.vue')
         },
         { /** 产品类别 */
           path: '/ext/kcgl/cplb',
           name: 'ext_kcgl_cplb',
-          component: () => import('@/views/frame/ext/tkcgl/cplb.vue')
+          component: () => import('@/views/web/ext/tkcgl/cplb.vue')
         },
         { /** 产品类别 */
           path: '/ext/kcgl/cplb',
           name: 'ext_kcgl_cplb',
-          component: () => import('@/views/frame/ext/tkcgl/cplb.vue')
+          component: () => import('@/views/web/ext/tkcgl/cplb.vue')
         },
         { /** 产品定义 */
           path: '/ext/kcgl/cpdy',
           name: 'ext_kcgl_cpdy',
-          component: () => import('@/views/frame/ext/tkcgl/cpdy.vue')
+          component: () => import('@/views/web/ext/tkcgl/cpdy.vue')
         },
         { /** 库存整理 */
           path: '/ext/kcgl/kczl',
           name: 'ext_kcgl_kczl',
-          component: () => import('@/views/frame/ext/tkcgl/kczl.vue')
+          component: () => import('@/views/web/ext/tkcgl/kczl.vue')
         },
         { /** 库存统计 */
           path: '/ext/kcgl/kctj',
           name: 'ext_kcgl_kctj',
-          component: () => import('@/views/frame/ext/tkcgl/kctj.vue')
+          component: () => import('@/views/web/ext/tkcgl/kctj.vue')
         },
         { /** 库存变更 */
           path: '/ext/kcgl/kcbg',
           name: 'ext_kcgl_kcbg',
-          component: () => import('@/views/frame/ext/tkcgl/kcbg.vue')
+          component: () => import('@/views/web/ext/tkcgl/kcbg.vue')
         },
         { /** 库存整理 */
           path: '/ext/kcgl/kczl',
           name: 'ext_kcgl_kczl',
-          component: () => import('@/views/frame/ext/tkcgl/kczl.vue')
+          component: () => import('@/views/web/ext/tkcgl/kczl.vue')
         },
         { /** 供应商 */
           path: '/ext/cggl/gys',
           name: 'ext_cggl_gys',
-          component: () => import('@/views/frame/ext/tcggl/gys.vue')
+          component: () => import('@/views/web/ext/tcggl/gys.vue')
         },
         { /** 采购管理 */
           path: '/ext/cggl/cggl',
           name: 'ext_cggl_cggl',
-          component: () => import('@/views/frame/ext/tcggl/cggl.vue')
+          component: () => import('@/views/web/ext/tcggl/cggl.vue')
         },
         { /** 采购退货 */
           path: '/ext/cggl/cgth',
           name: 'ext_cggl_cgth',
-          component: () => import('@/views/frame/ext/tcggl/cgth.vue')
+          component: () => import('@/views/web/ext/tcggl/cgth.vue')
         },
         { /** 采购查询 */
           path: '/ext/cggl/cgcx',
           name: 'ext_cggl_cgcx',
-          component: () => import('@/views/frame/ext/tcggl/cgcx.vue')
+          component: () => import('@/views/web/ext/tcggl/cgcx.vue')
         },
         { /** 物流公司 */
           path: '/ext/cwgl/wlgs',
           name: 'ext_cwgl_wlgs',
-          component: () => import('@/views/frame/ext/tcwgl/wlgs.vue')
+          component: () => import('@/views/web/ext/tcwgl/wlgs.vue')
         },
         { /** 客户管理 */
           path: '/ext/xsgl/khgl',
           name: 'ext_xsgl_khgl',
-          component: () => import('@/views/frame/ext/txsgl/khgl.vue')
+          component: () => import('@/views/web/ext/txsgl/khgl.vue')
         },
         { /** 客户公海 */
           path: '/ext/xsgl/khgh',
           name: 'ext_xsgl_khgh',
-          component: () => import('@/views/frame/ext/txsgl/khgh.vue')
+          component: () => import('@/views/web/ext/txsgl/khgh.vue')
         },
         { /** 订单管理 */
           path: '/ext/xsgl/xsgl',
           name: 'ext_xsgl_xsgl',
-          component: () => import('@/views/frame/ext/txsgl/xsgl.vue')
+          component: () => import('@/views/web/ext/txsgl/xsgl.vue')
         },
         { /** 销售退货 */
           path: '/ext/xsgl/xsth',
           name: 'ext_xsgl_xsth',
-          component: () => import('@/views/frame/ext/txsgl/xsth.vue')
+          component: () => import('@/views/web/ext/txsgl/xsth.vue')
         },
         { /** 销售查询 */
           path: '/ext/xsgl/xscx',
           name: 'ext_xsgl_xscx',
-          component: () => import('@/views/frame/ext/txsgl/xscx.vue')
+          component: () => import('@/views/web/ext/txsgl/xscx.vue')
         },
         { /** 生产工艺 */
           path: '/ext/scgl/scgy',
           name: 'ext_scgl_scgy',
-          component: () => import('@/views/frame/ext/tscgl/scgy.vue')
+          component: () => import('@/views/web/ext/tscgl/scgy.vue')
         },
         { /** 生产管理 */
           path: '/ext/scgl/scgl',
           name: 'ext_scgl_scgl',
-          component: () => import('@/views/frame/ext/tscgl/scgl.vue')
+          component: () => import('@/views/web/ext/tscgl/scgl.vue')
         },
         { /** 生产物料 */
           path: '/ext/scgl/scwl',
           name: 'ext_scgl_scwl',
-          component: () => import('@/views/frame/ext/tscgl/scwl.vue')
+          component: () => import('@/views/web/ext/tscgl/scwl.vue')
         },
         { /** 生产记录 */
           path: '/ext/scgl/scjl',
           name: 'ext_scgl_scjl',
-          component: () => import('@/views/frame/ext/tscgl/scjl.vue')
+          component: () => import('@/views/web/ext/tscgl/scjl.vue')
         },
         { /** 借用管理 */
           path: '/ext/kcgl/jygl',
           name: 'ext_kcgl_jygl',
-          component: () => import('@/views/frame/ext/tkcgl/jygl.vue')
+          component: () => import('@/views/web/ext/tkcgl/jygl.vue')
         },
       ]
     },
@@ -247,7 +274,7 @@ const router = createRouter({
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import('@/views/frame/test/test.vue')
+      component: () => import('@/views/web/test/test.vue')
     }
   ]
 })

@@ -81,8 +81,8 @@ export default { name: "platform_user" }
     import eocore from "@/inc/eocore"
     import eolib from "@/inc/eolib";
 
-    import vbuttonk from "@/logic/common/vbuttonk.vue"
-    import vtable from "@/logic/common/vtable.vue"
+    import vbuttonk from "@/components/web/vbuttonk.vue"
+    import vtable from "@/components/web/vtable.vue"
 
     import user_info from "@/views/platform/user_info.vue"
     import TLogic from "@/logic/TLogic";

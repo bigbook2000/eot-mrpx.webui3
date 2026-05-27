@@ -52,7 +52,7 @@
 
     import type {ctree_node, cfunc_boolean} from "@/inc/eotypes";    
 
-    import vtable from "@/logic/common/vtable.vue"
+    import vtable from "@/components/web/vtable.vue"
     type t_table = InstanceType<typeof vtable>
     
     const x_show_loading = ref(false);

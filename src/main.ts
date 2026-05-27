@@ -1,5 +1,6 @@
-import './assets/prj.scss'
 import './assets/eoui.scss'
+import './assets/prj.scss'
+import './assets/app.scss'
 
 import { createApp } from 'vue'
 
@@ -9,19 +10,21 @@ import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 
 
 import './assets/element/element.scss'
-import './assets/element/button.scss'
-import './assets/element/input.scss'
-import './assets/element/table.scss'
-import './assets/element/tabs.scss'
-import './assets/element/tree.scss'
-import './assets/element/menu.scss'
-import './assets/element/loading.scss'
-import './assets/element/page.scss'
-import './assets/element/select.scss'
-import './assets/element/datetime.scss'
-import './assets/element/check.scss'
-import './assets/element/dialog.scss'
-import './assets/element/upload.scss'
+// autocomplete button carousel checkbox
+import './assets/element/element1.scss'
+import './assets/element/element2.scss'
+// date picker time 
+import './assets/element/element3.scss'
+// dialog dropdown
+import './assets/element/element4.scss'
+// textarea input 
+import './assets/element/element5.scss'
+// textarea input menu
+import './assets/element/element6.scss'
+// page radio select switch
+import './assets/element/element7.scss'
+// table tree
+import './assets/element/element8.scss'
 
 //import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'

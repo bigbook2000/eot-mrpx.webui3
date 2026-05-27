@@ -78,8 +78,8 @@ export default { name: "platform_dept" }
     import eocore from "@/inc/eocore"
     import eolib from "@/inc/eolib";
 
-    import vform from "@/logic/common/vform.vue"
-    import vformd from "@/logic/common/vformd.vue"
+    import vform from "@/components/web/vform.vue"
+    import vformd from "@/components/web/vformd.vue"
 
     import { ElTree } from 'element-plus'
     import dept_list from "@/views/platform/dept_list.vue"

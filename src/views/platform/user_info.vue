@@ -86,11 +86,11 @@
 
     import type {cfunc_boolean} from "@/inc/eotypes";
 
-    import vdialog from "@/logic/common/vdialog.vue"
+    import vdialog from "@/components/web/vdialog.vue"
     type t_dialog = InstanceType<typeof vdialog>;
     const v_dialog = ref<t_dialog>();
 
-    import vdic from "@/logic/common/vdic.vue"
+    import vdic from "@/components/web/vdic.vue"
 
     import dept_list from "@/views/platform/dept_list.vue"
     const v_dept_list = ref<InstanceType<typeof dept_list>>();

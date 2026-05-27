@@ -945,7 +945,7 @@ export default {
 	 * 过滤菜单选项
 	 * @returns 
 	 */
-    loadMenuList(): any[] {
+    loadMenuList(app: number): any[] {
 
         const menuList = [];
         const menuListAll = [];
@@ -954,6 +954,7 @@ export default {
         for (let d of TGlobal.menuList) {
 
             if (d["f_type"] != "menu") continue;
+            if (app >=0 &&d["f_app"] != app) continue;
 
             //console.log(d);
             // 通过角色判断

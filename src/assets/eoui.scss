@@ -37,16 +37,16 @@ body {
 /** 移动端适配 */
 @media screen and (max-width: 1200px) {
     html {
-        font-size: 1vw;
+        font-size: 2.8vw;
     }
     #app {    
         margin: 0;
         padding: 0;
         width: 100%;
         height: 100%;
-        min-width: 600px;
-        min-height: 600px;
-        overflow: auto;
+        min-width: 320px;
+        min-height: 480px;
+        overflow: hidden;
     }
 } /* @media screen and (min-width: 800px) */
 
@@ -103,7 +103,7 @@ body {
     .eo_col_f {
         width: 100%;
         height: 0;
-        flex: 1 1 auto;
+        flex: 1 1 0%;
         box-sizing: border-box;
         overflow: hidden;
     }    
@@ -124,7 +124,7 @@ body {
     .eo_row_f {
         width: 0;
         height: 100%;	
-        flex: 1 1 auto;
+        flex: 1 1 0%;
         box-sizing: border-box;
         overflow: hidden;
     }    
@@ -171,7 +171,7 @@ body {
             box-sizing: border-box;
 
             @mixin form_label_s1 {    
-                padding: 2px 2px 2px 5px;
+                padding: 0.2rem 0.2rem 0.2rem 0.5rem;
                 flex: 0 0 auto;
                 display: flex;
                 align-items: center;
@@ -179,29 +179,29 @@ body {
                 color: #333;
             }
 
-            .label_w {    
+            .label_w {
                 @include form_label_s1;
             }
             .label_n {    
-                width: 60px;
+                width: 6rem;
                 @include form_label_s1;
             }
             .label_b {
-                width: 100px;
+                width: 8rem;
                 @include form_label_s1;
             }
             .label_s {
-                width: 40px;
+                width: 4rem;
                 @include form_label_s1;
             }
             
             .input {    
-                flex: 1 1 auto;
+                flex: 1 1 0%;
                 width: 0;
-                padding: 2px 5px 2px 2px;
+                padding: 0.2rem 0.5rem;
             }
             .input_w {    
-                padding: 2px 5px 2px 2px;
+                padding: 0.2rem 0.5rem;
             }
 
             .split {
@@ -210,19 +210,24 @@ body {
                 height: 100%;
             }
             .info {
-                flex: 1 1 auto;
+                flex: 1 1 0%;
                 width: 0;
-                padding: 5px 5px;
+                padding: 0.5rem 0.5rem;
                 font-size: 1.0rem;
                 color: #333;
             }
             .info_w {
-                padding: 5px 10px;
+                padding: 0.5rem 0.5rem;
                 font-size: 1.0rem;
                 line-height: 2;
                 color: #333;
             }            
-        }         
+        }
+        
+        .button {
+            width: 100%;
+            padding: 0.5rem 0rem;
+        }
     }
 
     .eo_tool_bar {
@@ -233,7 +238,9 @@ body {
     }
     .eo_page_bar {
         width: 100%;
-        padding: 5px 10px;
+        padding: 1rem 0.8rem;
+        display: flex;
+        justify-content: center;
     }
      
 } 
@@ -274,7 +281,7 @@ body {
                 @include form_label_s2;
             }
             .input {    
-                flex: 1 1 auto;
+                flex: 1 1 0%;
                 width: 0;
                 padding: 0.5rem 1rem 0.5rem 0.5rem;
             }
@@ -288,7 +295,7 @@ body {
             }
 
             .info {    
-                flex: 1 1 auto;
+                flex: 1 1 0%;
                 width: 0;
                 padding: 1rem 1rem;
                 font-size: 1.0rem;

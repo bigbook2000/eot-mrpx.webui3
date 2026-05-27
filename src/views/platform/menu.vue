@@ -59,8 +59,8 @@ export default { name: "platform_menu" }
     import TLogic from "@/logic/TLogic"
 
     import type { cform_options, cdic_item, cfunc_boolean } from "@/inc/eotypes";
-    import vtable from "@/logic/common/vtable.vue"
-    import vformd from "@/logic/common/vformd.vue"
+    import vtable from "@/components/web/vtable.vue"
+    import vformd from "@/components/web/vformd.vue"
     
     import menu_info from "@/views/platform/menu_info.vue"
 

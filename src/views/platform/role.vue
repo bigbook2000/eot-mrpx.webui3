@@ -88,8 +88,8 @@ export default { name: "platform_role" }
 
     import eocore from "@/inc/eocore"
 
-    import vtable from "@/logic/common/vtable.vue"
-    import vformd from "@/logic/common/vformd.vue"
+    import vtable from "@/components/web/vtable.vue"
+    import vformd from "@/components/web/vformd.vue"
 
     type t_table = InstanceType<typeof vtable>;
     type t_formd = InstanceType<typeof vformd>;

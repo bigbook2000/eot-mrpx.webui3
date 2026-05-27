@@ -1,0 +1,175 @@
+.ap_header {
+    height: 4rem;
+    color: #fff;
+    background: var(--eo_color_main);
+    display: flex;
+    flex-direction: row;
+
+    .back {
+        flex: 0 0 auto;
+        width: 8rem;
+        box-sizing: border-box;
+        padding: 0.6rem 0rem 0rem 1rem;
+        color: #fff;
+        font-size: 2rem;
+    }
+    .title {
+        flex: 1 1 auto;
+        font-size: 1.4rem;
+        line-height: 4rem;
+        text-align: center;
+        box-sizing: border-box;
+    }
+    .tool {
+        flex: 0 0 auto;
+        width: 8rem;
+        box-sizing: border-box;
+    }
+}
+
+.ap_button {
+    width: 100%;
+}
+
+/* 全屏对话框（无滚动条） */
+.ap_dialog_full {
+    &.el-dialog.is-fullscreen {
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+
+        .el-dialog__header {
+            flex: 0 0 auto;
+        }
+
+        .el-dialog__body {
+            flex: 1 1 auto;
+            overflow: hidden;
+        }
+    }
+}
+
+/* tabs 内容区撑满剩余空间 */
+.ap_tabs_fill {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+
+    .el-tabs__header {
+        flex: 0 0 auto;
+    }
+
+    .el-tabs__content {
+        flex: 1 1 auto;
+        overflow: hidden;
+    }
+
+    .el-tab-pane {
+        height: 100%;
+        overflow: hidden;
+    }
+}
+
+/* tabs 吸顶 */
+.ap_tabs_sticky {
+    .el-tabs__header {
+        margin: 0;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background: #fff;
+    }
+    .el-tabs__nav-wrap {
+        padding: 0 0.6rem;
+    }
+}
+
+/* ========== 通用卡片列表 ========== */
+
+/* 列表容器 */
+.ap_list_wrap {
+    padding: 0.4rem 0.6rem;
+
+    /* 空数据提示 */
+    .empty {
+        text-align: center;
+        padding: 3rem 0;
+        font-size: 1rem;
+        color: #999;
+    }
+
+    /* 卡片列表项 */
+    .item {
+        position: relative;
+        display: flex;
+        flex-direction: row;
+        background: #fff;
+        border-radius: 0.5rem;
+        margin-bottom: 0.6rem;
+        padding: 0.6rem 0.6rem 0.6rem 0.2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        transition: background 0.2s;
+
+        /* 选中态 */
+        &.ap_sel {
+            background: #e8f5e9;
+            border-left: 3px solid var(--eo_color_main);
+        }
+
+        /* 左上角复选框（绝对定位） */
+        .check {
+            position: absolute;
+            top: 0.3rem;
+            right: 1.2rem;
+            z-index: 1;
+        }
+
+        /* 右下角详情按钮（绝对定位） */
+        .detail {
+            position: absolute;
+            bottom: 0.5rem;
+            right: 1rem;
+            z-index: 1;
+        }
+
+        /* 卡片主体内容 */
+        .body {
+            flex: 1 1 auto;
+            width: 0;
+
+            .row {
+                display: flex;
+                flex-direction: row;
+                align-items: baseline;
+                padding: 0.15rem 0;
+                line-height: 1.4;
+
+                .label {
+                    flex: 0 0 auto;
+                    font-size: 0.9rem;
+                    color: #999;
+                    overflow: hidden;
+                    width: 5rem;
+                    box-sizing: border-box;
+                }
+
+                .value {
+                    flex: 1 1 0%;
+                    font-size: 1rem;
+                    color: #333;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    box-sizing: border-box;
+                }
+
+                /* 主要标识加粗 */
+                .title {
+                    font-weight: 600;
+                    font-size: 1rem;
+                }
+            }
+        }
+    }
+}

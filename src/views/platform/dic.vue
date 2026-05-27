@@ -114,8 +114,8 @@ export default { name: "platform_dic" }
 
     import type { cform_options, cfunc_boolean } from "@/inc/eotypes";
 
-    import vtable from "@/logic/common/vtable.vue"
-    import vformd from "@/logic/common/vformd.vue"
+    import vtable from "@/components/web/vtable.vue"
+    import vformd from "@/components/web/vformd.vue"
     import eolib from "@/inc/eolib"
     import eodic from "@/inc/eodic"
 

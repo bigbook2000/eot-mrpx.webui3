@@ -31,6 +31,8 @@
                     <div class="div_copyright">
                         <span>{{ x_copyright + " " + x_version }}</span>
                     </div>
+                    <!-- 分辨率 -->
+                    <div class="div_resolution">{{ x_resolution }}</div>
                     <div style="height:50px;"></div>
                 </div>
             </div>
@@ -58,11 +60,19 @@
     var x_main_title = ref("");
     var x_copyright = ref("");
     var x_version = ref("");
+    var x_resolution = ref("");
+
+    const updateResolution = () => {
+        x_resolution.value = `浏览器分辨率: ${window.innerWidth} × ${window.innerHeight}`;
+    }
 
     onMounted(async () => {
         x_main_title.value = TGlobal.appData["main_title"];
         x_copyright.value = TGlobal.appData["copyright"];
         x_version.value = TGlobal.appData["version"];
+
+        updateResolution();
+        window.addEventListener('resize', updateResolution);
     })
 
     const onButtonClick_Login = async () => {
@@ -118,8 +128,6 @@
             router.replace({ name:'main' });
         }
     }
-    
-     
 
 </script>
 <style scoped lang="scss">
@@ -133,7 +141,7 @@
 @media screen and (min-width: 1200px) {
 .div_login {
     width: 100%;
-    min-height: 100vh;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -169,47 +177,41 @@
         }
     }
 }
-.div_copyright {
-    font-size: 1.2rem;
-    color: #666;
-    padding: 0.5rem;
-    text-align: center;
-}
 }
 
 /** 移动端适配 */
 @media screen and (max-width: 1200px) {
 .div_login {
     width: 100%;
-    min-height: 100vh;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
 
     .border {        
-        width: 60rem;
+        width: 30rem;
         border: 1px solid var(--eo_color_dark1);
-        border-radius: 5rem;
+        border-radius: 1rem;
 
         .panel {
             .title {
                 text-align: center;
                 background-color: var(--eo_color_dark1);
-                padding: 2rem;
-                font-size: 2rem;
+                padding: 1rem;
+                font-size: 1.5rem;
                 color: #fff;
-                border-top-left-radius: 5rem;
-                border-top-right-radius: 5rem;
+                border-top-left-radius: 1rem;
+                border-top-right-radius: 1rem;
                 box-sizing: border-box;
             }
             .row {
-                padding: 2rem 4rem;
+                padding: 1rem 2rem;
                 box-sizing: border-box;
             }
             .info {
-                padding: 2rem 4rem;
+                padding: 1rem 2rem;
                 box-sizing: border-box;
-                height: 10rem;
+                height: 6rem;
                 color: #4099ff;
                 word-break: break-all;
                 word-wrap: break-word;
@@ -217,11 +219,18 @@
         }
     }
 }
+}
+
 .div_copyright {
-    font-size: 14px;
-    color: #333;
-    padding: 5px;
+    font-size: 1.2rem;
+    color: #999;
+    padding: 0.2rem;
     text-align: center;
 }
+.div_resolution {
+    font-size: 1.2rem;
+    color: #999;
+    padding: 0.2rem;
+    text-align: center;
 }
 </style>

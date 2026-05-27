@@ -113,9 +113,9 @@ export default { name: "platform_menu" }
     import TGlobal from "@/logic/TGlobal"
     import TLogic from "@/logic/TLogic"
 
-    import vtable from "@/logic/common/vtable.vue"
+    import vtable from "@/components/web/vtable.vue"
     import user_input from "@/views/platform/user_input.vue"
-    import vformd from "@/logic/common/vformd.vue"
+    import vformd from "@/components/web/vformd.vue"
 
     import type { cform_options } from "@/inc/eotypes"
 
