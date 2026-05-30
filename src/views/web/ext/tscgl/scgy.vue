@@ -58,7 +58,7 @@ export default { name: "ext_scgl_scgy" }
     import eolib from "@/inc/eolib";
 
     import { ElTree } from 'element-plus'
-    import vbuttonk from "@/components/web/vbuttonk.vue"
+    import vbuttonk from "@/components/vbuttonk.vue"
     import vtable from "@/components/web/vtable.vue"
     import TLogic from "@/logic/TLogic";
 

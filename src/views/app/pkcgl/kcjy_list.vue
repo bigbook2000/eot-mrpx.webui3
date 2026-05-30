@@ -1,6 +1,6 @@
 <template>
     <!-- 调拨历史 - App端 -->
-    <div class="ap_list_wrap">
+    <div class="ap_list">
         <div v-if="x_list.length === 0" class="empty">
             暂无调拨记录
         </div>

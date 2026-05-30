@@ -47,11 +47,11 @@
                     <div class="eo_tool_bar">
                         <div class="eo_form">
                             <div class="cell">
-                                <vbuttonk type="primary" class="input_w" permit="" 
+                                <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                                     @click="onButtonClick_Add_cpdy">添加产品</vbuttonk>
-                                <vbuttonk type="default" class="input_w" permit="" 
+                                <vbuttonk width="8rem" type="default" class="input_w" permit="" 
                                     @click="onButtonClick_Del_cpdy">删除产品</vbuttonk>
-                                <vbuttonk type="primary" class="input_w" permit="" 
+                                <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                                     @click="onButtonClick_Upd_cpdy">修改产品</vbuttonk>
                             </div>
                         </div>
@@ -121,11 +121,11 @@
                     <div class="eo_tool_bar">
                         <div class="eo_form">
                             <div class="cell">
-                                <vbuttonk type="primary" class="input_w" permit="" 
+                                <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                                     @click="onButtonClick_Add_cpbj">添加部件</vbuttonk>
-                                <vbuttonk type="default" class="input_w" permit="" 
+                                <vbuttonk width="8rem" type="default" class="input_w" permit="" 
                                     @click="onButtonClick_Del_cpbj">删除部件</vbuttonk>
-                                <vbuttonk type="primary" class="input_w" permit="" 
+                                <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                                     @click="onButtonClick_Upd_cpbj">修改部件</vbuttonk>
                             </div>
                         </div>
@@ -154,7 +154,7 @@ export default { name: "ext_kcgl_cpdy" }
     import eolib from "@/inc/eolib";
 
     import { ElTree } from 'element-plus'
-    import vbuttonk from "@/components/web/vbuttonk.vue"
+    import vbuttonk from "@/components/vbuttonk.vue"
     import vtable from "@/components/web/vtable.vue"
     import cpdy_xx from "./cpdy_xx.vue"
     import cpdy_bj from "./cpdy_bj.vue"

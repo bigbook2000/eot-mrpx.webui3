@@ -21,15 +21,6 @@
                                 style="width:100%"></user_input>
                         </div>
                     </div>
-                </div>
-                <div class="eo_form">
-                    <div class="cell eo_w240p">
-                        <div class="label_n">客户</div>
-                        <div class="input">
-                            <el-input style="width:100%" maxlength="32"
-                                v-model="x_query_khmc" placeholder="请输入客户名称"></el-input>
-                        </div>
-                    </div>
                     <div class="cell" style="width:320px;">
                         <div class="label_n">创建日期</div>
                         <div class="input">
@@ -43,6 +34,25 @@
                             </el-date-picker>
                         </div>
                     </div>
+                </div>
+                <div class="eo_form">
+                    <div class="cell eo_w240p">
+                        <div class="label_n">客户</div>
+                        <div class="input">
+                            <el-input style="width:100%" maxlength="32"
+                                v-model="x_query_khmc" placeholder="请输入客户名称"></el-input>
+                        </div>
+                    </div>
+                    <div class="cell eo_w240p">
+                        <div class="label_n">流程</div>
+                        <div class="input">
+                            <el-select v-model="x_query_flow_point_id" style="width:100%">
+                                <el-option v-for="d in x_flow_point_list" :key="d.value"
+                                    :label="d.label" :value="d.value" />
+                            </el-select>
+                        </div>
+                    </div>                    
+
                     <div class="cell">
                         <div class="input_w">
                             <el-button type="primary" class="eo_w80p" @click="onButtonClick_Load_xsd">查找</el-button>
@@ -63,7 +73,7 @@
                             <div class="eo_tool_bar">
                                 <div class="eo_form">
                                     <div class="cell">
-                                        <tflow_button ref="v_flow_button" 
+                                        <tflow_button :app="false" ref="v_flow_button" 
                                             @on-new="onButtonClick_Flow_Add"
                                             @on-back="onButtonClick_Flow_Back"
                                             @on-edit="onButtonClick_Flow_Upd"
@@ -125,7 +135,7 @@
                     </div>
                     <div class="eo_row_sp"></div>
                     <div class="eo_row_d">
-                        <vflow ref="v_flow_xsd" type="销售出库"></vflow>
+                        <vflow ref="v_flow_xsd" type="销售出库" :app="false"></vflow>
                     </div>
                 </div>
             </div>
@@ -141,16 +151,16 @@ export default { name: "ext_xsgl_ddgl" }
 </script>
 
 <script lang="ts" setup>
-    import { ref, nextTick, onMounted } from "vue"
+    import { ref, computed, nextTick, onMounted } from "vue"
     import type { cform_options, cfunc_boolean, cfunc_data } from "@/inc/eotypes";
     import { type cflow_type, type cflow_point } from "@/inc/eoflow";
 
     import eocore from "@/inc/eocore"
     import eolib from "@/inc/eolib";
 
-    import vbuttonk from "@/components/web/vbuttonk.vue"
+    import vbuttonk from "@/components/vbuttonk.vue"
     import vtable from "@/components/web/vtable.vue"
-    import vdic from "@/components/web/vdic.vue"
+    import vdic from "@/components/vdic.vue"
     import vflow from "@/components/web/vflow.vue"
 
     import eodic from "@/inc/eodic";
@@ -161,7 +171,7 @@ export default { name: "ext_xsgl_ddgl" }
     import TGlobal from "@/logic/TGlobal";
 
     import user_input from "@/views/platform/user_input.vue"
-    import tflow_button from "@/views/web/ext/comm/tflow_button.vue";
+    import tflow_button from "@/views/comm/web/tflow_button.vue";
     
 
     import xsdcp from "@/views/web/ext/txsgl/xsdcp.vue"
@@ -188,6 +198,18 @@ export default { name: "ext_xsgl_ddgl" }
     const x_query_xsdh = ref("");
     const x_query_khmc = ref("");
     const x_query_cjrq = ref<[string, string] | null>(null);
+    const x_query_flow_point_id = ref(-1);
+
+    const x_flow_point_list = computed(() => {
+        const flowType = eoflow.get_type_by_name("销售出库");
+        const list: { label: string; value: number }[] = [{ label: "全部", value: -1 }];
+        if (flowType) {
+            for (let d of flowType.points) {
+                list.push({ label: d.name, value: d.flow_point_id });
+            }
+        }
+        return list;
+    });
 
 
     // 分页变量
@@ -335,6 +357,7 @@ export default { name: "ext_xsgl_ddgl" }
             "v_sfje2": -0.01,
             "v_cjsj1": "",
             "v_cjsj2": "",
+            "v_flow_point_id": x_query_flow_point_id.value,
             "s_page_row_index": rowIndex,
             "s_page_row_count": pageRowCount
         });

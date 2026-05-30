@@ -136,7 +136,7 @@
 
     import eocore from "@/inc/eocore"
     import vdialog from "@/components/web/vdialog.vue"
-    import vdic from "@/components/web/vdic.vue"
+    import vdic from "@/components/vdic.vue"
 
     import user_input from "@/views/platform/user_input.vue"
     import gys_list from "@/views/web/ext/tcggl/gys_list.vue"

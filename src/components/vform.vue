@@ -146,7 +146,7 @@
     import type {cdic_item, cform_options} from "@/inc/eotypes";
     import eocore from "@/inc/eocore";
 
-    import vdic from "@/components/web/vdic.vue"
+    import vdic from "@/components/vdic.vue"
 
     const props = withDefaults(defineProps<{
         types: cform_options[],

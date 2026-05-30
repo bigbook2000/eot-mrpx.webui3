@@ -82,9 +82,9 @@
             <div class="eo_tool_bar">
                 <div class="eo_form">
                     <div class="cell">
-                        <vbuttonk type="primary" class="input_w" permit="" 
+                        <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                             @click="onButtonClick_Add_jyd">借用</vbuttonk>
-                        <vbuttonk type="primary" class="input_w" permit="" 
+                        <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                             @click="onButtonClick_Upd_jyd">归还</vbuttonk>
                     </div>
                 </div>
@@ -145,9 +145,9 @@ export default { name: "ext_kcgl_jygl" }
     import eolib from "@/inc/eolib";
     import eodic from "@/inc/eodic";
 
-    import vbuttonk from "@/components/web/vbuttonk.vue"
+    import vbuttonk from "@/components/vbuttonk.vue"
     import vtable from "@/components/web/vtable.vue"
-    import vdic from "@/components/web/vdic.vue"
+    import vdic from "@/components/vdic.vue"
 
     import TGlobal from "@/logic/TGlobal";
     import TLogic from "@/logic/TLogic";

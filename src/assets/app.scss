@@ -1,4 +1,4 @@
-.ap_header {
+.ap_topbar {
     height: 4rem;
     color: #fff;
     background: var(--eo_color_main);
@@ -32,7 +32,7 @@
 }
 
 /* 全屏对话框（无滚动条） */
-.ap_dialog_full {
+.ap_dialog {
     &.el-dialog.is-fullscreen {
         overflow: hidden;
         display: flex;
@@ -49,8 +49,46 @@
     }
 }
 
+
+/* 弹出对话框 */
+.ap_dialog_head {
+    display: flex;
+    flex-direction: row;
+
+    .title {
+        flex: 1 1 auto;
+        width: 0;
+        font-size: 1.2rem;
+        color: var(--eo_color_light2);
+    }
+
+    .close {
+        width: 3.6rem;
+        padding: 0.5rem 1rem;
+        box-sizing: border-box;
+
+        .icon {
+            width: 1.8rem;
+            height: 1.8rem;
+            background-size: 1.8rem 1.8rem;
+            background-image: url("./icon/close_color.png");
+        }
+    }
+}
+.ap_dialog_foot {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    
+    .button {
+        padding: 1.8rem 0.9rem 0px 0.9rem;
+        width: 100%;
+        box-sizing: border-box;
+    }
+}
+
 /* tabs 内容区撑满剩余空间 */
-.ap_tabs_fill {
+.ap_tabs {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -68,27 +106,19 @@
     .el-tab-pane {
         height: 100%;
         overflow: hidden;
+        padding: 0 0.6rem;
     }
-}
 
-/* tabs 吸顶 */
-.ap_tabs_sticky {
-    .el-tabs__header {
-        margin: 0;
-        position: sticky;
-        top: 0;
-        z-index: 1;
-        background: #fff;
-    }
     .el-tabs__nav-wrap {
         padding: 0 0.6rem;
     }
 }
 
+
 /* ========== 通用卡片列表 ========== */
 
 /* 列表容器 */
-.ap_list_wrap {
+.ap_list {
     padding: 0.4rem 0.6rem;
 
     /* 空数据提示 */

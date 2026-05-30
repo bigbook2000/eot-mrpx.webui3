@@ -2,21 +2,21 @@
     <!-- 库存整理 - 编辑工具栏 -->
     <div class="div_tool_bar div_tool_actions">
         <div class="div_btn_group">
-            <vbuttonk type="primary" permit="" @click="emit('add')">新增</vbuttonk>
-            <vbuttonk type="primary" permit="" @click="emit('upd')">修改</vbuttonk>
-            <vbuttonk type="danger" permit="" @click="emit('del')">移除</vbuttonk>
+            <vbuttonk width="8rem" type="primary" permit="" @click="emit('add')">新增</vbuttonk>
+            <vbuttonk width="8rem" type="primary" permit="" @click="emit('upd')">修改</vbuttonk>
+            <vbuttonk width="8rem" type="danger" permit="" @click="emit('del')">移除</vbuttonk>
         </div>
         <div class="div_btn_group">
-            <vbuttonk type="default" permit="" @click="emit('jy')">调拨</vbuttonk>
-            <vbuttonk type="default" permit="" @click="emit('cf')">拆库</vbuttonk>
-            <vbuttonk type="default" permit="" @click="emit('hb')">并库</vbuttonk>
-            <vbuttonk type="primary" permit="" @click="emit('get')">详情</vbuttonk>
+            <vbuttonk width="8rem" type="default" permit="" @click="emit('jy')">调拨</vbuttonk>
+            <vbuttonk width="8rem" type="default" permit="" @click="emit('cf')">拆库</vbuttonk>
+            <vbuttonk width="8rem" type="default" permit="" @click="emit('hb')">并库</vbuttonk>
+            <vbuttonk width="8rem" type="primary" permit="" @click="emit('get')">详情</vbuttonk>
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
-import vbuttonk from "@/components/web/vbuttonk.vue";
+import vbuttonk from "@/components/vbuttonk.vue";
 
 const emit = defineEmits<{
     (e: 'add'): void;

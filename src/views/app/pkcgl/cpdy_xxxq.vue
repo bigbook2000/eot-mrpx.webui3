@@ -131,7 +131,7 @@
 </template>
 
 <script lang="ts" setup>
-    import vdic from "@/components/web/vdic.vue"
+    import vdic from "@/components/vdic.vue"
 
     defineProps<{
         cpdyData: any;

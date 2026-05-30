@@ -1,8 +1,7 @@
 <template>
-    <vdialog ref="v_dialog"
-        :width="width" :title="title"
+    <vdialog ref="v_dialog" :title="title"
         @close="onDialogClose">
-        <vform ref="v_form" :types="formTypes" :data="x_form_data"></vform>
+        <vform ref="v_form" :types="formTypes" :data="x_form_data" label-width="5rem"></vform>
     </vdialog>
 </template>
 
@@ -24,11 +23,11 @@
         (e: "close", cancel: boolean, data: any, cb: cfunc_boolean): void
     }>()
 
-    import vdialog from "@/components/web/vdialog.vue"
+    import vdialog from "@/components/app/vdialog.vue"
     type t_dialog = InstanceType<typeof vdialog>;
     const v_dialog = ref<t_dialog>();
 
-    import vform from "@/components/web/vform.vue"
+    import vform from "@/components/vform.vue"
     type t_form = InstanceType<typeof vform>;    
     const v_form = ref<t_form>();
 

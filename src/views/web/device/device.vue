@@ -7,7 +7,7 @@ export default { name: "device_list" }
 
     import { onMounted } from "vue"
 
-    import vbuttonk from "@/components/web/vbuttonk.vue"
+    import vbuttonk from "@/components/vbuttonk.vue"
     import vtable from "@/components/web/vtable.vue"
 
     import device_info from "@/views/web/device/device_info.vue"
@@ -138,28 +138,28 @@ export default { name: "device_list" }
                 <div class="eo_form">
                     <div class="cell">                        
                         <div class="input_w">
-                            <vbuttonk type="default" class="input_w" permit="device.list.upd" 
+                            <vbuttonk width="8rem" type="default" class="input_w" permit="device.list.upd" 
                                 @click="onButtonClick_Update">升级</vbuttonk>
                         </div>
                         <div class="input_w">
-                            <vbuttonk type="default" class="input_w" permit="device.list.upd" 
+                            <vbuttonk width="8rem" type="default" class="input_w" permit="device.list.upd" 
                                 @click="onButtonClick_Config">配置</vbuttonk>
                         </div>
                         <div class="input_w">
-                            <vbuttonk type="primary" class="input_w" permit="device.list.upd" 
+                            <vbuttonk width="8rem" type="primary" class="input_w" permit="device.list.upd" 
                                 @click="onButtonClick_Control">控制</vbuttonk>
                         </div>
                         <div class="split"></div>
                         <div class="input_w">
-                            <vbuttonk type="primary" class="input_w" permit="device.list.upd" 
+                            <vbuttonk width="8rem" type="primary" class="input_w" permit="device.list.upd" 
                                 @click="onButtonClick_Add">添加</vbuttonk>
                         </div>
                         <div class="input_w">
-                            <vbuttonk type="primary" class="input_w" permit="device.list.upd" 
+                            <vbuttonk width="8rem" type="primary" class="input_w" permit="device.list.upd" 
                                 @click="onButtonClick_Del">删除</vbuttonk>
                         </div>
                         <div class="input_w">
-                            <vbuttonk type="primary" class="input_w" permit="device.list.upd" 
+                            <vbuttonk width="8rem" type="primary" class="input_w" permit="device.list.upd" 
                                 @click="onButtonClick_Upd">修改</vbuttonk>
                         </div>
                     </div>

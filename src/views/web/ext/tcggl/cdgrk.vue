@@ -4,24 +4,24 @@
         <div class="eo_tool_bar">
             <div class="eo_form">
                 <div class="cell">
-                    <vbuttonk type="primary" class="input_w" permit="" 
+                    <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                         @click="onButtonClick_Load_kcmxrk">加载明细</vbuttonk>
-                    <vbuttonk type="primary" class="input_w" permit="" 
+                    <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                         v-show="x_edit_mode==1"
                         @click="onButtonClick_Add_cgdrk">添加明细</vbuttonk>
-                    <vbuttonk type="default" class="input_w" permit="" 
+                    <vbuttonk width="8rem" type="default" class="input_w" permit="" 
                         v-show="x_edit_mode==1"
                         @click="onButtonClick_Del_cgdrk">移除明细</vbuttonk>
-                    <vbuttonk type="primary" class="input_w" permit="" 
+                    <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                         v-show="x_edit_mode==1"
                         @click="onButtonClick_Upd_cgdrk">修改明细</vbuttonk>
-                    <vbuttonk type="primary" class="input_w" permit="" 
+                    <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                         v-show="x_edit_mode==2"
                         @click="onButtonClick_Upd_cgdrk">变更明细</vbuttonk>
-                    <vbuttonk type="default" class="input_w" permit="" 
+                    <vbuttonk width="8rem" type="default" class="input_w" permit="" 
                         v-show="x_edit_mode==0"
                         @click="onButtonClick_Get_cgdrk">查看明细</vbuttonk>
-                    <vbuttonk type="warning" class="input_w" permit="" 
+                    <vbuttonk width="8rem" type="warning" class="input_w" permit="" 
                         v-show="x_edit_mode==9"
                         @click="onButtonClick_Add_kcmx">产品入库</vbuttonk>
                 </div>
@@ -58,9 +58,9 @@
     import eocore from "@/inc/eocore"
     import eolib from "@/inc/eolib";
 
-    import vbuttonk from "@/components/web/vbuttonk.vue"
+    import vbuttonk from "@/components/vbuttonk.vue"
     import vtable from "@/components/web/vtable.vue"
-    import vdic from "@/components/web/vdic.vue"    
+    import vdic from "@/components/vdic.vue"    
     import eodic from "@/inc/eodic";
 
     import cgdrk_xx from "./cgdrk_xx.vue"

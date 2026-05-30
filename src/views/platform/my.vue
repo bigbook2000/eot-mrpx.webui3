@@ -41,7 +41,7 @@ export default { name: "platform_my" }
 
     import type { cform_options, cfunc_boolean } from "@/inc/eotypes";
 
-    import vform from "@/components/web/vform.vue"
+    import vform from "@/components/vform.vue"
     import vformd from "@/components/web/vformd.vue"
 
     type t_form = InstanceType<typeof vform>;    

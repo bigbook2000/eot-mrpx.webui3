@@ -1,6 +1,6 @@
 <template>
     <!-- 产品编辑对话框 - App端 -->
-    <el-dialog v-model="x_visible" title="产品定义" fullscreen class="ap_dialog_full">
+    <el-dialog v-model="x_visible" title="产品定义" fullscreen class="ap_dialog">
         <div class="div_dialog">
             <el-tabs v-model="x_active_tab" class="ap_tabs_fill">
                 <!-- 产品信息 Tab -->

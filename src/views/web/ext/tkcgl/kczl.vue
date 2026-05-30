@@ -6,26 +6,16 @@
             <div class="eo_tool_bar">
                 <div class="eo_form">
                     <div class="cell eo_w280p">
-                        <div class="label_n">批次</div>
+                        <div class="label_n">货物信息</div>
                         <div class="input">
                             <el-input style="width:100%" maxlength="32"
-                                v-model="x_query_kcbh" placeholder="批次"></el-input>
+                                v-model="x_query_kcxx" placeholder="批次或名称"></el-input>
                         </div>
                     </div>
                     <div class="cell" style="width:400px;">
                         <div class="label_n">产品类别</div>
                         <div class="input">
                             <tcplb v-model="x_query_cplb" :cplb-list="x_cplb_list"></tcplb>
-                        </div>
-                    </div>
-                    
-                </div>
-                <div class="eo_form">                    
-                    <div class="cell eo_w280p">
-                        <div class="label_n">产品名称</div>
-                        <div class="input">
-                            <el-input style="width:100%" maxlength="32"
-                                v-model="x_query_cpmc" placeholder="产品名称"></el-input>
                         </div>
                     </div>
                     <div class="cell eo_w200p">
@@ -51,19 +41,19 @@
                     <div class="eo_tool_bar">
                         <div class="eo_form">
                             <div class="cell">
-                                <vbuttonk type="primary" class="input_w" permit="" 
+                                <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                                     @click="onButtonClick_Add_kcmx">新增</vbuttonk>
-                                <vbuttonk type="primary" class="input_w" permit="" 
+                                <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                                     @click="onButtonClick_Upd_kcmx">修改</vbuttonk>
-                                <vbuttonk type="danger" class="input_w" permit="" 
+                                <vbuttonk width="8rem" type="danger" class="input_w" permit="" 
                                     @click="onButtonClick_Del_kcmx">移除</vbuttonk>
-                                <vbuttonk type="default" class="input_w" permit="" 
+                                <vbuttonk width="8rem" type="default" class="input_w" permit="" 
                                     @click="onButtonClick_Upd_kcjy">调拨</vbuttonk>
-                                <vbuttonk type="default" class="input_w" permit="" 
+                                <vbuttonk width="8rem" type="default" class="input_w" permit="" 
                                     @click="onButtonClick_Upd_kccf">拆库</vbuttonk>
-                                <vbuttonk type="default" class="input_w" permit="" 
+                                <vbuttonk width="8rem" type="default" class="input_w" permit="" 
                                     @click="onButtonClick_Upd_kchb">并库</vbuttonk>
-                                <vbuttonk type="primary" class="input_w" permit="" 
+                                <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                                     @click="onButtonClick_Get_kcmx">详情</vbuttonk>
                             </div>
                         </div>
@@ -87,9 +77,14 @@
                                     <div v-else>{{ scope.row.f_jyzt_s+'-'+scope.row.f_jyyg_id_s }}</div>
                                 </template>
                             </el-table-column>
-                            <el-table-column prop="f_kcbh" label="批次" width="200" />
+                            <el-table-column prop="f_kcxx" label="库存信息" width="240" show-overflow-tooltip>
+                                <template #default="scope">
+                                    <span>{{ scope.row.f_kcbh }}</span>
+                                    <br />
+                                    <span>{{ scope.row.f_cpmc }}</span>
+                                </template>
+                            </el-table-column>
                             <el-table-column prop="f_rksj_s" label="入库时间" width="160" sortable />
-                            <el-table-column prop="f_cpmc" label="产品名称" width="200" show-overflow-tooltip sortable />
                             <el-table-column prop="f_kcdj_s" label="单价" width="120" align="right" sortable />
                             <el-table-column prop="f_kcsl" label="数量" width="100" />
                             <el-table-column prop="f_cpgg" label="规格" width="180" show-overflow-tooltip />
@@ -144,9 +139,9 @@ export default { name: "ext_kcgl_kczl" }
     import eolib from "@/inc/eolib";
     import eodic from "@/inc/eodic";
 
-    import vbuttonk from "@/components/web/vbuttonk.vue"
+    import vbuttonk from "@/components/vbuttonk.vue"
     import vtable from "@/components/web/vtable.vue"
-    import vdic from "@/components/web/vdic.vue"
+    import vdic from "@/components/vdic.vue"
     import TLogic from "@/logic/TLogic";
     import TGlobal from "@/logic/TGlobal";
     import kcmx_cf from "@/views/web/ext/tkcgl/kcmx_cf.vue";
@@ -172,9 +167,7 @@ export default { name: "ext_kcgl_kczl" }
 
     // 查询条件
     const x_query_cplb = ref([0, 0]);
-    const x_query_cpmc = ref("");
-    const x_query_cpbm = ref("");
-    const x_query_kcbh = ref("");
+    const x_query_kcxx = ref("");
     const x_query_jyzt = ref(-1);
 
     // 分页变量
@@ -268,9 +261,7 @@ export default { name: "ext_kcgl_kczl" }
             "v_kcbz": TLogic.kcbzCodes["正常"],
             "v_cpdl_id": x_query_cplb.value[0],
             "v_cpxl_id": x_query_cplb.value[1],
-            "v_cpmc": x_query_cpmc.value,
-            "v_cpbm": x_query_cpbm.value,
-            "v_kcbh": x_query_kcbh.value,
+            "v_kcxx": x_query_kcxx.value,
             "v_jyzt": x_query_jyzt.value,
             "v_rklb": "",
             "v_cklb": "",

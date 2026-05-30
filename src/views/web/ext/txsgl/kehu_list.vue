@@ -111,7 +111,7 @@
     import type {ctree_node, cfunc_boolean} from "@/inc/eotypes";    
 
     import vtable from "@/components/web/vtable.vue"
-    import vdic from "@/components/web/vdic.vue"
+    import vdic from "@/components/vdic.vue"
 
     import TGlobal from "@/logic/TGlobal";
 

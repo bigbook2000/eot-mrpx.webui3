@@ -6,10 +6,10 @@
             <div class="eo_tool_bar">
                 <div class="eo_form">
                     <div class="cell eo_w280p">
-                        <div class="label_n">批次</div>
+                        <div class="label_n">库存信息</div>
                         <div class="input">
                             <el-input style="width:100%" maxlength="32"
-                                v-model="x_query_kcbh" placeholder="批次"></el-input>
+                                v-model="x_query_kcxx" placeholder="批次或名称"></el-input>
                         </div>
                     </div>
                     
@@ -21,14 +21,7 @@
                     </div>
                     
                 </div>
-                <div class="eo_form">                    
-                    <div class="cell eo_w280p">
-                        <div class="label_n">产品名称</div>
-                        <div class="input">
-                            <el-input style="width:100%" maxlength="32"
-                                v-model="x_query_cpmc" placeholder="产品名称"></el-input>
-                        </div>
-                    </div>
+                <div class="eo_form">
                     <div class="cell eo_w240p">
                         <div class="label_n">变更类别</div>
                         <div class="input">
@@ -73,10 +66,15 @@
                             <div v-else></div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="f_kcbh" label="批次" width="200" />
+                    <el-table-column prop="f_kcxx" label="库存信息" width="240" show-overflow-tooltip>
+                        <template #default="scope">
+                            <span>{{ scope.row.f_kcbh }}</span>
+                            <br />
+                            <span>{{ scope.row.f_cpmc }}</span>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="f_rksj_s" label="变更时间" width="160" />
                     <el-table-column prop="f_rklb" label="变更类别" width="120" />
-                    <el-table-column prop="f_cpmc" label="产品名称" width="200" show-overflow-tooltip />
                     <el-table-column prop="f_jyzt_s" label="调拨" width="120">
                         <template #default="scope">
                             <div v-if="scope.row.f_jyzt==0">-</div>
@@ -129,9 +127,9 @@ export default { name: "ext_kcgl_kczl" }
     import eolib from "@/inc/eolib";
     import eodic from "@/inc/eodic";
 
-    import vbuttonk from "@/components/web/vbuttonk.vue"
+    import vbuttonk from "@/components/vbuttonk.vue"
     import vtable from "@/components/web/vtable.vue"
-    import vdic from "@/components/web/vdic.vue"
+    import vdic from "@/components/vdic.vue"
     import TLogic from "@/logic/TLogic";
     import TGlobal from "@/logic/TGlobal";
     import kcmx_cf from "@/views/web/ext/tkcgl/kcmx_cf.vue";
@@ -151,9 +149,7 @@ export default { name: "ext_kcgl_kczl" }
 
     // 查询条件
     const x_query_cplb = ref([0, 0]);
-    const x_query_cpmc = ref("");
-    const x_query_cpbm = ref("");
-    const x_query_kcbh = ref("");    
+    const x_query_kcxx = ref("");
     const x_query_bglb = ref("");
 
     // 分页变量
@@ -248,9 +244,7 @@ export default { name: "ext_kcgl_kczl" }
             "v_kcbz": -9,
             "v_cpdl_id": x_query_cplb.value[0],
             "v_cpxl_id": x_query_cplb.value[1],
-            "v_cpmc": x_query_cpmc.value,
-            "v_cpbm": x_query_cpbm.value,
-            "v_kcbh": x_query_kcbh.value,
+            "v_kcxx": x_query_kcxx.value,
             "v_jyzt": -1,
             "v_rklb": x_query_bglb.value,
             "v_cklb": "",
@@ -284,7 +278,7 @@ export default { name: "ext_kcgl_kczl" }
                 if (list2 == undefined) return;
 
                 list1.forEach((item1: any) => {
-                    list2.find((item2: any) => {
+                    list2!.find((item2: any) => {
                         if (item1["f_kcmx_pid"] == item2["f_kcmx_id"]) {
                             item1["f_kcbh_p"] = item2["f_kcbh"];
                             return true;

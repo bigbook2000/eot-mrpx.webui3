@@ -11,11 +11,11 @@
                                 <div class="info_w">
                                     <span>产品大类</span>
                                 </div>
-                                 <vbuttonk type="primary" class="input_w" permit="" 
+                                 <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                                     @click="onButtonClick_Add_cpdl">添加大类</vbuttonk>
-                                <vbuttonk type="default" class="input_w" permit="" 
+                                <vbuttonk width="8rem" type="default" class="input_w" permit="" 
                                     @click="onButtonClick_Del_cpdl">删除大类</vbuttonk>
-                                <vbuttonk type="primary" class="input_w" permit="" 
+                                <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                                     @click="onButtonClick_Upd_cpdl">修改大类</vbuttonk>
                                 <div class="input_w">
                                     <el-button type="primary" class="eo_w80p" 
@@ -51,11 +51,11 @@
                                 <div class="info_w">
                                     <span>产品小类</span>
                                 </div>
-                                <vbuttonk type="primary" class="input_w" permit="" 
+                                <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                                     @click="onButtonClick_Add_cpxl">添加小类</vbuttonk>
-                                <vbuttonk type="default" class="input_w" permit="" 
+                                <vbuttonk width="8rem" type="default" class="input_w" permit="" 
                                     @click="onButtonClick_Del_cpxl">删除小类</vbuttonk>
-                                <vbuttonk type="primary" class="input_w" permit="" 
+                                <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                                     @click="onButtonClick_Upd_cpxl">修改小类</vbuttonk>
                             </div>
                         </div>
@@ -96,7 +96,7 @@ export default { name: "ext_kcgl_cplb" }
     import eocore from "@/inc/eocore"
     import eolib from "@/inc/eolib";
 
-    import vbuttonk from "@/components/web/vbuttonk.vue"
+    import vbuttonk from "@/components/vbuttonk.vue"
     import vtable from "@/components/web/vtable.vue"
     import vformd from "@/components/web/vformd.vue"
 

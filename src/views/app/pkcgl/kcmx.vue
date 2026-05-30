@@ -4,7 +4,7 @@
         <div class="eo_col">
             <topbar title="库存明细" />
             <div class="eo_col_f eo_scroll_v">
-                <el-tabs v-model="x_active_tab" type="card" class="ap_tabs_sticky">
+                <el-tabs v-model="x_active_tab" type="card" class="ap_tabs">
                     <el-tab-pane label="库存信息" name="cpxx">
                         <div class="div_tab_body">
                             <kcmx_xx ref="v_kcmx_xx" />

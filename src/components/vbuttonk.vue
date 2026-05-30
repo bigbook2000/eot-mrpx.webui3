@@ -1,7 +1,7 @@
 <template>
     <!-- 权限按钮 -->
     <div v-if="x_show_button">
-        <el-button :type="type" class="eo_w80p" @click="onButtonClick">
+        <el-button :type="type" :style="{ width: width }" @click="onButtonClick">
             <slot></slot>
         </el-button>
     </div>
@@ -18,6 +18,7 @@
     const props = defineProps<{
         type: string,
         permit: string,
+        width: string,
         exclude?: boolean
     }>()
 

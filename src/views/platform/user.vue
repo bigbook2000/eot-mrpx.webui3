@@ -33,14 +33,14 @@
                 </div>
                 <div class="eo_form">
                     <div class="cell">
-                        <vbuttonk type="primary" class="input_w" permit="platform.user.upd"
+                        <vbuttonk width="8rem" type="primary" class="input_w" permit="platform.user.upd"
                             @click="onButtonClick_Reset">重置密码</vbuttonk>
                         <div class="split"></div>
-                        <vbuttonk type="primary" class="input_w" permit="platform.user.upd" 
+                        <vbuttonk width="8rem" type="primary" class="input_w" permit="platform.user.upd" 
                             @click="onButtonClick_Add">添加</vbuttonk>
-                        <vbuttonk type="primary" class="input_w" permit="platform.user.upd" 
+                        <vbuttonk width="8rem" type="primary" class="input_w" permit="platform.user.upd" 
                             @click="onButtonClick_Del">删除</vbuttonk>
-                        <vbuttonk type="primary" class="input_w" permit="platform.user.upd" 
+                        <vbuttonk width="8rem" type="primary" class="input_w" permit="platform.user.upd" 
                             @click="onButtonClick_Upd">修改</vbuttonk>                        
                     </div>
                 </div>
@@ -81,7 +81,7 @@ export default { name: "platform_user" }
     import eocore from "@/inc/eocore"
     import eolib from "@/inc/eolib";
 
-    import vbuttonk from "@/components/web/vbuttonk.vue"
+    import vbuttonk from "@/components/vbuttonk.vue"
     import vtable from "@/components/web/vtable.vue"
 
     import user_info from "@/views/platform/user_info.vue"

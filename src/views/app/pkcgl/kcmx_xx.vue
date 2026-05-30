@@ -117,7 +117,7 @@
     import eocore from "@/inc/eocore";
     import eolib from "@/inc/eolib";
     import eodic from "@/inc/eodic";
-    import vdic from "@/components/web/vdic.vue"
+    import vdic from "@/components/vdic.vue"
 
     import TLogic from "@/logic/TLogic";
     import TGlobal from "@/logic/TGlobal";

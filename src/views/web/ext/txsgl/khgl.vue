@@ -79,11 +79,11 @@
                             <div class="eo_tool_bar">
                                 <div class="eo_form">
                                     <div class="cell">
-                                        <vbuttonk type="primary" class="input_w" permit="" 
+                                        <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                                             @click="onButtonClick_Add_kh">新建客户</vbuttonk>
-                                        <vbuttonk type="default" class="input_w" permit="" 
+                                        <vbuttonk width="8rem" type="default" class="input_w" permit="" 
                                             @click="onButtonClick_Upd_ghbz">提交公海</vbuttonk>
-                                        <vbuttonk type="primary" class="input_w" permit="" 
+                                        <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                                             @click="onButtonClick_Upd_kh">修改客户</vbuttonk>
                                     </div>
                                 </div>
@@ -165,9 +165,9 @@ export default { name: "ext_xsgl_khgl" }
     import region from "@/inc/region"
     import eodic from "@/inc/eodic"
 
-    import vdic from "@/components/web/vdic.vue"
+    import vdic from "@/components/vdic.vue"
     import vtable from "@/components/web/vtable.vue"
-    import vbuttonk from "@/components/web/vbuttonk.vue"
+    import vbuttonk from "@/components/vbuttonk.vue"
 
     import user_input from "@/views/platform/user_input.vue"
 

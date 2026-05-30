@@ -6,14 +6,14 @@
             <div class="eo_tool_bar">
                 <div class="eo_form">
                     <div class="cell">
-                        <vbuttonk type="primary" class="input_w" permit="" 
+                        <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                             @click="onButtonClick_Add_wlgs">添加</vbuttonk>
-                        <vbuttonk type="default" class="input_w" permit="" 
+                        <vbuttonk width="8rem" type="default" class="input_w" permit="" 
                             @click="onButtonClick_Del_wlgs">删除</vbuttonk>
-                        <vbuttonk type="primary" class="input_w" permit="" 
+                        <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                             @click="onButtonClick_Upd_wlgs">修改</vbuttonk>
                         <div class="split"></div>
-                        <vbuttonk type="primary" class="input_w" permit="" 
+                        <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                             @click="onButtonClick_Load_wlgs">刷新</vbuttonk>
                     </div>
                 </div>
@@ -60,9 +60,9 @@ export default { name: "ext_cwgl_wlgs" }
     import eolib from "@/inc/eolib";
     import eodic from "@/inc/eodic";
 
-    import vbuttonk from "@/components/web/vbuttonk.vue"
+    import vbuttonk from "@/components/vbuttonk.vue"
     import vtable from "@/components/web/vtable.vue"
-    import vdic from "@/components/web/vdic.vue"
+    import vdic from "@/components/vdic.vue"
     import vformd from "@/components/web/vformd.vue"
 
     type t_table = InstanceType<typeof vtable>;

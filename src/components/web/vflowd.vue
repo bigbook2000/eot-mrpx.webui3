@@ -4,6 +4,7 @@
         :show-close="false" 
         :align-center="true"
         :close-on-click-modal="false"
+        :append-to-body="true"
         @opened="onDialogOpened"
         @close="onDialogClose">
         <template #header="{ close }">
@@ -58,87 +59,32 @@
 
 <script setup lang="ts">
 
-    import { ref, reactive, nextTick } from "vue"
-    import type {cfunc_boolean} from "@/inc/eotypes";
+    import type { cfunc_boolean } from "@/inc/eotypes";
+    import { useVflowd } from "@/components/vflowd"
+
+    import vfiles from "@/components/vfiles.vue"
     
-    import eocore from "@/inc/eocore"
-    import eoflow from "@/inc/eoflow"
-
-    import vfiles from "@/components/web/vfiles.vue";
-    import TLogic from "@/logic/TLogic";
-
     const emits = defineEmits<{
         (e: "open", tag: any): void
         (e: "close", cancel: boolean, tag: any, cb: cfunc_boolean): void
     }>()
 
-    const x_show_dialog = ref(false);
-    const x_show_loading = ref(false);
+    const {
+        x_show_dialog,
+        x_show_loading,
+        x_flow_title,
+        v_files_flow,
+        x_file_type,
+        x_flow_process_data,
+        onLoading_file,
+        show_dialog,
+        onDialogOpened,
+        onDialogClose,
+        onButtonClick_Cancel,
+        onButtonClick_Ok,
+    } = useVflowd(emits)
 
-    const x_flow_title = ref("");
-    const v_files_flow = ref<InstanceType<typeof vfiles>>();
-    const x_file_type = ref(TLogic.fileTypes["系统_流程文件"]);
-
-    /** 外挂数据  */
-    let x_flow_process_data: any = reactive({ 
-        f_flow_process_id: 0,
-        f_flow_type_id: 0,
-        f_flow_point_pid: 0,
-        f_flow_point_id: 0,
-        f_user_id: 0,
-        f_user_id_s: "",
-        f_text: "",
-        f_data_id: 0,
-        f_op_time: "1970-01-01 00:00:00",
-        f_op_flag: eoflow.OP_FLAG_NORMAL,
-        v_table: "",
-        v_id_field: "",
-        v_id_value: 0,
-    });
-
-    const onLoading_file = (bshow: boolean) => {
-        x_show_loading.value = bshow;
-    }
-
-    const show_dialog = (title: string, data: any) => {
-
-        x_flow_title.value = title;
-        v_files_flow.value?.clear_files();
-        
-        x_show_dialog.value = true;
-        x_flow_process_data = reactive({...data});
-    }
-
-    const onDialogOpened = () => {
-    }
-    const onDialogClose = () => {
-    }
-
-    const onButtonClick_Cancel = () => {
-        emits("close", true, x_flow_process_data, (result: boolean) => {
-            x_show_dialog.value = !result;
-        });
-    }
-    const onButtonClick_Ok = async () => {
-
-        x_show_loading.value = true;
-        // 先添加流程实例
-        let ret = await eocore.post("/framework/flow/process/upd", [x_flow_process_data]);
-        let data = eocore.check_net_object(ret);
-        x_flow_process_data = reactive({...data});
-
-        // 关联附件
-        await v_files_flow.value?.update_key_id(x_flow_process_data["f_flow_process_id"]);
-
-        emits("close", false, x_flow_process_data, (result: boolean) => {
-            x_show_loading.value = false;
-            x_show_dialog.value = !result;
-        });
-    }
-
-    defineExpose({
-        show_dialog
-    })
+    defineExpose({ show_dialog })
 
 </script>
 

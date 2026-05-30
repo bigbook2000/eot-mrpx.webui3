@@ -1,6 +1,6 @@
 <template>
     <!-- App顶部导航栏 -->
-    <div class="ap_header">
+    <div class="ap_topbar">
         <div class="back" @click="onButtonClick_back">
             <el-icon><ArrowLeft /></el-icon>
         </div>
@@ -20,9 +20,13 @@
 
     import router from "@/router/index"
 
-    const props = defineProps<{
-        title: string
-    }>()
+    const props = withDefaults(defineProps<{
+        title: string,
+        back?: boolean
+    }>(), { 
+        title: "",
+        back: true 
+    })
 
     const emits = defineEmits<{
         (e: "click"): void
@@ -34,7 +38,12 @@
     const onButtonClick_back = () => {
         // 触发一个事件
         emits("click");
-        router.back();
+
+        if (props.back) {
+            router.back();
+        } else {
+            router.replace({name: 'app_menu'}); 
+        }
     }
 </script>
 

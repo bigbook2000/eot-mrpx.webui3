@@ -7,25 +7,25 @@
                     <div class="label_n">产品清单</div>
                 </div>
                 <div class="cell">
-                    <vbuttonk type="primary" class="input_w" permit="" 
+                    <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                         v-show="x_edit_mode==1"
                         @click="onButtonClick_Add_cgdcp">添加清单</vbuttonk>
-                    <vbuttonk type="default" class="input_w" permit="" 
+                    <vbuttonk width="8rem" type="default" class="input_w" permit="" 
                         v-show="x_edit_mode==1"
                         @click="onButtonClick_Del_cgdcp">移除清单</vbuttonk>
-                    <vbuttonk type="primary" class="input_w" permit="" 
+                    <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                         v-show="x_edit_mode==1"
                         @click="onButtonClick_Upd_cgdcp">修改清单</vbuttonk>
-                    <vbuttonk type="primary" class="input_w" permit="" 
+                    <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                         v-show="x_edit_mode==2"
                         @click="onButtonClick_Upd_cgdcp">变更清单</vbuttonk>
-                    <vbuttonk type="primary" class="input_w" permit="" 
+                    <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                         v-show="x_edit_mode==3"
                         @click="onButtonClick_Upd_cgdcp">物流单号</vbuttonk>
-                    <vbuttonk type="primary" class="input_w" permit="" 
+                    <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                         v-show="x_edit_mode==9"
                         @click="onButtonClick_Upd_shrk">收货入库</vbuttonk>
-                    <vbuttonk type="default" class="input_w" permit="" 
+                    <vbuttonk width="8rem" type="default" class="input_w" permit="" 
                         v-show="x_edit_mode==0"
                         @click="onButtonClick_Get_cgdcp">查看清单</vbuttonk>
                 </div>
@@ -65,9 +65,9 @@
     import eocore from "@/inc/eocore"
     import eolib from "@/inc/eolib";
 
-    import vbuttonk from "@/components/web/vbuttonk.vue"
+    import vbuttonk from "@/components/vbuttonk.vue"
     import vtable from "@/components/web/vtable.vue"
-    import vdic from "@/components/web/vdic.vue"    
+    import vdic from "@/components/vdic.vue"    
     import eodic from "@/inc/eodic";
 
     import cgdcp_xx from "./cgdcp_xx.vue"

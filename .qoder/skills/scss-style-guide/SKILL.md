@@ -22,7 +22,7 @@ description: SCSS样式编写规范，定义样式复用优先级、类名前缀
 ### App 端（移动端 <1200px）
 - 文件：[assets/app.scss](src/assets/app.scss)
 - 顶层大类名以 **`ap_`** 开头
-- 示例：`.ap_header`、`.ap_button`
+- 示例：`.ap_topbar`、`.ap_button`
 
 ## App 端表单布局规范
 
@@ -139,16 +139,16 @@ const queryKeyword = ref("");  // 不应使用驼峰
 
 App 界面中的卡片式列表**必须**使用 [app.scss](src/assets/app.scss) 中定义的通用 `ap_` 类，**禁止**在组件 scoped 样式中重复编写卡片布局。
 
-所有卡片子类采用**短命名**并在 `.ap_list_wrap` 下嵌套定义，编写模板时无需加 `ap_` 前缀。
+所有卡片子类采用**短命名**并在 `.ap_list` 下嵌套定义，编写模板时无需加 `ap_` 前缀。
 
 ### 通用类清单
 
 | 类名 | 嵌套层级 | 用途 |
 |------|---------|------|
-| `ap_list_wrap` | 顶层 | 列表外层容器 |
-| `.empty` | `.ap_list_wrap >` | 空数据提示 |
-| `.item` | `.ap_list_wrap >` | 单个卡片 |
-| `.item.ap_sel` | `.ap_list_wrap >` | 选中态卡片 |
+| `ap_list` | 顶层 | 列表外层容器 |
+| `.empty` | `.ap_list >` | 空数据提示 |
+| `.item` | `.ap_list >` | 单个卡片 |
+| `.item.ap_sel` | `.ap_list >` | 选中态卡片 |
 | `.check` | `.item >` | 右上角复选框（绝对定位） |
 | `.detail` | `.item >` | 右下角详情按钮（绝对定位） |
 | `.body` | `.item >` | 卡片主体内容区域 |
@@ -160,8 +160,8 @@ App 界面中的卡片式列表**必须**使用 [app.scss](src/assets/app.scss) 
 ### 模板结构
 
 ```vue
-<!-- ✅ 正确：使用 ap_list_wrap + 嵌套短命名 -->
-<div class="ap_list_wrap">
+<!-- ✅ 正确：使用 ap_list + 嵌套短命名 -->
+<div class="ap_list">
     <div v-if="list.length === 0" class="empty">暂无数据</div>
     <div v-for="item in list" :key="item.id"
         class="item"
@@ -192,7 +192,7 @@ App 界面中的卡片式列表**必须**使用 [app.scss](src/assets/app.scss) 
 
 <!-- ❌ 错误：不要在 scoped 中重复编写卡片样式 -->
 <style lang="scss" scoped>
-.div_list_item {  // 应使用 ap_list_wrap > .item
+.div_list_item {  // 应使用 ap_list > .item
     background: #fff;
     border-radius: 0.5rem;
     ...
@@ -237,7 +237,7 @@ App 界面中的卡片式列表**必须**使用 [app.scss](src/assets/app.scss) 
     .close { ... }
 }
 
-.ap_header {
+.ap_topbar {
     .back { ... }
     .title { ... }
 }

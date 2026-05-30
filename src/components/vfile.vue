@@ -3,7 +3,7 @@
     <div class="sv_file">
         <div class="border">
             <div class="remove" @click="onButtonClick_Remove" v-if="!readOnly">
-                <el-icon size="14" color="#666">
+                <el-icon size="1.2rem" color="#666">
                     <Delete />
                 </el-icon>
             </div>
@@ -30,7 +30,7 @@
                     :file-list="x_file_list"
                     :auto-upload="true">
                     <div class="upload" slot="trigger">
-                        <el-icon size="14" color="#00b077">
+                        <el-icon size="1.2rem" color="#00b077">
                             <Edit />
                         </el-icon>
                     </div>

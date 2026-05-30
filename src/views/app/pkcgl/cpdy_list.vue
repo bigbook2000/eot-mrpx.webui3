@@ -1,7 +1,7 @@
 <template>
     <!-- 产品选择对话框 - App端 -->
-    <el-dialog v-model="x_visible" title="选择产品" fullscreen :z-index="2000"
-        class="ap_dialog_full" @open="onDialogOpen">
+    <el-dialog v-model="x_visible" title="选择产品" fullscreen 
+        class="ap_dialog" @open="onDialogOpen">
         <div class="div_dialog">
             <div class="eo_col">
                 <!-- 搜索栏 -->
@@ -15,7 +15,7 @@
                 <!-- 列表 -->
                 <div class="eo_col_f">
                     <div class="eo_scroll_v">
-                        <div class="ap_list_wrap">
+                        <div class="ap_list">
                             <div v-if="x_data_list.length === 0 && !x_show_loading"
                                 class="empty">
                                 暂无产品数据

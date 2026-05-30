@@ -16,7 +16,7 @@
 
     import { onBeforeUpdate, onMounted, ref, watch } from "vue"
 
-    import vfile from "@/components/web/vfile.vue";
+    import vfile from "@/components/vfile.vue";
 
     import type { cfunc_loading } from "@/inc/eotypes";
 

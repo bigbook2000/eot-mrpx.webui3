@@ -16,18 +16,10 @@
                         </div>
                     </div>
                     <div class="cell eo_w240p">
-                        <div class="label_n">产品名称</div>
+                        <div class="label_n">库存信息</div>
                         <div class="input">
                             <el-input style="width:100%" maxlength="32"
-                                v-model="x_query_cpmc" placeholder="产品名称"
-                                :disabled="x_query_fixed"></el-input>
-                        </div>
-                    </div>
-                    <div class="cell eo_w240p">
-                        <div class="label_n">批次</div>
-                        <div class="input">
-                            <el-input style="width:100%" maxlength="32"
-                                v-model="x_query_kcbh" placeholder="批次"
+                                v-model="x_query_kcxx" placeholder="批次或名称"
                                 :disabled="x_query_fixed"></el-input>
                         </div>
                     </div>
@@ -53,8 +45,13 @@
                     @row-click="onTableRowClick_kcmx"
                     @sort-change="onTableSortChange">
                     <el-table-column prop="f_jyzt_s" label="状态" width="80" />
-                    <el-table-column prop="f_kcbh" label="批次" width="200" />
-                    <el-table-column prop="f_cpmc" label="产品名称" width="200" show-overflow-tooltip sortable />
+                    <el-table-column prop="f_kcxx" label="库存信息" width="240" show-overflow-tooltip>
+                        <template #default="scope">
+                            <span>{{ scope.row.f_kcbh }}</span>
+                            <br />
+                            <span>{{ scope.row.f_cpmc }}</span>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="f_kcdj_s" label="单价" width="120" align="right" sortable />
                     <el-table-column prop="f_kcsl_s" label="数量" width="120" align="right" sortable />
                     <el-table-column prop="f_rksj_s" label="入库时间" width="160" sortable />
@@ -111,9 +108,7 @@
 
     // 查询条件
     const x_query_cplb_d = ref([0, 0]);
-    const x_query_cpmc = ref("");
-    const x_query_kcbh = ref("");
-    const x_query_cpbm = ref("");
+    const x_query_kcxx = ref("");
 
     const x_query_fixed = ref(false);
 
@@ -165,8 +160,7 @@
         
         x_query_fixed.value = !eocore.check_empty(data["f_cpbm"]);
         // 初始化查询条件
-        x_query_cpmc.value = "";
-        x_query_cpbm.value = data["f_cpbm"];
+        x_query_kcxx.value = data["f_cpbm"];
 
         x_cplb_list.value = await TLogic.netload_Tree_cplb(true);
     }
@@ -218,9 +212,7 @@
             "v_kcbz": TLogic.kcbzCodes["正常"],
             "v_cpdl_id": x_query_cplb_d.value[0],
             "v_cpxl_id": x_query_cplb_d.value[1],
-            "v_cpmc": x_query_cpmc.value,
-            "v_cpbm": x_query_cpbm.value,
-            "v_kcbh": x_query_kcbh.value,
+            "v_kcxx": x_query_kcxx.value,
             "v_jyzt": -1,
             "v_rklb": "",
             "v_cklb": "",

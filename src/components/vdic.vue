@@ -23,10 +23,10 @@
 
     const props = withDefaults(defineProps<{
         modelValue: number|string,
-        dic: string,
-        field: "value"|"label",
-        all?: boolean,
-        disabled?: boolean
+        dic?: string|undefined,
+        field?: "value"|"label"|undefined,
+        all?: boolean|undefined,
+        disabled?: boolean|undefined
     }>(), {
         modelValue: "",
         field: "value",

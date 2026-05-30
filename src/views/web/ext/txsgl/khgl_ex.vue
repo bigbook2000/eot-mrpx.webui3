@@ -29,7 +29,7 @@
             <div class="eo_tool_bar">
                 <div class="eo_form">
                     <div class="cell">
-                        <vbuttonk type="primary" class="input_w" permit="" 
+                        <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                             v-if="x_edit_mode"
                             @click="onButtonClick_Add_khgt">新建沟通</vbuttonk>
                     </div>
@@ -92,11 +92,11 @@
     import eocore from "@/inc/eocore"
     import eolib from "@/inc/eolib"
 
-    import vbuttonk from "@/components/web/vbuttonk.vue"
+    import vbuttonk from "@/components/vbuttonk.vue"
     import vtable from "@/components/web/vtable.vue"
     import vformd from "@/components/web/vformd.vue"
     import vdialog from "@/components/web/vdialog.vue"
-    import vdic from "@/components/web/vdic.vue"
+    import vdic from "@/components/vdic.vue"
     import vregion from "@/components/web/vregion.vue"
     import vtab from "@/components/web/vtab.vue"
     import { Edit } from '@element-plus/icons-vue'

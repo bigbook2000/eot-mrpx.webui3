@@ -193,7 +193,7 @@ export default { name: "ext_xsgl_khdlg" }
 
     import eocore from "@/inc/eocore"
     import vdialog from "@/components/web/vdialog.vue"
-    import vdic from "@/components/web/vdic.vue"
+    import vdic from "@/components/vdic.vue"
     import vregion from "@/components/web/vregion.vue"
 
     type t_dialog = InstanceType<typeof vdialog>;

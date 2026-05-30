@@ -45,7 +45,7 @@
     import eolib from "@/inc/eolib";
     import eodic from "@/inc/eodic";
 
-    import vdic from "@/components/web/vdic.vue"
+    import vdic from "@/components/vdic.vue"
     import vtable from "@/components/web/vtable.vue"
 
     import TLogic from "@/logic/TLogic";

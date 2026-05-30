@@ -116,7 +116,7 @@
     var x_tab_name = ref("");
 
     /** 缓存列表 */
-    var x_keep_alive_list = ref<string[]>([]);
+    const x_keep_alive_list = ref<string[]>([]);
 
     onMounted(() => {       
         

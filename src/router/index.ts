@@ -29,33 +29,61 @@ const router = createRouter({
     {
       path: '/app/main',
       name: 'app_main',
-      component: AppMain
+      component: AppMain,
+      children: [
+        {
+          path: '/app/menu',
+          name: 'app_menu',
+          component: () => import('@/views/app/menu.vue')
+        },
+        {
+          path: '/app/cggl/cggl',
+          name: 'app_cggl_cggl',
+          component: () => import('@/views/app/pcggl/cggl.vue')
+        },
+        {
+          path: '/app/xsgl/xsgl',
+          name: 'app_xsgl_xsgl',
+          component: () => import('@/views/app/pxsgl/xsgl.vue')
+        },
+        {
+          path: '/app/xsgl/khgl',
+          name: 'app_xsgl_khgl',
+          component: () => import('@/views/app/pxsgl/khgl.vue')
+        },
+        {
+          path: '/app/xsgl/khgh',
+          name: 'app_xsgl_khgh',
+          component: () => import('@/views/app/pxsgl/khgh.vue')
+        },
+        {
+          path: '/app/xsgl/kehu_xx',
+          name: 'app_xsgl_kehu_xx',
+          component: () => import('@/views/app/pxsgl/kehu_xx.vue')
+        },
+        {
+          path: '/app/xsgl/xsd_xx',
+          name: 'app_xsgl_xsd_xx',
+          component: () => import('@/views/app/pxsgl/xsd_xx.vue')
+        },
+        {
+          path: '/app/kcgl/kczl',
+          name: 'app_kcgl_kczl',
+          component: () => import('@/views/app/pkcgl/kczl.vue')
+        },
+        {
+          path: '/app/kcgl/kcmx',
+          name: 'app_kcgl_kcmx',
+          component: () => import('@/views/app/pkcgl/kcmx.vue')
+        },
+        {
+          path: '/app/kcgl/cpdy',
+          name: 'app_kcgl_cpdy',
+          component: () => import('@/views/app/pkcgl/cpdy.vue')
+        },
+      ]
     },
-    {
-      path: '/app/cggl/cggl',
-      name: 'app_cggl_cggl',
-      component: () => import('@/views/app/pcggl/cggl.vue')
-    },
-    {
-      path: '/app/xsgl/xsgl',
-      name: 'app_xsgl_xsgl',
-      component: () => import('@/views/app/pxsgl/xsgl.vue')
-    },
-    {
-      path: '/app/kcgl/kczl',
-      name: 'app_kcgl_kczl',
-      component: () => import('@/views/app/pkcgl/kczl.vue')
-    },
-    {
-      path: '/app/kcgl/kcmx',
-      name: 'app_kcgl_kcmx',
-      component: () => import('@/views/app/pkcgl/kcmx.vue')
-    },
-    {
-      path: '/app/kcgl/cpdy',
-      name: 'app_kcgl_cpdy',
-      component: () => import('@/views/app/pkcgl/cpdy.vue')
-    },
+
     /** App End */
 
     {

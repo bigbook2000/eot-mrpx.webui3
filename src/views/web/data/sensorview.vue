@@ -79,7 +79,7 @@ export default { name: "data_sensorview" }
 
     import vtable from "@/components/web/vtable.vue"
     import vformd from "@/components/web/vformd.vue"
-    import vdic from "@/components/web/vdic.vue"
+    import vdic from "@/components/vdic.vue"
 
     import dept_input from "@/views/platform/dept_input.vue"
 

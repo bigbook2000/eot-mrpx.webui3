@@ -14,7 +14,7 @@
             <!-- 列表 -->
             <div class="eo_col_f">
                 <div class="eo_scroll_v">
-                    <div class="ap_list_wrap">
+                    <div class="ap_list">
                         <div v-if="x_data_list.length === 0 && !x_show_loading"
                             class="empty">
                             暂无产品数据

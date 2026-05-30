@@ -1,7 +1,7 @@
 <template>
     <!-- 库存整理 - 已选择列表 -->
     <el-dialog v-model="x_visible" title="已选择库存" fullscreen :z-index="2000">
-        <div class="ap_list_wrap">
+        <div class="ap_list">
             <div v-if="list.length === 0" class="empty">
                 暂无选择
             </div>

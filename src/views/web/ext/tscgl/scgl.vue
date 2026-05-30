@@ -52,11 +52,11 @@
                             <div class="eo_tool_bar">
                                 <div class="eo_form">
                                     <div class="cell">
-                                        <vbuttonk type="primary" class="input_w" permit="" 
+                                        <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                                             @click="onButtonClick_Add_scd">新增任务</vbuttonk>
                                     </div>
                                     <div class="cell">
-                                        <vbuttonk type="default" class="input_w" permit="" 
+                                        <vbuttonk width="8rem" type="default" class="input_w" permit="" 
                                             @click="onButtonClick_Del_scd">删除任务</vbuttonk>
                                     </div>
                                 </div>
@@ -106,11 +106,11 @@
                             <div class="eo_tool_bar">
                                 <div class="eo_form">
                                     <div class="cell">
-                                        <vbuttonk type="primary" class="input_w" permit="" 
+                                        <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                                             @click="onButtonClick_Upd_scwl">添加物料</vbuttonk>
                                     </div>
                                     <div class="cell">
-                                        <vbuttonk type="warning" class="input_w" permit="" 
+                                        <vbuttonk width="8rem" type="warning" class="input_w" permit="" 
                                             @click="onButtonClick_New_scwl">进行生产</vbuttonk>
                                     </div>
                                 </div>
@@ -166,7 +166,7 @@ export default { name: "ext_scgl_scgl" }
     import eolib from "@/inc/eolib";
 
     import { ElTree } from 'element-plus'
-    import vbuttonk from "@/components/web/vbuttonk.vue"
+    import vbuttonk from "@/components/vbuttonk.vue"
     import vtable from "@/components/web/vtable.vue"
     
     import TLogic from "@/logic/TLogic";

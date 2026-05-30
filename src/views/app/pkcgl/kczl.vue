@@ -2,7 +2,7 @@
     <!-- 库存整理 - 移动端 -->
     <div class="eo_page" v-loading="x_show_loading">
         <div class="eo_col">
-            <topbar title="库存整理" />
+            <topbar title="库存整理" :back="false" />
             <div class="eo_col_d">
                 <!-- 简洁搜索栏 -->
                 <div class="div_search_bar">
@@ -11,7 +11,7 @@
                         <el-button @click="x_show_select = true">选择</el-button>
                     </el-badge>
                     <div class="search_input">
-                        <el-input v-model="x_query_kcbh" placeholder="批次号或名称" clearable 
+                        <el-input v-model="x_query_kcxx" placeholder="批次号或名称" clearable 
                             @keyup.enter="onSimpleSearch" />
                     </div>
                     <el-button type="primary" @click="onSimpleSearch">搜索</el-button>
@@ -20,7 +20,7 @@
             <div class="eo_col_f">
                 <div class="eo_scroll_v">
                     <!-- 库存明细列表 -->
-                    <div class="ap_list_wrap">
+                    <div class="ap_list">
                         <div v-if="x_data_list.length == 0" class="empty">
                             暂无数据
                         </div>
@@ -84,7 +84,7 @@
 
         <!-- 更多查询 Drawer -->
         <el-drawer v-model="x_show_drawer" direction="ttb" size="auto" :with-header="false">
-            <kczl_q :cplb-list="x_cplb_list" :init-batch="x_query_kcbh" @search="onDrawerSearch" />
+            <kczl_q :cplb-list="x_cplb_list" :init-batch="x_query_kcxx" @search="onDrawerSearch" />
         </el-drawer>
         <!-- 已选择列表 -->
         <kczl_select v-model="x_show_select" :list="x_checked_list" @detail="onItemDetailClick" />
@@ -127,14 +127,12 @@ export default { name: "app_kcgl_kczl" }
 
     // 查询条件
     const x_query_cplb = ref([0, 0]);
-    const x_query_cpmc = ref("");
-    const x_query_cpbm = ref("");
-    const x_query_kcbh = ref("");
+    const x_query_kcxx = ref("");
     const x_query_jyzt = ref(-1);
 
     // 分页变量
     const x_page_index = ref(1);
-    const x_page_row_count = ref(100);
+    const x_page_row_count = ref(20);
     const x_row_total = ref(0);
 
     // 加载状态
@@ -181,9 +179,7 @@ export default { name: "app_kcgl_kczl" }
             "v_kcbz": TLogic.kcbzCodes["正常"],
             "v_cpdl_id": x_query_cplb.value[0],
             "v_cpxl_id": x_query_cplb.value[1],
-            "v_cpmc": x_query_kcbh.value,
-            "v_cpbm": x_query_cpbm.value,
-            "v_kcbh": x_query_kcbh.value,
+            "v_kcxx": x_query_kcxx.value,
             "v_jyzt": x_query_jyzt.value,
             "v_rklb": "",
             "v_cklb": "",
@@ -191,7 +187,7 @@ export default { name: "app_kcgl_kczl" }
             "v_rksj2": "",
             "v_cksj1": "",
             "v_cksj2": "",
-            "v_order_by": "",
+            "v_order_by": "ORDER BY f_kcmx_id DESC",
             "s_page_row_index": rowIndex,
             "s_page_row_count": pageRowCount
         });
@@ -199,9 +195,13 @@ export default { name: "app_kcgl_kczl" }
         x_show_loading.value = false;
         if (list == undefined) list = [];
 
-        // 分页总数
-        if (list.length > 0 && list[0]["s_total_count"] != undefined) {
-            x_row_total.value = eocore.to_int(list[0]["s_total_count"]);
+        // 分页总数，只有当rowIndex<0才返回总数
+        if (rowIndex < 0) {
+            if (list.length > 0) {
+                x_row_total.value = eocore.to_int(list[0]["s_total_count"]);
+            } else {
+                x_row_total.value = 0;
+            }
         }
 
         // 格式化每条数据
@@ -275,8 +275,7 @@ export default { name: "app_kcgl_kczl" }
      */
     const onSimpleSearch = () => {
         // 简洁搜索仅按批次查询，重置其他条件
-        x_query_cpmc.value = "";
-        x_query_cpbm.value = "";
+        x_query_kcxx.value = "";
         x_query_cplb.value = [0, 0];
         x_query_jyzt.value = -1;
         netLoad_kcmx_query(-1);
@@ -285,11 +284,9 @@ export default { name: "app_kcgl_kczl" }
     /**
      * Drawer组合查询搜索
      */
-    const onDrawerSearch = (params: { cplb: number[], cpmc: string, cpbm: string, kcbh: string, jyzt: number }) => {
+    const onDrawerSearch = (params: { cplb: number[], kcxx: string, jyzt: number }) => {
         x_query_cplb.value = params.cplb;
-        x_query_cpmc.value = params.cpmc;
-        x_query_cpbm.value = params.cpbm;
-        x_query_kcbh.value = params.kcbh;
+        x_query_kcxx.value = params.kcxx;
         x_query_jyzt.value = params.jyzt;
         x_show_drawer.value = false;
         netLoad_kcmx_query(-1);

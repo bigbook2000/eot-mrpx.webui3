@@ -139,7 +139,7 @@
     type t_dialog = InstanceType<typeof vdialog>;
     const v_dialog = ref<t_dialog>();
 
-    import vdic from "@/components/web/vdic.vue"
+    import vdic from "@/components/vdic.vue"
 
     const emits = defineEmits<{
         (e: "close", cancel: boolean, data: any, cb: cfunc_boolean): void

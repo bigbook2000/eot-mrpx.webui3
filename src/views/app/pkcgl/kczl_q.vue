@@ -3,15 +3,9 @@
     <div class="eo_tool_bar">
         <div class="eo_form">
             <div class="cell eo_w100">
-                <div class="label_n">批次</div>
+                <div class="label_n">货物</div>
                 <div class="input">
-                    <el-input v-model="x_query_kcbh" placeholder="批次" maxlength="32" />
-                </div>
-            </div>
-            <div class="cell eo_w100">
-                <div class="label_n">产品名称</div>
-                <div class="input">
-                    <el-input v-model="x_query_cpmc" placeholder="产品名称" maxlength="32" />
+                    <el-input v-model="x_query_kcxx" placeholder="批次或名称" maxlength="32" />
                 </div>
             </div>
             <div class="cell eo_w100">
@@ -38,7 +32,7 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import tcplb from "@/views/web/ext/comm/tcplb.vue";
-import vdic from "@/components/web/vdic.vue";
+import vdic from "@/components/vdic.vue";
 
 const props = defineProps<{
     cplbList: any[],
@@ -46,22 +40,18 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    (e: 'search', params: { cplb: number[], cpmc: string, cpbm: string, kcbh: string, jyzt: number }): void
+    (e: 'search', params: { cplb: number[], kcxx: string, jyzt: number }): void
 }>();
 
 // 查询条件
-const x_query_kcbh = ref(props.initBatch || "");
-const x_query_cpmc = ref("");
-const x_query_cpbm = ref("");
+const x_query_kcxx = ref(props.initBatch || "");
 const x_query_cplb = ref([0, 0]);
 const x_query_jyzt = ref(-1);
 
 const onSearch = () => {
     emit('search', {
         cplb: x_query_cplb.value,
-        cpmc: x_query_cpmc.value,
-        cpbm: x_query_cpbm.value,
-        kcbh: x_query_kcbh.value,
+        kcxx: x_query_kcxx.value,
         jyzt: x_query_jyzt.value,
     });
 };

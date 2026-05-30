@@ -1,24 +1,20 @@
-<script setup lang="ts">
+import { ref } from "vue"
 
-    // 流程按钮
+import type { cfunc_boolean, cfunc_data } from "@/inc/eotypes";
+import { type cflow_point } from "@/inc/eoflow";
 
-    import { ref, watch, onMounted } from "vue"
+import eocore from '@/inc/eocore';
+import eolib from '@/inc/eolib';
+import TGlobal from '@/logic/TGlobal'
+import TLogic from '@/logic/TLogic'
 
-    import type { cfunc_boolean, cfunc_data } from "@/inc/eotypes";
-    import { type cflow_point } from "@/inc/eoflow";
+import eoflow from "@/inc/eoflow";
 
-    import eocore from '@/inc/eocore';
-    import eolib from '@/inc/eolib';
-    import TGlobal from '@/logic/TGlobal'
-    import TLogic from '@/logic/TLogic'
+export function useTflowButton(
+    emit: any
+) {
 
-    import eoflow from "@/inc/eoflow";
-
-    import vbuttonk from "@/components/web/vbuttonk.vue"
-    import vflow from "@/components/web/vflow.vue"
-
-    type t_flow = InstanceType<typeof vflow>;
-    let v_flow: t_flow|undefined = undefined;
+    let v_flow: any = undefined;
 
     // 按钮状态
     const x_flow_new = ref(false); // 新建
@@ -28,21 +24,9 @@
     const x_flow_status = ref(false);
     const x_flow_status_text = ref("");
 
-    let m_flow_point: cflow_point|undefined = undefined;
+    let m_flow_point: cflow_point | undefined = undefined;
 
-    const emits = defineEmits<{
-        (e: 'on-new', point: cflow_point, data: any): void
-        (e: 'on-back', point: cflow_point, data: any): void
-        (e: 'on-edit', point: cflow_point, data: any): void
-        (e: 'on-get', point: cflow_point, data: any): void
-        (e: 'on-cancel', point: cflow_point, data: any): void
-        (e: 'on-flow', point: cflow_point, data: any): void
-    }>()
-
-    onMounted(() => {
-    })
-
-    const init_flow = (flow: t_flow|undefined) => {
+    const init_flow = (flow: any) => {
         v_flow = flow;
 
         x_flow_new.value = false;
@@ -50,7 +34,7 @@
         x_flow_cancel.value = false;
         x_flow_back.value = false;
         x_flow_status.value = false;
-        
+
         const point = v_flow?.get_first_point();
         if (point != undefined) {
             x_flow_new.value = TLogic.checkRoleString(point.role);
@@ -78,18 +62,18 @@
         x_flow_edit.value = pointName.includes(m_flow_point.name);
         console.log("set_flow_edit", m_flow_point, pointName, x_flow_edit.value);
     }
-    
+
     /**
      * 根据数据更新流程按钮状态
      * @param data 
      */
-    const update_flow_status = (data: any) : boolean => { 
+    const update_flow_status = (data: any): boolean => {
 
         let flowPointId = 0;
         if (data != undefined) {
             flowPointId = data["f_flow_point_id"];
         }
-        
+
         // 需要作废权限
         //x_flow_cancel.value = ret.first;
 
@@ -100,7 +84,7 @@
         x_flow_status.value = false;
 
         if (flowPointId <= 0) return false;
-        
+
         m_flow_point = v_flow?.get_point_by_id(flowPointId);
         if (m_flow_point == undefined) return false;
 
@@ -130,10 +114,10 @@
      * @param data0 订单数据
      */
     const show_flow_dialog = (data0: any, callback: cfunc_data) => {
-        
+
         v_flow?.process_add_dialog(async (cancel: boolean, data: any, cb: cfunc_boolean) => {
 
-            if (cancel) { 
+            if (cancel) {
                 cb(true); return;
             }
 
@@ -150,28 +134,28 @@
             cb(true);
         });
     }
-    
+
     const onButtonClick_Flow_Add = () => {
         const point = v_flow?.get_first_point();
         if (point == undefined) {
             eocore.show_info("无流程节点");
             return;
         }
-        emits("on-new", point, {});
+        emit("on-new", point, {});
     }
     const onButtonClick_Flow_Upd = () => {
         if (m_flow_point == undefined) {
             eocore.show_info("请选择流程节点");
             return;
         }
-        emits("on-edit", m_flow_point, {});
+        emit("on-edit", m_flow_point, {});
     }
     const onButtonClick_Flow_Get = () => {
         if (m_flow_point == undefined) {
             eocore.show_info("请选择流程节点");
             return;
         }
-        emits("on-get", m_flow_point, {});
+        emit("on-get", m_flow_point, {});
     }
 
     const onButtonClick_Flow_Cancel = () => {
@@ -179,63 +163,44 @@
             eocore.show_info("请选择流程节点");
             return;
         }
-        emits("on-cancel", m_flow_point, {});
+        emit("on-cancel", m_flow_point, {});
     }
     const onButtonClick_Flow_Back = () => {
         if (m_flow_point == undefined) {
             eocore.show_info("请选择流程节点");
             return;
         }
-        emits("on-back", m_flow_point, {});
+        emit("on-back", m_flow_point, {});
     }
     const onButtonClick_Flow = () => {
         if (m_flow_point == undefined) {
             eocore.show_info("请选择流程节点");
             return;
         }
-        emits("on-flow", m_flow_point, {});
+        emit("on-flow", m_flow_point, {});
     }
 
-    defineExpose({
+    return {
+        x_flow_new,
+        x_flow_edit,
+        x_flow_cancel,
+        x_flow_back,
+        x_flow_status,
+        x_flow_status_text,
+
         init_flow,
         get_point,
         get_point_name,
         set_flow_back,
         set_flow_edit,
         update_flow_status,
-        show_flow_dialog
-    })
+        show_flow_dialog,
 
-</script>
-
-<template>
-    <div class="sv_flow_button">
-        <vbuttonk type="primary" class="input_w" permit="" 
-            v-show="x_flow_new" 
-            @click="onButtonClick_Flow_Add">新建</vbuttonk>
-        <vbuttonk type="primary" class="input_w" permit="" 
-            v-show="x_flow_edit"
-            @click="onButtonClick_Flow_Upd">修改</vbuttonk>
-        <vbuttonk type="default" class="input_w" permit="" 
-            v-show="!x_flow_edit"
-            @click="onButtonClick_Flow_Get">详情</vbuttonk>
-        <div class="split"></div>
-        <vbuttonk type="warning" class="input_w" permit="" 
-            v-show="x_flow_cancel"
-            @click="onButtonClick_Flow_Cancel">作废</vbuttonk>
-        <vbuttonk type="warning" class="input_w" permit="" 
-            v-show="x_flow_back"
-            @click="onButtonClick_Flow_Back">退回</vbuttonk>
-        <vbuttonk type="warning" class="input_w" permit="" 
-            v-show="x_flow_status"
-            @click="onButtonClick_Flow">{{ x_flow_status_text }}</vbuttonk>
-    </div>
-</template>
-
-<style>
-.sv_flow_button {
-    display: flex;
-    flex-direction: row;
-    box-sizing: border-box;
+        onButtonClick_Flow_Add,
+        onButtonClick_Flow_Upd,
+        onButtonClick_Flow_Get,
+        onButtonClick_Flow_Cancel,
+        onButtonClick_Flow_Back,
+        onButtonClick_Flow,
+    }
 }
-</style>

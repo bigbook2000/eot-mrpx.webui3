@@ -60,7 +60,7 @@
 
     import eocore from "@/inc/eocore"
     import vdialog from "@/components/web/vdialog.vue"
-    import vdic from "@/components/web/vdic.vue"
+    import vdic from "@/components/vdic.vue"
 
     import TLogic from "@/logic/TLogic";
     import TGlobal from "@/logic/TGlobal";

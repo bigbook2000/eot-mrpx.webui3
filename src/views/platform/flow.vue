@@ -8,14 +8,14 @@
                     <div class="eo_tool_bar">
                         <div class="eo_form">
                             <div class="cell">
-                                <vbuttonk type="primary" class="input_w" permit="" 
+                                <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                                     @click="onButtonClick_Load_type">刷新</vbuttonk>
                                 <div class="split"></div>
-                                <vbuttonk type="primary" class="input_w" permit="" 
+                                <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                                     @click="onButtonClick_Add_type">添加类别</vbuttonk>
-                                <vbuttonk type="default" class="input_w" permit="" 
+                                <vbuttonk width="8rem" type="default" class="input_w" permit="" 
                                     @click="onButtonClick_Del_type">删除类别</vbuttonk>
-                                <vbuttonk type="primary" class="input_w" permit="" 
+                                <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                                     @click="onButtonClick_Upd_type">修改类别</vbuttonk>
                             </div>
                         </div>
@@ -46,11 +46,11 @@
                     <div class="eo_tool_bar">
                         <div class="eo_form">
                             <div class="cell">
-                                <vbuttonk type="primary" class="input_w" permit="" 
+                                <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                                     @click="onButtonClick_Add_point">添加节点</vbuttonk>
-                                <vbuttonk type="default" class="input_w" permit="" 
+                                <vbuttonk width="8rem" type="default" class="input_w" permit="" 
                                     @click="onButtonClick_Del_point">删除节点</vbuttonk>
-                                <vbuttonk type="primary" class="input_w" permit="" 
+                                <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                                     @click="onButtonClick_Upd_point">修改节点</vbuttonk>
                             </div>
                         </div>
@@ -76,9 +76,9 @@
                     <div class="eo_tool_bar">
                         <div class="eo_form">
                             <div class="cell">
-                                <vbuttonk type="primary" class="input_w" permit="" 
+                                <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                                     @click="onButtonClick_Up_point">上移</vbuttonk>
-                                <vbuttonk type="primary" class="input_w" permit="" 
+                                <vbuttonk width="8rem" type="primary" class="input_w" permit="" 
                                     @click="onButtonClick_Down_point">下移</vbuttonk>
                             </div>
                         </div>
@@ -108,9 +108,9 @@ export default { name: "platform_flow" }
     import eolib from "@/inc/eolib";
     import eodic from "@/inc/eodic";
 
-    import vbuttonk from "@/components/web/vbuttonk.vue"
+    import vbuttonk from "@/components/vbuttonk.vue"
     import vtable from "@/components/web/vtable.vue"
-    import vdic from "@/components/web/vdic.vue"
+    import vdic from "@/components/vdic.vue"
     import vformd from "@/components/web/vformd.vue"
 
     import flow_point from "@/views/platform/flow_point.vue"

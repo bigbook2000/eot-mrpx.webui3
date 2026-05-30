@@ -1,6 +1,6 @@
 <template>
     <!-- 产品部件清单 - App端 -->
-    <div class="ap_list_wrap div_bj_scroll">
+    <div class="ap_list div_bj_scroll">
         <!-- 加载中 -->
         <div v-if="x_loading" class="empty">
             加载中...

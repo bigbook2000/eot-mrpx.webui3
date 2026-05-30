@@ -11,7 +11,7 @@ export default { name: "data_datalist" }
     import { onMounted } from "vue"
 
     import vtable from "@/components/web/vtable.vue"
-    import vdic from "@/components/web/vdic.vue"
+    import vdic from "@/components/vdic.vue"
 
     import { tsInit } from "./datalist_"
 

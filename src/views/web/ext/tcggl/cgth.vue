@@ -67,7 +67,7 @@
                             <div class="eo_tool_bar">
                                 <div class="eo_form">
                                     <div class="cell">
-                                        <tflow_button ref="v_flow_button"
+                                        <tflow_button :app="false" ref="v_flow_button"
                                             @on-new="onButtonClick_Flow_Add"
                                             @on-back="onButtonClick_Flow_Back"
                                             @on-edit="onButtonClick_Flow_Upd"
@@ -146,9 +146,9 @@ export default { name: "ext_cggl_cgth" }
     import eodic from "@/inc/eodic";
     import eoflow from "@/inc/eoflow";
 
-    import vbuttonk from "@/components/web/vbuttonk.vue"
+    import vbuttonk from "@/components/vbuttonk.vue"
     import vtable from "@/components/web/vtable.vue"
-    import vdic from "@/components/web/vdic.vue"
+    import vdic from "@/components/vdic.vue"
     import vflow from "@/components/web/vflow.vue"
 
     import cgth_xx from "./cgth_xx.vue"
@@ -156,7 +156,7 @@ export default { name: "ext_cggl_cgth" }
     import TGlobal from "@/logic/TGlobal";
 
     import user_input from "@/views/platform/user_input.vue"
-    import tflow_button from "@/views/web/ext/comm/tflow_button.vue";
+    import tflow_button from "@/views/comm/web/tflow_button.vue";
 
     type t_table = InstanceType<typeof vtable>;
     const v_table_cgth = ref<t_table>();
