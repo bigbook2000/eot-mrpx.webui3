@@ -36,6 +36,7 @@ export function useTflowButton(
         x_flow_status.value = false;
 
         const point = v_flow?.get_first_point();
+        //console.log("init_flow", v_flow, point);
         if (point != undefined) {
             x_flow_new.value = TLogic.checkRoleString(point.role);
         }
@@ -57,10 +58,21 @@ export function useTflowButton(
         x_flow_back.value = v_flow.check_point_order(m_flow_point.flow_point_id, pointName) || false;
         //console.log("set_flow_back", m_flow_point, pointName, x_flow_back.value);
     }
+    /**
+     * 设置流程编辑模式
+     * @param pointName 
+     */
     const set_flow_edit = (pointName: string[]) => {
         if (m_flow_point == undefined) return;
         x_flow_edit.value = pointName.includes(m_flow_point.name);
         console.log("set_flow_edit", m_flow_point, pointName, x_flow_edit.value);
+    }
+    /**
+     * 设置新增流程模式
+     */
+    const set_flow_add = () => {
+        x_flow_edit.value = true;
+        m_flow_point = v_flow?.get_first_point();
     }
 
     /**
@@ -193,6 +205,7 @@ export function useTflowButton(
         get_point_name,
         set_flow_back,
         set_flow_edit,
+        set_flow_add,
         update_flow_status,
         show_flow_dialog,
 

@@ -135,7 +135,13 @@ export default {
             if (d.flow_type_id == typeId) return d;
         }
 
-        console.log("******** ********", "eoflow::get_type_by_id: undefined", typeId);
+        const stack = new Error().stack;
+        if (stack) {
+            console.log("******** ********", "eoflow::get_type_by_id: undefined", typeId, stack);
+        } else {
+            console.log("******** ********", "eoflow::get_type_by_id: undefined", typeId);
+        }
+        
         return undefined;
     },
     get_type_by_name(typeName: string): cflow_type|undefined {
@@ -144,8 +150,25 @@ export default {
             if (d.name == typeName) return d;
         }
 
-        console.log("******** ********", "eoflow::get_type_by_name: undefined", typeName);
+        const stack = new Error().stack;
+        if (stack) {
+            console.log("******** ********", "eoflow::get_type_by_name: undefined", typeName, stack);
+        } else {
+            console.log("******** ********", "eoflow::get_type_by_name: undefined", typeName);
+        }
+        
         return undefined;
+    },
+
+    get_point_name(type: cflow_type|undefined, pointId: number): string {
+        if (type == undefined) return "";
+
+        for (let d of type.points) {
+            if (d.flow_point_id == pointId) {
+                return d.name;
+            }
+        }
+        return "";
     },
 
 }

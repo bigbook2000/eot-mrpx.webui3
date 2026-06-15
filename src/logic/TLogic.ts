@@ -1007,5 +1007,57 @@ export default {
 
         //console.log(TGlobal.menuList, menuList, menuListAll);
         return menuList;
-    }	
+    },
+
+
+    /**
+     * 统计销售订单数据
+     */
+    async netLoad_xsd_count(xsdId: number): Promise<any> {
+        
+        // 统计订单明细
+        let ret = await eocore.proc("p_xsdcp_count", {
+            "v_xsd_id": xsdId
+        });
+        let data = eocore.check_net_object(ret);
+        if (data == undefined) return undefined;
+
+        if (eocore.to_int(data["f_count"]) <= 0) {
+            eocore.show_info("没有订单明细");
+            return undefined;
+        }
+
+		return data;
+    },
+
+	/**
+	 * 初始化空的销售单数据
+	 * @returns 
+	 */
+	getEmptyData_xsd() {
+
+        return {
+            "f_xsd_id": 0,
+            "f_xsdh": "",          // 销售订单号
+            "f_khgl_id": 0,         // 客户ID
+            "f_khgl_id_s": "",      // 客户名称
+            "f_xsjh_id": 0, // 销售计划ID
+            "f_xsy_id": TGlobal.userData['f_user_id'], // 销售员ID
+            "f_xsy_id_s": TGlobal.userData['f_name'], // 销售员姓名
+            "f_lxr": "", // 联系人
+            "f_lxfs": "", // 联系电话
+            "f_lxdz": "", // 联系地址
+            "f_fklb": 1, // 付款类别
+            "f_xsje": 0.0, // 销售金额
+            "f_ssje": 0.0, // 实收金额
+            "f_cjsj": "", // 创建时间
+            "f_fhsj": "", // 发货时间
+            "f_fhy_id": 0, // 发货员ID
+            "f_fhy_id_s": "", // 发货员
+            "f_yxbz": 1, // 有效标志
+            "f_flow_point_id": 0,
+            "f_flow_process_id": 0,
+            "f_beizhu": "" // 备注
+        };		
+	}
 }

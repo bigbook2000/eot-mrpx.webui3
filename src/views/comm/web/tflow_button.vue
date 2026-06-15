@@ -27,6 +27,7 @@
         get_point_name,
         set_flow_back,
         set_flow_edit,
+        set_flow_add,
         update_flow_status,
         show_flow_dialog,
         onButtonClick_Flow_Add,
@@ -43,6 +44,7 @@
         get_point_name,
         set_flow_back,
         set_flow_edit,
+        set_flow_add,
         update_flow_status,
         show_flow_dialog
     })

@@ -27,6 +27,7 @@
         get_point_name,
         set_flow_back,
         set_flow_edit,
+        set_flow_add,
         update_flow_status,
         show_flow_dialog,
         onButtonClick_Flow_Add,
@@ -43,6 +44,7 @@
         get_point_name,
         set_flow_back,
         set_flow_edit,
+        set_flow_add,
         update_flow_status,
         show_flow_dialog
     })
@@ -51,13 +53,13 @@
 
 <template>
     <div class="ap_flow_button">
+        <div class="input" v-show="x_flow_edit">
+            <vbuttonk width="100%" type="primary" permit=""
+                @click="onButtonClick_Flow_Upd">保存</vbuttonk>
+        </div>
         <div class="input" v-show="x_flow_status">
             <vbuttonk width="100%" type="warning" permit=""                 
                 @click="onButtonClick_Flow">{{ x_flow_status_text }}</vbuttonk>
-        </div>
-        <div class="input" v-show="x_flow_edit">
-            <vbuttonk width="100%" type="primary" permit=""                 
-                @click="onButtonClick_Flow_Upd">保存</vbuttonk>
         </div>
         <div class="input" v-show="x_flow_cancel">
             <vbuttonk width="100%" type="warning" permit=""                 

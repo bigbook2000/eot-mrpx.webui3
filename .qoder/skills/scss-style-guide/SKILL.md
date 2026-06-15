@@ -116,25 +116,6 @@ App 界面中的 `el-dialog` **禁止**使用 `<template #footer>` 插槽放置�
 <el-button size="small" type="primary">确定</el-button>
 ```
 
-## Vue 响应式变量命名规范
-
-Vue 组件中 `ref()` / `reactive()` 声明的响应式变量**必须**以 **`x_`** 为前缀，全部小写，单词间用下划线连接。
-
-```ts
-// ✅ 正确
-const x_visible = ref(false);
-const x_query_cpmc = ref("");
-const x_data_list = ref<any[]>([]);
-const x_cpdy_data: any = reactive({});
-const x_selected_id = ref(0);
-
-// ❌ 错误：缺少 x_ 前缀
-const visible = ref(false);
-const queryKeyword = ref("");  // 不应使用驼峰
-```
-
-> **`m_` 前缀**保留给非响应式的模块级变量（如 `m_cplb_list`、`m_dialog_tag`）。
-
 ## App 端卡片列表规范
 
 App 界面中的卡片式列表**必须**使用 [app.scss](src/assets/app.scss) 中定义的通用 `ap_` 类，**禁止**在组件 scoped 样式中重复编写卡片布局。

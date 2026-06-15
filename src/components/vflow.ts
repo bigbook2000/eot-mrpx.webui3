@@ -51,42 +51,50 @@ export function useVflow(
     const get_point_by_name = (pointName: string): cflow_point | undefined => {
 
         if (m_flow_type == undefined) {
-            console.log("******** ********", "eoflow::get_point_name: type", pointName);
+            const stack = new Error().stack;
+            console.log("******** ********", "eoflow::get_point_name: type", pointName, stack);
             return undefined;
         }
         for (let d2 of m_flow_type.points) {
             if (d2.name == pointName) return d2;
         }
 
-        console.log("******** ********", "eoflow::get_point_name: undefined", pointName);
+        const stack = new Error().stack;
+        console.log("******** ********", "eoflow::get_point_name: undefined", pointName, stack);
         return undefined;
     }
 
     const get_point_name_by_id = (pointId: number): string => {
 
         if (m_flow_type == undefined) {
-            console.log("******** ********", "eoflow::get_point_name_by_id: type", pointId, m_flow_type);
+            const stack = new Error().stack;
+            console.log("******** ********", "eoflow::get_point_name_by_id: type", pointId, m_flow_type, stack);
             return "";
         }
 
         for (let d2 of m_flow_type.points) {
             if (d2.flow_point_id == pointId) return d2.name;
         }
-        console.log("******** ********", "eoflow::get_point_name_by_id: undefined", pointId, m_flow_type);
+
+        const stack = new Error().stack;
+        console.log("******** ********", "eoflow::get_point_name_by_id: undefined", pointId, m_flow_type, stack);
         return "";
     }
 
     const get_point_by_id = (pointId: number): cflow_point | undefined => {
 
         if (m_flow_type == undefined) {
-            console.log("******** ********", "eoflow::get_point_by_id: type", pointId);
+            const stack = new Error().stack;
+            console.log("******** ********", "eoflow::get_point_by_id: type", pointId, stack);
             return undefined;
         }
 
         for (let d2 of m_flow_type.points) {
             if (d2.flow_point_id == pointId) return d2;
         }
-        console.log("******** ********", "eoflow::get_point_by_id: undefined", pointId);
+
+        const stack = new Error().stack;
+        console.log("******** ********", "eoflow::get_point_by_id: undefined", pointId, stack);
         return undefined;
     }
 
@@ -97,7 +105,8 @@ export function useVflow(
     const get_next_point = (pointId: number): cflow_point | undefined => {
 
         if (m_flow_type == undefined) {
-            console.log("******** ********", "eoflow::get_next_point: type", pointId);
+            const stack = new Error().stack;
+            console.log("******** ********", "eoflow::get_next_point: type", pointId, stack);
             return undefined;
         }
 
@@ -108,7 +117,8 @@ export function useVflow(
             }
         }
 
-        console.log("******** ********", "eoflow::get_next_point: undefined", pointId);
+        const stack = new Error().stack;
+        console.log("******** ********", "eoflow::get_next_point: undefined", pointId, stack);
         return undefined;
     }
 
@@ -119,7 +129,8 @@ export function useVflow(
     const get_prev_point = (pointId: number): cflow_point | undefined => {
 
         if (m_flow_type == undefined) {
-            console.log("******** ********", "eoflow::get_prev_point: type", pointId);
+            const stack = new Error().stack;
+            console.log("******** ********", "eoflow::get_prev_point: type", pointId, stack);
             return undefined;
         }
 
@@ -130,7 +141,8 @@ export function useVflow(
             }
         }
 
-        console.log("******** ********", "eoflow::get_prev_point: undefined", pointId);
+        const stack = new Error().stack;
+        console.log("******** ********", "eoflow::get_prev_point: undefined", pointId, stack);
         return undefined;
     }
 
@@ -142,7 +154,8 @@ export function useVflow(
     const check_point_back = (pointName: string): any => {
 
         if (m_flow_type == undefined) {
-            console.log("******** ********", "eoflow::get_point_by_id: type", pointName);
+            const stack = new Error().stack;
+            console.log("******** ********", "eoflow::get_point_by_id: type", pointName, stack);
             return undefined;
         }
 
@@ -161,7 +174,8 @@ export function useVflow(
     const check_point_order = (pointId1: number, pointName2: string): boolean => {
 
         if (m_flow_type == undefined) {
-            console.log("******** ********", "eoflow::check_point_order: type", pointId1, pointName2);
+            const stack = new Error().stack;
+            console.log("******** ********", "eoflow::check_point_order: type", pointId1, pointName2, stack);
             return false;
         }
 
@@ -174,7 +188,8 @@ export function useVflow(
         }
 
         if (point1 == undefined || point2 == undefined) {
-            console.log("******** ********", "eoflow::check_point_order: point", pointId1, pointName2);
+            const stack = new Error().stack;
+            console.log("******** ********", "eoflow::check_point_order: point", pointId1, pointName2, stack);
             return false;
         }
 
@@ -294,6 +309,7 @@ export function useVflow(
 
         m_last_error = "";
         const process = get_process_point(); // 获取当前流程点
+        console.log("process_add_data", m_flow_type, process);
         if (process == undefined) return undefined;
         if (m_flow_type == undefined) return undefined;
 
