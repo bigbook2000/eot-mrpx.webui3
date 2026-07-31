@@ -163,32 +163,37 @@
         </div>
         <div class="eo_col_d eo_form">
             <div class="button">
-                <el-button class="ap_button" type="primary" @click="$emit('confirm')">保存</el-button>
+                <el-button class="ap_button" type="primary" @click="onSave">保存</el-button>
             </div>
             <div class="button">
-                <el-button class="ap_button" @click="$emit('cancel')">取消</el-button>
+                <el-button class="ap_button" @click="onCancel">取消</el-button>
             </div>
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
-    import { reactive, watch } from "vue"
+    import { reactive } from "vue"
     import vdic from "@/components/vdic.vue"
     import vregion from "@/components/web/vregion.vue"
 
-    const props = defineProps<{
-        data: any
-    }>();
-
     const emit = defineEmits<{
-        confirm: []
-        cancel: []
+        update: [data: any | null]
     }>();
 
     let m_data = reactive<any>({});
 
-    watch(() => props.data, (val) => {
-        if (val) Object.assign(m_data, val);
-    }, { immediate: true });
+    const loadData = (data: any) => {
+        Object.assign(m_data, data);
+    };
+
+    const onSave = () => {
+        emit('update', { ...m_data });
+    };
+
+    const onCancel = () => {
+        emit('update', null);
+    };
+
+    defineExpose({ loadData });
 </script>

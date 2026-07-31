@@ -1,18 +1,18 @@
 <template>
     <!-- 采购产品明细编辑对话框 - App端 -->
     <vdialog ref="v_dialog"
-        width="1000px" :title="x_title"
+        :title="x_title"
         @open="onDialogOpen"
         @close="onDialogClose">
         <div class="eo_form">
-            <div class="cell eo_w2">
+            <div class="cell eo_w100">
                 <div class="label_n">采购单号</div>
                 <div class="input">
                     <el-input v-model="x_data_cgdcp['f_cgdh']" style="width:100%" disabled>
                     </el-input>
                 </div>
             </div> 
-            <div class="cell eo_w2">
+            <div class="cell eo_w100">
                 <div class="label_n">产品名称<span style="color:red;">*</span></div>
                 <div class="input">
                     <el-input v-model="x_data_cgdcp['f_cpmc']" style="width:100%"
@@ -24,14 +24,14 @@
                     </el-input>
                 </div>
             </div>
-            <div class="cell eo_w2">
+            <div class="cell eo_w100">
                 <div class="label_n">产品编码</div>
                 <div class="input">
                     <el-input v-model="x_data_cgdcp['f_cpbm']" style="width:100%"
                         maxlength="50" :disabled="true"></el-input>
                 </div>
             </div>
-            <div class="cell eo_w2">
+            <div class="cell eo_w100">
                 <div class="label_n">销售定价</div>
                 <div class="input">
                     <el-input v-model="x_data_cgdcp['f_cpjg']" style="width:100%" disabled>
@@ -39,14 +39,14 @@
                 </div>
             </div> 
             
-            <div class="cell eo_w2">
+            <div class="cell eo_w100">
                 <div class="label_n">库存数量</div>
                 <div class="input">
                     <el-input v-model="x_data_cgdcp['f_cpsl_s']" style="width:100%" disabled>
                     </el-input>
                 </div>
             </div> 
-            <div class="cell eo_w2">
+            <div class="cell eo_w100">
                 <div class="label_n">库存成本</div>
                 <div class="input">
                     <el-input v-model="x_data_cgdcp['f_cpdj_s']" style="width:100%" disabled>
@@ -54,7 +54,7 @@
                 </div>
             </div> 
             
-            <div class="cell eo_w2">
+            <div class="cell eo_w100">
                 <div class="label_n">采购件数</div>
                 <div class="input">
                     <el-input-number v-model="x_data_cgdcp['f_cgsl']" style="width:100%"
@@ -63,7 +63,7 @@
                         @change="onNumberChange_jszj" />
                 </div>
             </div>
-            <div class="cell eo_w2">
+            <div class="cell eo_w100">
                 <div class="label_n">单件数量</div>
                 <div class="input">
                     <el-input-number v-model="x_data_cgdcp['f_bzsl']" style="width:100%"
@@ -72,7 +72,7 @@
                         @change="onNumberChange_jszj" />
                 </div>
             </div>
-            <div class="cell eo_w2">
+            <div class="cell eo_w100">
                 <div class="label_n">采购单价</div>
                 <div class="input">
                     <el-input-number v-model="x_data_cgdcp['f_cgdj']" style="width:100%"
@@ -81,8 +81,17 @@
                         @change="onNumberChange_jszj" />
                 </div>
             </div>
+            <div class="cell eo_w100">
+                <div class="label_n">采购总价</div>
+                <div class="input">
+                    <el-input-number v-model="x_data_cgdcp['f_cgzj']" style="width:100%"
+                        :min="0" :max="999999" :precision="3" :step="1" 
+                        :disabled="!x_edit_fields['f_cgzj']" 
+                        @change="onNumberChange_jsdj" />
+                </div>
+            </div>
 
-            <div class="cell eo_w2">
+            <div class="cell eo_w100">
                 <div class="label_n">物流公司</div>
                 <div class="input">
                     <el-input v-model="x_data_cgdcp['f_wlgs_id_s']" style="width:100%"
@@ -94,17 +103,7 @@
                     </el-input>
                 </div>
             </div>
-            <div class="cell eo_w2">
-                <div class="label_n">采购总价</div>
-                <div class="input">
-                    <el-input-number v-model="x_data_cgdcp['f_cgzj']" style="width:100%"
-                        :min="0" :max="999999" :precision="3" :step="1" 
-                        :disabled="!x_edit_fields['f_cgzj']" 
-                        @change="onNumberChange_jsdj" />
-                </div>
-            </div>
-
-            <div class="cell eo_w2">
+            <div class="cell eo_w100">
                 <div class="label_n">物流单号</div>
                 <div class="input">
                     <el-input v-model="x_data_cgdcp['f_wldh']" style="width:100%"
@@ -133,13 +132,13 @@
 
     import eocore from "@/inc/eocore"
     import eolib from "@/inc/eolib";
-    import vdialog from "@/components/web/vdialog.vue"
+    import vdialog from "@/components/app/vdialog.vue"
 
     import TLogic from "@/logic/TLogic";
     import TGlobal from "@/logic/TGlobal";
 
-    import cpdy_list from "@/views/vweb/ext/tkcgl/cpdy_list.vue"
-    import wlgs_list from "@/views/vweb/ext/tcwgl/wlgs_list.vue"
+    import cpdy_list from "@/views/vapp/pkcgl/cpdy_list.vue"
+    import wlgs_list from "@/views/vapp/pcggl/wlgs_list.vue"
 
     const v_cpdy_list = ref<InstanceType<typeof cpdy_list>>();
     const v_wlgs_list = ref<InstanceType<typeof wlgs_list>>();

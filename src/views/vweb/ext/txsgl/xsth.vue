@@ -222,7 +222,7 @@ export default { name: "ext_xsgl_xsth" }
         const flowStatus = v_flow_button.value?.update_flow_status(xsthData);
         if (!flowStatus) return;
 
-        v_flow_button.value?.set_flow_back("已审核");
+        v_flow_button.value?.set_flow_back("待发货");
 
         if (xsthData["f_xsy_id"] == TGlobal.userData["f_user_id"]) {
             v_flow_button.value?.set_flow_edit(["新建", "待发货"]);

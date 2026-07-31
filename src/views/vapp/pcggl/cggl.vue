@@ -173,7 +173,7 @@ export default { name: "app_cggl_cggl" }
 
     const onItemDetailClick = (item: any) => {
         x_selected_id.value = item.f_cgd_id;
-        router.push({ name: 'app_cggl_cgd_xx', state: { cgdData: JSON.parse(JSON.stringify(item)) } })
+        router.push({ name: 'app_cggl_cgd_xx', query: { id: item.f_cgd_id } });
     }
 
     const onButtonClick_Add_cgd = () => {

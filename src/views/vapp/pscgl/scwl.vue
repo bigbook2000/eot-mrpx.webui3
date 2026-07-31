@@ -1,36 +1,33 @@
 <template>
-    <!-- 销售查询 - 移动端 -->
+    <!-- 生产物料 - 移动端 -->
     <div class="eo_page" v-loading="x_show_loading">
         <div class="eo_col">
-            <topbar title="销售查询" :back="false" />
-            <div class="eo_col_d">
-                <!-- 简洁搜索栏 -->
-                <div class="div_search_bar">
-                    <el-date-picker style="flex:1;min-width:0;"
-                        v-model="x_query_cjsj"
-                        type="daterange"
-                        range-separator="至"
-                        start-placeholder="开始"
-                        end-placeholder="结束"
-                        value-format="YYYY-MM-DD"
-                        size="default">
-                    </el-date-picker>
-                </div>
-                <div class="div_search_bar">
-                    <el-input v-model="x_query_key" placeholder="关键字" clearable
-                        @keyup.enter="onSearch" />
-                    <el-button type="primary" @click="onSearch">搜索</el-button>
-                </div>
-                
+            <topbar title="生产物料" :back="false" />
+            <!-- 搜索栏 -->
+            <div class="div_search_bar">
+                <el-input v-model="x_query_key" placeholder="批次/产品名称" clearable
+                    @keyup.enter="onSearch" />
+                <el-button type="primary" @click="onSearch">搜索</el-button>
             </div>
+            <div class="div_search_bar">
+                <el-date-picker style="flex:1;min-width:0;"
+                    v-model="x_query_date"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始"
+                    end-placeholder="结束"
+                    value-format="YYYY-MM-DD"
+                    size="default">
+                </el-date-picker>
+            </div>
+            <!-- 列表 -->
             <div class="eo_col_f">
                 <div class="eo_scroll_v">
-                    <!-- 销售记录卡片列表 -->
                     <div class="ap_list">
                         <div v-if="x_data_list.length == 0" class="empty">
                             暂无数据
                         </div>
-                        <div v-for="item in x_data_list" :key="item.f_kcmx_id" class="item">
+                        <div v-for="item in x_data_list" :key="item.f_kcjy_id" class="item">
                             <div class="body">
                                 <div class="row">
                                     <span class="value title">{{ item.f_kcbh }}</span>
@@ -38,24 +35,14 @@
                                 <div class="row">
                                     <span class="label">产品名称</span>
                                     <span class="value">{{ item.f_cpmc }}</span>
-                                </div>
-                                <div class="row">
-                                    <span class="label">金额</span>
-                                    <span class="value">{{ item.f_xsje_s }}</span>
                                     <span class="label">数量</span>
                                     <span class="value">{{ item.f_kcsl }}</span>
                                 </div>
                                 <div class="row">
-                                    <span class="label">客户</span>
-                                    <span class="value">{{ item.f_khgl_id_s || '-' }}</span>
                                     <span class="label">时间</span>
-                                    <span class="value">{{ item.f_cjsj_s }}</span>
-                                </div>
-                                <div class="row">
-                                    <span class="label">订单号</span>
-                                    <span class="value">{{ item.f_xsdh }}</span>
-                                    <span class="label">销售员</span>
-                                    <span class="value">{{ item.f_xsy_id_s }}</span>
+                                    <span class="value">{{ item.f_jysj_s }}</span>
+                                    <span class="label">库管员</span>
+                                    <span class="value">{{ item.f_kgy_id_s }}</span>
                                 </div>
                                 <div class="row">
                                     <span class="label">规格</span>
@@ -94,10 +81,9 @@
     </div>
 </template>
 
-
 <script lang="ts">
 /** KeepAlive */
-export default { name: "app_xsgl_xscx" }
+export default { name: "app_scgl_scwl" }
 </script>
 
 <script lang="ts" setup>
@@ -108,16 +94,17 @@ export default { name: "app_xsgl_xscx" }
 
     import topbar from '@/views/vapp/comm/topbar.vue'
 
-    import TGlobal from "@/logic/TGlobal";
     import TLogic from "@/logic/TLogic";
+    import TGlobal from "@/logic/TGlobal";
 
+    // 查询条件
     const x_query_key = ref("");
-    const x_query_cjsj = ref<[string, string] | undefined>(undefined);
+    const x_query_date = ref<[string, string] | null>(null);
 
     // 列表数据
     const x_data_list = ref<any[]>([]);
 
-    // 分页变量
+    // 分页
     const x_page_index = ref(1);
     const x_page_row_count = ref(20);
     const x_row_total = ref(0);
@@ -126,59 +113,49 @@ export default { name: "app_xsgl_xscx" }
     const x_show_loading = ref(false);
 
     onMounted(() => {
-
-        let dt = new Date();
-        const jssj = eolib.date_end(dt);
-        dt.setMonth(dt.getMonth() - 1);
-        const kssj = eolib.date_start(dt);
-        x_query_cjsj.value = [kssj, jssj];
-
-        netLoad_xsdck_query(-1);
+        netLoad_kcjy_query(-1);
     });
 
     onActivated(() => {
-        netLoad_xsdck_query(x_page_index.value - 1)
-    })
+        netLoad_kcjy_query(x_page_index.value - 1);
+    });
 
-    /**
-     * 搜索
-     */
     const onSearch = () => {
         x_page_index.value = 1;
-        netLoad_xsdck_query(-1);
+        netLoad_kcjy_query(-1);
     }
 
-    /**
-     * 分页点击
-     */
     const onPageChange = (pageIndex: number) => {
         x_page_index.value = pageIndex;
-        netLoad_xsdck_query(pageIndex - 1);
+        netLoad_kcjy_query(pageIndex - 1);
     }
 
     /**
-     * 查询产品数据
-     * @param pageIndex 页码索引，-1表示重置到第1页
+     * 查询生产物料
      */
-    const netLoad_xsdck_query = async (pageIndex: number = -1) => {
+    const netLoad_kcjy_query = async (pageIndex: number = -1) => {
         let pageRowCount = x_page_row_count.value;
         let rowIndex = pageIndex * pageRowCount;
         if (pageIndex < 0) x_page_index.value = 1;
 
-        let cjsj1 = eolib.date_start(x_query_cjsj.value?.[0]);
-        let cjsj2 = eolib.date_end(x_query_cjsj.value?.[1]);
+        let kssj = "";
+        let jssj = "";
+        if (x_query_date.value) {
+            kssj = x_query_date.value[0];
+            jssj = x_query_date.value[1];
+        }
 
         x_show_loading.value = true;
-        let ret = await eocore.proc("p_xsdck_query", {
-            "v_xsy_id": TGlobal.userData["f_user_id"],
-            "v_khgl_id": -1,
-            "v_khmc": x_query_key.value,
-            "v_xsdh": x_query_key.value,
-            "v_cjsj1": cjsj1,
-            "v_cjsj2": cjsj2,
+        let ret = await eocore.proc("p_kcjy_query", {
+            "v_kcbz": -9,
             "v_kcbh": x_query_key.value,
+            "v_kssj": kssj,
+            "v_jssj": jssj,
+            "v_jyzt": 1,
+            "v_jyyg_id": TGlobal.userData["f_user_id"],
+            "v_cpbm": "",
             "v_cpmc": x_query_key.value,
-            "v_order_by": " ORDER BY f_xsdck_id DESC",
+            "v_order_by": " ORDER BY f_kcjy_id DESC",
             "s_page_row_index": rowIndex,
             "s_page_row_count": pageRowCount
         });
@@ -196,17 +173,10 @@ export default { name: "app_xsgl_xscx" }
         x_data_list.value = list;
     }
 
-    /**
-     * 数据格式化
-     */
     const formatItem = (data: any) => {
-        data["f_cjsj_s"] = eolib.date_2_string(data["f_cjsj"]);
-        data["f_xsje_s"] =
-            eolib.fixed_num(eocore.to_float(data["f_xsdj"] * data["f_kcsl"]), 2);
-
-        TLogic.updateDicUserData(data, ["f_xsy_id"]);
+        data["f_jysj_s"] = eolib.datetime_2_short(data["f_jysj"]);
+        TLogic.updateDicUserData(data, ["f_jyyg_id", "f_kgy_id"]);
     }
-
 </script>
 
 <style lang="scss" scoped>

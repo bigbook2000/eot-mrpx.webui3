@@ -125,8 +125,9 @@
     background-color: var(--el-table-bg-color);
     width: 100%;
     max-width: 100%;
-    height: -moz-fit-content;
-    height: fit-content;
+    /* eoui 自动填充*/
+    /* height: -moz-fit-content; */
+    /* height: fit-content; */
     font-size: var(--el-font-size-base);
     color: var(--el-table-text-color);
     position: relative;

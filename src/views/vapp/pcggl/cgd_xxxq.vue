@@ -1,6 +1,6 @@
 <template>
     <!-- 采购入库详情 -->
-    <div class="eo_col">
+    <div class="eo_col" v-loading="x_show_loading">
 
         <div class="eo_col_f">
             <div class="eo_scroll_v">
@@ -17,7 +17,7 @@
                             <el-input v-model="x_data_cgd['f_gys_id_s']" style="width:100%"
                                 placeholder="请选择供应商" :readonly="true">
                                 <template #append>
-                                    <el-button :icon="More" @click="onOpenGysList" />
+                                    <el-button :icon="More" @click="onButtonClick_gys_list" />
                                 </template>
                             </el-input>
                         </div>
@@ -39,7 +39,7 @@
                     <div class="cell eo_w100">
                         <div class="label_n">付款类别</div>
                         <div class="input">
-                            <el-input v-model="x_data_cgd['f_fklb_s']" style="width:100%" disabled />
+                            <vdic v-model="x_data_cgd['f_fklb']" dic="付款类别" :all="false" field="value" style="width:100%" />
                         </div>
                     </div>
                     <div class="cell eo_w100">
@@ -95,17 +95,21 @@
                     @on-flow="onFlow" />
             </div>
         </div>
+        <gys_list ref="v_gys_list" @close="onDialogClose_gys_list" />
     </div>
-    <gys_list ref="v_gys_list" @close="onGysSelect" />
+    
 </template>
 
 <script lang="ts" setup>
-    import { ref, reactive, watch } from "vue"
+    import { ref } from "vue"
     import { More } from '@element-plus/icons-vue'
     import type { cfunc_boolean } from "@/inc/eotypes";
 
     import eocore from "@/inc/eocore"
+    import eolib from "@/inc/eolib"
     import eoflow, { type cflow_point } from "@/inc/eoflow"
+
+    import vdic from "@/components/vdic.vue"
 
     import router from "@/router/index"
     import tflow_button from "@/views/comm/app/tflow_button.vue"
@@ -114,76 +118,82 @@
     import TGlobal from "@/logic/TGlobal";
     import TLogic from "@/logic/TLogic";
 
-    const props = defineProps<{
-        data: any
-        cgdId: number
+    const emit = defineEmits<{
+        update: [data: any]
     }>();
 
-    const emit = defineEmits<{
-        save: [data: any]
-        cancel: []
-    }>();
+    const x_show_loading = ref(false);
 
     const v_flow_button = ref<any>();
     const v_gys_list = ref<InstanceType<typeof gys_list>>();
 
-    let x_data_cgd = reactive<any>({});
+    let x_data_cgd = ref<any>({
+        f_cgd_id: 0
+    });
     let m_flow: any = undefined;
 
-    // ========== 流程初始化（由父组件调用） ==========
-
-    const initFlow = (flow: any) => {
+    // ========== 加载数据 ==========
+    const loadData = async (flow: any, cgdData: any) => {
         m_flow = flow;
+
+        // 初始化流程按钮
         v_flow_button.value?.init_flow(flow);
-        
+
+        Object.assign(x_data_cgd.value, {}, cgdData);
         updateFlowStatus();
     }
 
     // ========== 流程状态更新 ==========
-
     const updateFlowStatus = () => {
 
-        if (props.cgdId <= 0) return;
-        const cgdData = props.data;
-        if (!cgdData) return;
-        const yxbz = cgdData["f_yxbz"];
+        const data = x_data_cgd.value;
+
+        // 初始状态可编辑
+        if (data["f_cgd_id"] <= 0) {
+            v_flow_button.value?.set_flow_add();
+            return;
+        }
+
+        // 是否有效
+        const yxbz = data["f_yxbz"];
         if (yxbz == 0) return;
 
-        const flowStatus = v_flow_button.value?.update_flow_status(cgdData);        
+        // 先设置当前流程按钮状态
+        const flowStatus = v_flow_button.value?.update_flow_status(data);
         if (!flowStatus) return;
 
         // 核准之后无法退回
         v_flow_button.value?.set_flow_back("已核准");
-        
+
         // 只允许编辑自己
-        if (cgdData["f_xsy_id"] == TGlobal.userData["f_user_id"]) {
+        if (data["f_cgy_id"] == TGlobal.userData["f_user_id"]) {
             v_flow_button.value?.set_flow_edit(["新建"]);
         }
     };
 
     const netLoad_cgd_upd = async (data: any): Promise<any> => {
         const ret = await eocore.proc("p_cgd_upd", {
-            "v_cgd_id": data["f_cgd_id"] ?? 0,
-            "v_cgdh": data["f_cgdh"] ?? "",
-            "v_gys_id": data["f_gys_id"] ?? 0,
-            "v_gys_id_s": data["f_gys_id_s"] ?? "",
-            "v_cgy_id": data["f_cgy_id"] ?? 0,
-            "v_cgy_id_s": data["f_cgy_id_s"] ?? "",
-            "v_cgjh_id": data["f_cgjh_id"] ?? 0,
-            "v_cgjhdh": data["f_cgjhdh"] ?? "",
-            "v_lxr": data["f_lxr"] ?? "",
-            "v_lxdh": data["f_lxdh"] ?? "",
-            "v_wlgs_id": data["f_wlgs_id"] ?? 0,
-            "v_wlgs_id_s": data["f_wlgs_id_s"] ?? "",
-            "v_wldh": data["f_wldh"] ?? "",
-            "v_shr_id": data["f_shr_id"] ?? 0,
-            "v_shr_id_s": data["f_shr_id_s"] ?? "",
-            "v_fklb": data["f_fklb"] ?? 1,
-            "v_zje": data["f_zje"] ?? 0,
-            "v_sfje": data["f_sfje"] ?? 0,
-            "v_shsj": data["f_shsj"] ?? "",
-            "v_yxbz": data["f_yxbz"] ?? 1,
-            "v_beizhu": data["f_beizhu"] ?? ""
+            "v_cgd_id": data["f_cgd_id"],
+            "v_cgdh": data["f_cgdh"],
+            "v_gys_id": data["f_gys_id"],
+            "v_gys_id_s": data["f_gys_id_s"],
+            "v_cgy_id": data["f_cgy_id"],
+            "v_cgy_id_s": data["f_cgy_id_s"],
+            "v_cgjh_id": data["f_cgjh_id"],
+            "v_cgjhdh": data["f_cgjhdh"],
+            "v_lxr": data["f_lxr"],
+            "v_lxdh": data["f_lxdh"],
+            "v_wlgs_id": data["f_wlgs_id"],
+            "v_wlgs_id_s": data["f_wlgs_id_s"],
+            "v_wldh": data["f_wldh"],
+            "v_shr_id": data["f_shr_id"],
+            "v_shr_id_s": data["f_shr_id_s"],
+            "v_fklb": data["f_fklb"],
+            "v_zje": data["f_zje"],
+            "v_sfje": data["f_sfje"],
+            "v_shsj": data["f_shsj"],
+            "v_yxbz": data["f_yxbz"],
+            "v_beizhu": data["f_beizhu"]
         });
         return eocore.check_net_object(ret);
     };
@@ -197,15 +207,15 @@
         const ret = await eocore.proc("p_cgdcp_count", {
             "v_cgd_id": cgdData["f_cgd_id"]
         });
-        const data = eocore.check_net_object(ret);
-        if (data == undefined) return undefined;
+        const countData = eocore.check_net_object(ret);
+        if (countData == undefined) return undefined;
 
-        if (eocore.to_int(data["f_count"]) <= 0) {
+        if (eocore.to_int(countData["f_count"]) <= 0) {
             eocore.show_info("没有采购明细");
             return undefined;
         }
 
-        cgdData["f_zje"] = eocore.to_float(data["f_cgzj"]);
+        cgdData["f_zje"] = eocore.to_float(countData["f_cgzj"]);
         return await netLoad_cgd_upd(cgdData);
     }
 
@@ -216,11 +226,11 @@
         const dataNew = await netLoad_cgd_count(data0);
         if (dataNew == undefined) return;
 
-        Object.assign(props.data, dataNew);
-        Object.assign(x_data_cgd, dataNew);
+        Object.assign(x_data_cgd.value, dataNew);
 
-        v_flow_button.value?.show_flow_dialog(props.data, (data1: any) => {
+        v_flow_button.value?.show_flow_dialog(x_data_cgd.value, (data1: any) => {
             updateFlowStatus();
+            emit('update', x_data_cgd.value);
         });
     }
 
@@ -231,6 +241,7 @@
 
         v_flow_button.value?.show_flow_dialog(data0, (data1: any) => {
             updateFlowStatus();
+            emit('update', x_data_cgd.value);
         });
     }
 
@@ -276,6 +287,7 @@
 
         v_flow_button.value?.show_flow_dialog(data0, (data1: any) => {
             updateFlowStatus();
+            emit('update', x_data_cgd.value);
         });
     }
 
@@ -283,8 +295,58 @@
         // 新建已在 cggl.vue 的"新增"按钮中处理
     }
 
-    const onFlowEdit = () => {
-        // 编辑直接使用表单的保存按钮
+    const onFlowEdit = async () => {
+
+        const data = x_data_cgd.value;
+
+        if (!eocore.check_id(data, "f_gys_id")) {
+            eocore.show_info("请选择供应商");
+            return;
+        }
+
+        const isAdd = !eocore.check_id(data, "f_cgd_id");
+
+        if (isAdd) {
+            // 新增：生成采购入库单号
+            const cgdh = await TLogic.netLoad_RecordString("采购入库单号", "CG", "yyMMdd", 6);
+            if (eocore.check_empty(cgdh)) {
+                eocore.show_info("生成入库单号失败");
+                return;
+            }
+            data["f_cgdh"] = cgdh;
+        } else {
+            // 编辑：检查流程状态
+            const flowType = eoflow.get_type_by_name("采购入库");
+            if (flowType) {
+                const firstPoint = flowType.points[0];
+                if (firstPoint && data["f_flow_point_id"] != firstPoint.flow_point_id) {
+                    eocore.show_info("入库单已提交，无法修改");
+                    return;
+                }
+            }
+        }
+
+        x_show_loading.value = true;
+        const dataNew = await netLoad_cgd_upd(data);
+        x_show_loading.value = false;
+        if (dataNew == undefined) return;
+
+        if (isAdd) {
+            // 新增：创建流程节点
+            m_flow?.clear_list(dataNew["f_cgd_id"]);
+            const processData = await m_flow?.process_add_data(dataNew["f_cgd_id"], "-");
+            if (processData != undefined) {
+                dataNew["f_flow_point_id"] = processData["f_flow_point_id"];
+                dataNew["f_flow_process_id"] = processData["f_flow_process_id"];
+            }
+        }
+
+        Object.assign(x_data_cgd.value, dataNew);
+        updateFlowStatus();
+
+        eocore.show_success("保存成功");
+
+        emit('update', dataNew);
     }
 
     const onFlowGet = () => {
@@ -292,23 +354,33 @@
     }
 
     const onFlowCancel = async () => {
-        const ok = await eocore.show_confirm("确定要作废该入库单吗？");
-        if (!ok) return;
-        props.data["f_yxbz"] = 0;
-        const dataNew = await netLoad_cgd_upd(props.data);
+
+        const dret = await eocore.show_confirm("确定要作废该入库单吗？");
+        if (!dret) return;
+
+        const data = x_data_cgd.value;
+        data["f_yxbz"] = 0;
+        const dataNew = await netLoad_cgd_upd(data);
         if (dataNew == undefined) return;
-        Object.assign(x_data_cgd, dataNew);
+        Object.assign(x_data_cgd.value, dataNew);
+
         eocore.show_success("入库单已作废");
-        emit('cancel');
+
+        emit('update', dataNew);
     }
 
     const onFlowBack = () => {
+
         m_flow?.process_back_dialog((cancel: boolean, data: any, cb: any) => {
-            if (cancel) { cb(true); return; }
-            props.data["f_flow_point_id"] = data["f_flow_point_id"];
-            props.data["f_flow_point_id_s"] = data["f_flow_point_id_s"];
-            Object.assign(x_data_cgd, props.data);
+
+            if (cancel) {
+                cb(true); return;
+            }
+            x_data_cgd.value["f_flow_point_id"] = data["f_flow_point_id"];
+            x_data_cgd.value["f_flow_point_id_s"] = data["f_flow_point_id_s"];
+
             updateFlowStatus();
+
             cb(true);
         });
     }
@@ -318,24 +390,22 @@
         const pointName = point?.name;
         if (!pointName) return;
 
-        const cgdData = props.data;
-
         switch (pointName) {
             case "新建":
-                onButtonClick_Flow_CGTJ(point, cgdData);
+                onButtonClick_Flow_CGTJ(point, x_data_cgd.value);
                 break;
             case "待审核":
             case "已审核":
-                v_flow_button.value?.show_flow_dialog(cgdData, (data1: any) => {
-                    Object.assign(x_data_cgd, cgdData);
+                v_flow_button.value?.show_flow_dialog(x_data_cgd.value, (data1: any) => {
                     updateFlowStatus();
+                    emit('update', x_data_cgd.value);
                 });
                 break;
             case "已核准":
-                onButtonClick_Flow_CGFH(cgdData);
+                onButtonClick_Flow_CGFH(x_data_cgd.value);
                 break;
             case "已发货":
-                onButtonClick_Flow_CGRK(cgdData);
+                onButtonClick_Flow_CGRK(x_data_cgd.value);
                 break;
             case "完成":
                 break;
@@ -343,27 +413,26 @@
     }
 
     // ========== 供应商选择 ==========
-
-    const onOpenGysList = () => {
+    const onButtonClick_gys_list = () => {
         v_gys_list.value?.show_dialog({});
     }
 
-    const onGysSelect = (cancel: boolean, data: any, cb: cfunc_boolean) => {
+    const onDialogClose_gys_list = (cancel: boolean, data: any, cb: cfunc_boolean) => {
         if (cancel) {
             cb(true); return;
         }
 
-        const gys = {
-            f_gys_id: data["f_gys_id"],
-            f_gys_id_s: data["f_gysmc"],
-            f_lxr: data["f_lxr"] ?? "",
-            f_lxdh: data["f_lxdh"] ?? ""
-        };
-        Object.assign(x_data_cgd, gys);
-        Object.assign(props.data, gys);
+        x_data_cgd.value["f_gys_id"] = data["f_gys_id"];
+        x_data_cgd.value["f_gys_id_s"] = data["f_gysmc"];
+        x_data_cgd.value["f_lxr"] = data["f_lxr"] ?? "";
+        x_data_cgd.value["f_lxdh"] = data["f_lxdh"] ?? "";
 
         cb(true);
     }
 
-    defineExpose({ updateFlowStatus, initFlow })
+    defineExpose({
+        loadData,
+        updateFlowStatus
+    })
 </script>
+

@@ -1,7 +1,7 @@
 <template>
     <el-table ref="v_table" :data="x_list" class="eo_fill"
         stripe border fit highlight-current-row
-        row-key="rowId"
+        :row-key="idField"
         @row-click="onTableRowClick"
         @sort-change="onTableSortChange">
         <el-table-column type="selection" width="55" v-if="check!=undefined" />

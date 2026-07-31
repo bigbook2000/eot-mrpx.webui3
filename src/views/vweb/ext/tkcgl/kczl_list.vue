@@ -45,13 +45,9 @@
                     @row-click="onTableRowClick_kcmx"
                     @sort-change="onTableSortChange">
                     <el-table-column prop="f_jyzt_s" label="状态" width="80" />
-                    <el-table-column prop="f_kcxx" label="库存信息" width="240" show-overflow-tooltip>
-                        <template #default="scope">
-                            <span>{{ scope.row.f_kcbh }}</span>
-                            <br />
-                            <span>{{ scope.row.f_cpmc }}</span>
-                        </template>
-                    </el-table-column>
+                    <el-table-column prop="f_kcbh" label="批次" width="200" sortable />
+                    <el-table-column prop="f_rksj_s" label="入库时间" width="160" sortable />
+                    <el-table-column prop="f_cpmc" label="产品名称" width="240" show-overflow-tooltip />
                     <el-table-column prop="f_kcdj_s" label="单价" width="120" align="right" sortable />
                     <el-table-column prop="f_kcsl_s" label="数量" width="120" align="right" sortable />
                     <el-table-column prop="f_rksj_s" label="入库时间" width="160" sortable />

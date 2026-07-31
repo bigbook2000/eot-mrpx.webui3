@@ -4,7 +4,7 @@
         <!-- 工具栏按钮 -->
         <div class="eo_col_d eo_form" v-show="m_edit_mode == 1">
             <div class="button">
-                <el-button class="ap_button" type="primary" @click="onAdd_xsdcp">添加产品</el-button>
+                <el-button class="ap_button" type="primary" @click="onButtonAdd_xsdcp">添加产品</el-button>
             </div>
         </div>
         <div class="eo_col_f">
@@ -21,7 +21,7 @@
                             <div class="row">
                                 <span class="label">数量</span>
                                 <span class="value">{{ item['f_xssl'] }}</span>
-                                <span class="label">单价</span>
+                                <span class="label">销售单价</span>
                                 <span class="value">{{ item['f_xsdj_s'] }}</span>
                             </div>
                             <div class="row">
@@ -39,15 +39,15 @@
                                 <span class="value">{{ item['f_beizhu'] }}</span>
                             </div>
                             <div class="row" v-if="m_edit_mode == 1">
-                                <el-button class="ap_button" @click.stop="onDel_xsdcp(item['f_xsdcp_id'])">移除</el-button>
-                                <el-button class="ap_button" type="primary" @click.stop="onUpd_xsdcp(item['f_xsdcp_id'])">修改</el-button>
+                                <el-button class="ap_button" @click.stop="onButtonDel_xsdcp(item['f_xsdcp_id'])">移除</el-button>
+                                <el-button class="ap_button" type="primary" @click.stop="onButtonUpd_xsdcp(item['f_xsdcp_id'])">修改</el-button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <xsdcp_xx ref="v_xsdcp_xx" @close="onDialogClose" />
+        <xsdcp_xx ref="v_xsdcp_xx" @close="onDialogClose" />        
     </div>
 </template>
 
@@ -59,7 +59,10 @@
     import eocore from "@/inc/eocore"
     import eolib from "@/inc/eolib"
 
-    import xsdcp_xx from "./xsdcp_xx.vue"
+    import TLogic from "@/logic/TLogic";
+    import TGlobal from "@/logic/TGlobal";
+
+    import xsdcp_xx from "./xsdcp_xx.vue"    
 
     type t_xsdcp_xx = InstanceType<typeof xsdcp_xx>;
     const v_xsdcp_xx = ref<t_xsdcp_xx>();
@@ -73,7 +76,7 @@
         f_xsdh: "",
     };
     let m_edit_mode: number = 0;
-    let m_field_array: string[] = [];
+    let m_field_cp: string[] = [];    
 
     const loadList = async (flow: any, xsdData: any) => {
         
@@ -109,18 +112,20 @@
         if (!pointName) return;
 
         m_edit_mode = 0;
-        m_field_array = [""];
+        m_field_cp = [""];
+
         switch (pointName) {
             case "新建":
                 m_edit_mode = 1;
-                m_field_array = ["*"];
+                m_field_cp = ["*"];
                 break;
             case "待审核":
             case "已审核":
                 m_edit_mode = 2;
-                m_field_array = ["*"];
+                m_field_cp = ["*"];
                 break;
             case "已核准":
+                m_edit_mode = 3;
                 break;
             case "已生产":
                 break;
@@ -130,12 +135,12 @@
             case "完成":
                 break;
         }       
-    }    
+    }
 
     /**
      * 添加产品
      */
-    const onAdd_xsdcp = () => {
+    const onButtonAdd_xsdcp = () => {
 
         if (m_edit_mode != 1) {
             eocore.show_error("产品明细不可编辑");
@@ -160,13 +165,13 @@
             f_beizhu: "",
         };
 
-        v_xsdcp_xx.value?.showDialog(xsdcpData, m_field_array);
+        v_xsdcp_xx.value?.showDialog(xsdcpData, m_field_cp);
     }
 
     /**
      * 移除产品
      */
-    const onDel_xsdcp = async (xsdcpId: number) => {
+    const onButtonDel_xsdcp = async (xsdcpId: number) => {
 
         if (xsdcpId <= 0) {
             eocore.show_info("请先选择要移除的产品");
@@ -194,7 +199,7 @@
     /**
      * 修改产品
      */
-    const onUpd_xsdcp = (xsdcpId: number) => {
+    const onButtonUpd_xsdcp = (xsdcpId: number) => {
         if (xsdcpId <= 0) {
             eocore.show_info("请先选择要修改的产品");
             return;
@@ -205,7 +210,7 @@
             eocore.show_info("未找到所选产品");
             return;
         }
-        v_xsdcp_xx.value?.showDialog({ ...item }, m_field_array);
+        v_xsdcp_xx.value?.showDialog({ ...item }, m_field_cp);
     }
 
     /**

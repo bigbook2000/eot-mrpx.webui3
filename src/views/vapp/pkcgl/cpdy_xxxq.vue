@@ -119,14 +119,6 @@
                 <div style="height:2rem;"></div>
             </div>
         </div>
-        <div class="eo_col_d eo_form">
-            <div class="button">
-                <el-button class="ap_button" type="primary" @click="$emit('confirm')">保存</el-button>
-            </div>
-            <div class="button">
-                <el-button class="ap_button" @click="$emit('cancel')">取消</el-button>
-            </div>
-        </div>
     </div>
 </template>
 
@@ -141,7 +133,5 @@
 
     defineEmits<{
         selectCpdl: [value: any];
-        confirm: [];
-        cancel: [];
     }>();
 </script>

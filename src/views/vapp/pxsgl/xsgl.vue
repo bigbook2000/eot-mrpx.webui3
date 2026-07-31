@@ -31,8 +31,6 @@
                                 <div class="row">
                                     <span class="label">客户</span>
                                     <span class="value">{{ item.f_khgl_id_s || '-' }}</span>
-                                    <span class="label">销售员</span>
-                                    <span class="value">{{ item.f_xsy_id_s }}</span>
                                 </div>
                                 <div class="row">
                                     <span class="label">总金额</span>
@@ -46,10 +44,14 @@
                                     <span class="label">时间</span>
                                     <span class="value">{{ item.f_cjsj_s }}</span>
                                 </div>
+                                <div class="row">
+                                    <span class="label">销售员</span>
+                                    <span class="value">{{ item.f_xsy_id_s }}</span>
+                                </div>
                             </div>
                             <div class="detail">
-                                <el-button class="detail_btn" type="primary" plain
-                                 @click="onItemDetailClick(item)">详情</el-button>
+                                <el-button class="detail_btn" type="primary" plain 
+                                    @click="onItemDetailClick(item)">详情</el-button>
                             </div>
                         </div>
                     </div>

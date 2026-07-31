@@ -10,24 +10,29 @@
         @close="onDialogClose">
         <template #header="{ close }">
             <div class="ap_dialog_head">
+                <div class="back" @click="onButtonClick_Cancel">
+                    <el-icon><ArrowLeft /></el-icon>
+                </div>
                 <div class="title">
                     <span>{{ title }}</span>
                 </div>
-                <div class="close" @click="onButtonClick_Cancel">
-                    <div class="icon"></div>
+                <div class="tool">
+                    <slot name="tool"></slot>
                 </div>
             </div>
         </template>
-        <div v-loading="x_show_loading">
+        <div v-loading="x_show_loading" class="ap_dialog_body">
             <!-- 默认插槽 -->
-            <slot></slot>
-            <div class="ap_dialog_foot">
-                <div class="button">
-                    <el-button type="primary" class="eo_w100" @click="onButtonClick_Ok">{{ okLabel }}</el-button>
-                </div>
-                <slot name="button"></slot>
-                <div class="button">
-                    <el-button type="default" class="eo_w100" @click="onButtonClick_Cancel">取消</el-button>
+            <div class="content">
+                <slot></slot>
+            </div>
+            <div class="foot">
+                <div class="ap_dialog_foot">
+                    <div class="button">
+                        <el-button type="primary" class="eo_w100" @click="onButtonClick_Ok">{{ okLabel }}</el-button>
+                    </div>
+                    <slot name="button"></slot>
+                    <div style="height:1rem;"></div>
                 </div>
             </div>
         </div>
@@ -38,6 +43,7 @@
 
     import { ref, reactive, nextTick } from "vue"
     import type {cfunc_boolean} from "@/inc/eotypes";
+    import { ArrowLeft } from '@element-plus/icons-vue'
 
     withDefaults(defineProps<{
         okLabel?: string,
@@ -64,6 +70,11 @@
         x_show_dialog.value = true;        
         m_dialog_tag = tag;
     }
+    const hide_dialog = () => {
+        emits("close", false, m_dialog_tag, (result: boolean) => {
+            x_show_dialog.value = !result;
+        });
+    }
 
     const onDialogOpened = () => {
         emits("open", m_dialog_tag);
@@ -87,6 +98,7 @@
 
     defineExpose({
         show_dialog,
+        hide_dialog,
         show_loading
     })
 

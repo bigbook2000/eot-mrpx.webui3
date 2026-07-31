@@ -7,8 +7,8 @@
                 <!-- 简洁搜索栏 -->
                 <div class="div_search_bar">
                     <el-button type="primary" @click="onButtonClick_Add_kcmx">新增</el-button>
-                    <el-badge :value="x_checked_ids.size" :hidden="x_checked_ids.size === 0">
-                        <el-button @click="x_show_select = true">选择</el-button>
+                    <el-badge :value="x_checked_count" :hidden="x_checked_count === 0">
+                        <el-button @click="onButtonClick_Select">选择</el-button>
                     </el-badge>
                     <div class="search_input">
                         <el-input v-model="x_query_kcxx" placeholder="批次号或名称" clearable 
@@ -26,43 +26,43 @@
                         </div>
                         <div v-for="item in x_data_list" :key="item.f_kcmx_id"
                             class="item"
-                            :class="{ 'ap_sel': x_selected_id == item.f_kcmx_id }">
-                            <div class="check" @click.stop="onItemCheck(item)">
-                                <el-checkbox :model-value="x_checked_ids.has(item.f_kcmx_id)" />
+                            :class="{ 'ap_sel': x_selected_id == item['f_kcmx_id'] }">
+                            <div class="check">
+                                <el-checkbox v-model="item['checked']" @change="onCheckChange_kcmx(item['f_kcmx_id'])" />
                             </div>
                             <div class="body">
                                 <div class="row">
                                     <span class="label">批次</span>
-                                    <span class="value title">{{ item.f_kcbh }}</span>
+                                    <span class="value title">{{ item['f_kcbh'] }}</span>
                                 </div>
                                 <div class="row">
                                     <span class="label">名称</span>
-                                    <span class="value">{{ item.f_cpmc }}</span>
+                                    <span class="value">{{ item['f_cpmc'] }}</span>
                                 </div>
                                 <div class="row">
                                     <span class="label">单价</span>
-                                    <span class="value">{{ item.f_kcdj_s }}</span>
+                                    <span class="value">{{ item['f_kcdj_s'] }}</span>
                                     <span class="label">数量</span>
-                                    <span class="value">{{ item.f_kcsl }}</span>
+                                    <span class="value">{{ item['f_kcsl'] }}</span>
                                 </div>
                                 <div class="row">
                                     <span class="label">规格</span>
-                                    <span class="value">{{ item.f_cpgg || '-' }}</span>
+                                    <span class="value">{{ item['f_cpgg'] || '-' }}</span>
                                 </div>
                                 <div class="row">
                                     <span class="label">尺寸</span>
-                                    <span class="value">{{ item.f_cpcc || '-' }}</span>
+                                    <span class="value">{{ item['f_cpcc'] || '-' }}</span>
                                     <span class="label">重量</span>
-                                    <span class="value">{{ item.f_cpzl || '-' }}</span>
+                                    <span class="value">{{ item['f_cpzl'] || '-' }}</span>
                                 </div>
                                 <div class="row">
                                     <span class="label">调拨</span>
-                                    <span class="value">{{ item.f_jyzt_s }}</span>
+                                    <span class="value">{{ item['f_jyzt_s'] }} - {{ item['f_jyyg_id_s'] }}</span>
                                 </div>
                             </div>
                             <div class="detail">
                                 <el-button class="detail_btn" type="primary" plain
-                                 @click="onItemDetailClick(item)">详情</el-button>
+                                    @click="onButtonClick_kcmx(item['f_kcmx_id'])">详情</el-button>
                             </div>
                         </div>
                     </div>
@@ -87,7 +87,9 @@
             <kczl_q :cplb-list="x_cplb_list" :init-batch="x_query_kcxx" @search="onDrawerSearch" />
         </el-drawer>
         <!-- 已选择列表 -->
-        <kczl_select v-model="x_show_select" :list="x_checked_list" @detail="onItemDetailClick" />
+        <kczl_select ref="v_kczl_select" @close="onDialogClose_select" />
+        <!-- 库存明细对话框 -->
+        <kcmx_d ref="v_kcmx_d" ok-label="返回" @close="onDialogClose_kcmx_d" />
     </div>
 </template>
 
@@ -99,7 +101,6 @@ export default { name: "app_kcgl_kczl" }
 <script lang="ts" setup>
 
     import { ref, computed, onMounted } from "vue"
-    import { useRouter } from "vue-router"
     import type { cfunc_boolean } from "@/inc/eotypes";
 
     import eocore from "@/inc/eocore"
@@ -112,15 +113,18 @@ export default { name: "app_kcgl_kczl" }
 
     import kczl_q from "./kczl_q.vue"
     import kczl_select from "./kczl_select.vue"
+    import kcmx_d from "./kcmx_d.vue"
 
-    const router = useRouter();
+    type t_kczl_select = InstanceType<typeof kczl_select>;
+    const v_kczl_select = ref<t_kczl_select>();
+    type t_kcmx_d = InstanceType<typeof kcmx_d>;
+    const v_kcmx_d = ref<t_kcmx_d>();
 
     // 数据列表
     const x_data_list = ref<any[]>([]);
     // 当前选中项ID
     const x_selected_id = ref(0);
-    // 勾选项ID集合（多选用于调拨、并库）
-    const x_checked_ids = ref(new Set<number>());
+    const x_checked_count = ref(0);
 
     // 产品类别列表
     const x_cplb_list = ref<any[]>([]);
@@ -141,12 +145,6 @@ export default { name: "app_kcgl_kczl" }
     // Drawer显隐
     const x_show_drawer = ref(false);
 
-    // 已选择列表弹窗
-    const x_show_select = ref(false);
-    const x_checked_list = computed(() => {
-        return x_data_list.value.filter(d => x_checked_ids.value.has(d.f_kcmx_id));
-    });
-
     onMounted(async () => {
         // 加载产品类别列表
         x_cplb_list.value = await TLogic.netload_Tree_cplb(true);
@@ -154,10 +152,14 @@ export default { name: "app_kcgl_kczl" }
         netLoad_kcmx_query(-1);
     });
 
+    const getCheckedList = (): any[] => {
+        return x_data_list.value.filter(d => d["checked"]);
+    }
+
     /**
      * 格式化单条数据
      */
-    const formatItem = (data: any) => {
+    const formatItem_kcmx = (data: any) => {
         data["f_jyzt_s"] = eodic.get_dic_label("调拨状态", data["f_jyzt"]);
         data["f_rksj_s"] = eolib.datetime_2_short(data["f_rksj"], true);
         data["f_pksj_s"] = eolib.datetime_2_short(data["f_pksj"], true);
@@ -206,60 +208,24 @@ export default { name: "app_kcgl_kczl" }
 
         // 格式化每条数据
         for (let d of list) {
-            formatItem(d);
+            d["checked"] = false;
+            formatItem_kcmx(d);
         }
         x_data_list.value = list;
 
         // 清除选择
         x_selected_id.value = 0;
-        x_checked_ids.value = new Set();
+        x_checked_count.value = 0;
     }
 
     /**
-     * 列表项点击 - 导航到库存明细页
+     * 列表项点击 - 弹出库存明细对话框
      */
-    const onItemDetailClick = (item: any) => {
-        x_selected_id.value = item.f_kcmx_id;
-        router.push({
-            name: 'app_kcgl_kcmx',
-            state: { kcmxData: JSON.parse(JSON.stringify(item)) }
-        });
-    }
-
-    /**
-     * 复选框点击
-     */
-    const onItemCheck = (item: any) => {
-        const id = item.f_kcmx_id;
-        const newSet = new Set(x_checked_ids.value);
-        if (newSet.has(id)) {
-            newSet.delete(id);
-        } else {
-            newSet.add(id);
-        }
-        x_checked_ids.value = newSet;
-    }
-
-    /**
-     * 获取勾选的数据列表
-     */
-    const getCheckedList = (): any[] => {
-        return x_data_list.value.filter(d => x_checked_ids.value.has(d.f_kcmx_id));
-    }
-
-    /**
-     * 获取选中的单条数据（优先勾选的第一条，否则选中的那条）
-     */
-    const getSelectedItem = (needConfirm: boolean): any | undefined => {
-        const checked = getCheckedList();
-        if (checked.length > 0) return checked[0];
-        if (x_selected_id.value > 0) {
-            return x_data_list.value.find(d => d.f_kcmx_id == x_selected_id.value);
-        }
-        if (needConfirm) {
-            eocore.show_info("请先选择库存项");
-        }
-        return undefined;
+    const onButtonClick_kcmx = async (kcmxId: any) => {
+        const ret = await eocore.proc("p_kcmx_get", { "v_kcmx_id": kcmxId });
+        const data = eocore.check_net_object(ret);
+        if (data == undefined) return;
+        v_kcmx_d.value?.showDialog(data, false);
     }
 
     /**
@@ -296,7 +262,7 @@ export default { name: "app_kcgl_kczl" }
      * 添加库存明细
      */
     const onButtonClick_Add_kcmx = async () => {
-        let kcmxData: any = {
+        const kcmxData: any = {
             "f_kcmx_id": 0,
             "f_cpdy_id": 0,
             "f_kcbh": "",
@@ -323,46 +289,38 @@ export default { name: "app_kcgl_kczl" }
             "f_kgy_id_s": TGlobal.userData["f_name"],
             "f_beizhu": "",
             "f_kcbz": TLogic.kcbzCodes["正常"],
+            "rksl": 1,
         };
-        kcmxData["rksl"] = 1;
-        router.push({
-            name: 'app_kcgl_kcmx',
-            state: { kcmxData: JSON.parse(JSON.stringify(kcmxData)) }
-        });
+        v_kcmx_d.value?.showDialog(kcmxData, false);
+    }
+    
+    const onCheckChange_kcmx = (kcmxId: number) => {
+        const list = getCheckedList();
+        //console.log("onCheckChange_kcmx", kcmxId, x_data_list.value, list);
+        x_checked_count.value = list.length;
     }
 
-    /**
-     * 出库（移除）
-     */
-    const onButtonClick_Del_kcmx = async () => {
-        const kcmxData = getSelectedItem(true);
-        if (kcmxData == undefined) return;
-        let ret = await eocore.show_confirm(
-            "是否移除库存货物 " + kcmxData["f_kcbh"] + "？一旦操作将造成不可预知的错误");
-        if (!ret) return;
+    const onButtonClick_Select = () => {
+        const list = getCheckedList();
+        if (list.length == 0) {
+            eocore.show_info("请先勾选库存项");
+            return;
+        }
+        v_kczl_select.value?.showDialog(list);
+    }
 
-        x_show_loading.value = true;
-        const dataNew = await TLogic.netLoad_kcmx_upd(
-            kcmxData["f_kcmx_id"],
-            0,
-            kcmxData["f_cpdy_id"],
-            kcmxData["f_kcbh"],
-            "整理出库",
-            0,
-            kcmxData["f_hwck"],
-            kcmxData["f_kcdj"],
-            kcmxData["f_kcsl"],
-            TGlobal.userData["f_user_id"],
-            kcmxData["f_beizhu"],
-            TLogic.kcbzCodes["历史"]
-        );
-        x_show_loading.value = false;
-        if (dataNew == undefined) return;
-
-        // 从列表中移除
-        const idx = x_data_list.value.findIndex(d => d.f_kcmx_id == kcmxData.f_kcmx_id);
-        if (idx >= 0) x_data_list.value.splice(idx, 1);
-        x_selected_id.value = 0;
+    const onDialogClose_select = (cancel: boolean, data: any, cb: cfunc_boolean) => {
+        cb(true);
+        if (!cancel) {
+            netLoad_kcmx_query(-1);
+        }
+    }
+    const onDialogClose_kcmx_d = (cancel: boolean, data: any, cb: cfunc_boolean) => {
+        cb(true);
+        if (!cancel) {
+            //netLoad_kcmx_query(x_page_index.value - 1);
+            netLoad_kcmx_query(-1);
+        }
     }
 
 

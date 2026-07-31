@@ -61,6 +61,13 @@
                 </div>
             </div>
             <div class="cell eo_w2">
+                <div class="label_n">移动</div>
+                <div class="input">
+                    <el-switch v-model="x_menu_data['f_app']" 
+                        :active-value="1" :inactive-value="0"></el-switch>
+                </div>
+            </div>
+            <div class="cell eo_w2">
                 <div class="label_n">状态</div>
                 <div class="input">
                     <el-switch v-model="x_menu_data['f_status']" 

@@ -1,18 +1,39 @@
 <template>
     <!-- 销售出库产品明细编辑对话框 -->
     <vdialog ref="v_dialog"
-        width="1000px" title="出库货物"
+        title="出库货物"
         @open="onDialogOpen"
         @close="onDialogClose">
         <div class="eo_form">
-            <div class="cell eo_w2">
+            <div class="cell eo_w100">
                 <div class="label_n">单号</div>
                 <div class="input">
                     <el-input v-model="x_data_xsdck['f_xsdh']" style="width:100%" disabled>
                     </el-input>
                 </div>
+            </div>
+            <div class="cell eo_w100">
+                <div class="label_n">销售产品</div>
+                <div class="input">
+                    <el-select v-model="x_data_xsdck['f_xsdcp_id']" placeholder="请选择销售产品" 
+                        style="width:100%" :disabled="!x_edit_fields['f_xsdcp_id']"
+                        @change="onSelectChange_xsdcp">
+                        <el-option v-for="item in x_xsdcp_list"
+                            :key="item.f_xsdcp_id"
+                            :label="item.f_cpmc"
+                            :value="item.f_xsdcp_id">
+                        </el-option>
+                    </el-select>
+                </div>
+            </div>
+            <div class="cell eo_w100">
+                <div class="label_n">产品编码</div>
+                <div class="input">
+                    <el-input v-model="x_data_xsdck['f_cpbm']" style="width:100%"
+                        maxlength="50" disabled></el-input>
+                </div>
             </div>            
-            <div class="cell eo_w2">
+            <div class="cell eo_w100">
                 <div class="label_n">批次<span style="color:red;">*</span></div>
                 <div class="input">
                     <el-input v-model="x_data_xsdck['f_kcbh']" style="width:100%"
@@ -24,22 +45,9 @@
                     </el-input>
                 </div>
             </div>
-            <div class="cell eo_w2">
-                <div class="label_n">产品编码</div>
-                <div class="input">
-                    <el-input v-model="x_data_xsdck['f_cpbm']" style="width:100%"
-                        maxlength="50" disabled></el-input>
-                </div>
-            </div>
-            <div class="cell eo_w2">
-                <div class="label_n">产品名称</div>
-                <div class="input">
-                    <el-input v-model="x_data_xsdck['f_cpmc']" style="width:100%"
-                        maxlength="50" disabled></el-input>
-                </div>
-            </div>
 
-            <div class="cell eo_w2">
+
+            <div class="cell eo_w100">
                 <div class="label_n">物流公司</div>
                 <div class="input">
                     <el-input v-model="x_data_xsdck['f_wlgs_id_s']" style="width:100%"
@@ -51,16 +59,8 @@
                     </el-input>
                 </div>
             </div>            
-            
-            <div class="cell eo_w2">
-                <div class="label_n">销售单价<span style="color:red;">*</span></div>
-                <div class="input">
-                    <el-input-number v-model="x_data_xsdck['f_ckdj']" :precision="2" :min="0" 
-                        placeholder="" style="width: 100%" 
-                        :disabled="true" />
-                </div>
-            </div>
-            <div class="cell eo_w2">
+  
+            <div class="cell eo_w100">
                 <div class="label_n">物流单号</div>
                 <div class="input">
                     <el-input v-model="x_data_xsdck['f_wldh']" style="width:100%"
@@ -68,8 +68,16 @@
                         maxlength="200" placeholder="物流单号"></el-input>
                 </div>
             </div>
-
-            <div class="cell eo_w2">
+          
+            <div class="cell eo_w100">
+                <div class="label_n">销售单价<span style="color:red;">*</span></div>
+                <div class="input">
+                    <el-input-number v-model="x_data_xsdck['f_xsdj']" :precision="2" :min="0" 
+                        placeholder="" style="width: 100%" 
+                        :disabled="true" />
+                </div>
+            </div>
+            <div class="cell eo_w100">
                 <div class="label_n">单件数量</div>
                 <div class="input">
                     <el-input-number v-model="x_data_xsdck['f_kcsl']" :precision="3" :min="0" 
@@ -78,21 +86,21 @@
                 </div>
             </div>
 
-            <div class="cell eo_w4">
+            <div class="cell eo_w100">
                 <div class="label_n">仓库</div>
                 <div class="input">
                     <vdic style="width:100%" dic="产品仓库" :all="false" field="value"
                         v-model="x_data_xsdck['f_hwck']" :disabled="true" />
                 </div>
             </div>
-            <div class="cell eo_w4">
+            <div class="cell eo_w100">
                 <div class="label_n">出库时间</div>
                 <div class="input">
                     <el-input v-model="x_data_xsdck['f_rksj_s']" style="width:100%"
                         maxlength="200" disabled></el-input>
                 </div>
             </div>
-           <div class="cell eo_w2">
+            <div class="cell eo_w100">
                 <div class="label_n">库存单价<span style="color:red;">*</span></div>
                 <div class="input">
                     <el-input-number v-model="x_data_xsdck['f_kcdj']" :precision="2" :min="0" 
@@ -100,14 +108,14 @@
                         :disabled="true" />
                 </div>
             </div>            
-            <div class="cell eo_w4">
+            <div class="cell eo_w100">
                 <div class="label_n">出库状态</div>
                 <div class="input">
                     <el-input v-model="x_data_xsdck['f_rkzt_s']" style="width:100%"
                         maxlength="200" disabled></el-input>
                 </div>
             </div>
-            <div class="cell eo_w4">
+            <div class="cell eo_w100">
                 <div class="label_n">库管员</div>
                 <div class="input">
                     <el-input v-model="x_data_xsdck['f_kgy_id_s']" style="width:100%"
@@ -136,14 +144,14 @@
     import type { cfunc_boolean } from "@/inc/eotypes";
 
     import eocore from "@/inc/eocore"
-    import vdialog from "@/components/web/vdialog.vue"
+    import vdialog from "@/components/app/vdialog.vue"
     import vdic from "@/components/vdic.vue"
 
     import TLogic from "@/logic/TLogic";
 
     import user_input from "@/views/platform/user_input.vue"
-    import kczl_list from "@/views/vweb/ext/tkcgl/kczl_list.vue"
-    import wlgs_list from "@/views/vweb/ext/tcwgl/wlgs_list.vue"
+    import kczl_list from "@/views/vapp/pkcgl/kczl_list.vue"
+    import wlgs_list from "@/views/vapp/pcggl/wlgs_list.vue"
 
     const v_kczl_list = ref<InstanceType<typeof kczl_list>>();
     const v_wlgs_list = ref<InstanceType<typeof wlgs_list>>();
@@ -155,6 +163,8 @@
     const emits = defineEmits<{
         close: [cancel: boolean, data: any, cb: cfunc_boolean]
     }>();
+
+    const x_xsdcp_list = ref<any[]>([]);
 
     // 表单数据
     const x_data_xsdck: any = reactive({});
@@ -190,7 +200,37 @@
     }
 
     const onDialogOpen = (data: any) => {
+        // 加载销售产品列表
+        netLoad_xsdcp_list();
     }
+
+    /**
+     * 加载销售产品列表
+     */
+    const netLoad_xsdcp_list = async () => {
+        if (!eocore.check_id(x_data_xsdck, "f_xsd_id")) return;
+
+        let ret = await eocore.proc("p_xsdcp_list", {
+            "v_xsd_id": x_data_xsdck["f_xsd_id"],
+        });
+        let list = eocore.check_net_array(ret) || [];
+        x_xsdcp_list.value = list;
+    }
+
+    /**
+     * 销售产品下拉选择变化
+     */
+    const onSelectChange_xsdcp = (val: number) => {
+        const item = x_xsdcp_list.value.find(d => d.f_xsdcp_id == val);
+        if (!item) return;
+
+        x_data_xsdck['f_xsdcp_id'] = item['f_xsdcp_id'];
+        x_data_xsdck['f_cpmc'] = item['f_cpmc'];
+        x_data_xsdck['f_cpbm'] = item['f_cpbm'];
+        x_data_xsdck['f_cpdy_id'] = item['f_cpdy_id'];
+        x_data_xsdck['f_xsdj'] = item['f_xsdj'] ?? 0;
+    }
+
     /**
      * 对话框关闭事件
      */
@@ -246,6 +286,12 @@
     }
 
     const onInputOpen_kcmx = () => {
+
+        if (!eocore.check_id(x_data_xsdck, "f_cpdy_id")) {
+            eocore.show_info("请先选择产品清单");
+            return;            
+        }
+
         v_kczl_list?.value?.show_dialog(x_data_xsdck);
     }
     const onListSelect_kczl = (cancel: boolean, data: any, cb: cfunc_boolean) => {

@@ -66,14 +66,9 @@
                             <div v-else></div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="f_kcxx" label="库存信息" width="240" show-overflow-tooltip>
-                        <template #default="scope">
-                            <span>{{ scope.row.f_kcbh }}</span>
-                            <br />
-                            <span>{{ scope.row.f_cpmc }}</span>
-                        </template>
-                    </el-table-column>
+                    <el-table-column prop="f_kcbh" label="批次" width="200" />
                     <el-table-column prop="f_rksj_s" label="变更时间" width="160" />
+                    <el-table-column prop="f_cpmc" label="产品名称" width="240" />
                     <el-table-column prop="f_rklb" label="变更类别" width="120" />
                     <el-table-column prop="f_jyzt_s" label="调拨" width="120">
                         <template #default="scope">

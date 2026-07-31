@@ -2,7 +2,7 @@
     <!-- 产品档案 - App端 -->
     <div class="eo_page" v-loading="x_show_loading">
         <div class="eo_col">
-            <topbar title="产品定义" />
+            <topbar title="产品定义" :back="false" />
             <!-- 搜索栏 -->
             <div class="div_search_bar">
                 <div class="search_input">
@@ -190,7 +190,7 @@ export default { name: "app_kcgl_cpdy" }
     }
 
     const onItemClick = (item: any) => {
-        v_cpdy_xx.value?.show_dialog(item, m_cplb_list.value);
+        v_cpdy_xx.value?.showDialog(item, m_cplb_list.value);
     }
 
     const onDialogClose_cpdy = async (cancel: boolean, data: any, cb: cfunc_boolean) => {

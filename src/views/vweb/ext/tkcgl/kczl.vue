@@ -70,21 +70,15 @@
                             :on-page="onTablePage_kcmx"
                             @row-click="onTableRowClick_kcmx"
                             @sort-change="onTableSortChange">                            
-                            
                             <el-table-column prop="f_jyzt_s" label="调拨" width="120">
                                 <template #default="scope">
                                     <div v-if="scope.row.f_jyzt==0">-</div>
                                     <div v-else>{{ scope.row.f_jyzt_s+'-'+scope.row.f_jyyg_id_s }}</div>
                                 </template>
                             </el-table-column>
-                            <el-table-column prop="f_kcxx" label="库存信息" width="240" show-overflow-tooltip>
-                                <template #default="scope">
-                                    <span>{{ scope.row.f_kcbh }}</span>
-                                    <br />
-                                    <span>{{ scope.row.f_cpmc }}</span>
-                                </template>
-                            </el-table-column>
+                            <el-table-column prop="f_kcbh" label="批次" width="200" sortable />
                             <el-table-column prop="f_rksj_s" label="入库时间" width="160" sortable />
+                            <el-table-column prop="f_cpmc" label="产品名称" width="240" show-overflow-tooltip />
                             <el-table-column prop="f_kcdj_s" label="单价" width="120" align="right" sortable />
                             <el-table-column prop="f_kcsl" label="数量" width="100" />
                             <el-table-column prop="f_cpgg" label="规格" width="180" show-overflow-tooltip />

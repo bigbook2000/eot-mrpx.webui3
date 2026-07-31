@@ -46,7 +46,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { ref, watch, nextTick } from "vue"
+    import { ref, nextTick } from "vue"
     import type { cfunc_boolean, cform_options } from "@/inc/eotypes";
 
     import eocore from "@/inc/eocore"
@@ -57,17 +57,13 @@
     import TGlobal from "@/logic/TGlobal";
     import TLogic from "@/logic/TLogic";
 
-    const props = defineProps<{
-        khglId: number
-        editMode: boolean
-    }>();
-
     type t_formd = InstanceType<typeof vformd>;
     const v_formd_khgt = ref<t_formd>();
     const v_list_ref = ref<HTMLElement>();
 
     const x_khgt_list = ref<any[]>([]);
     const x_edit_mode = ref(false);
+    let m_khgl_id = ref(0);
     let m_khgt_data: any = undefined;
 
     const x_form_types_khgt = ref<cform_options[]>([
@@ -79,15 +75,16 @@
         { type: "label", name: "f_xsy_id_s", span: 100, label: "销售员" },
     ]);
 
-    const loadData = async () => {
-        x_edit_mode.value = props.editMode;
+    const loadData = async (khglId: number, editMode: boolean) => {
+        m_khgl_id.value = khglId;
+        x_edit_mode.value = editMode;
         x_khgt_list.value = [];
         m_khgt_data = undefined;
 
-        if (props.khglId <= 0) return;
+        if (khglId <= 0) return;
 
         const ret = await eocore.proc("p_khgt_list", {
-            "v_khgl_id": props.khglId
+            "v_khgl_id": khglId
         });
         const list = eocore.check_net_array(ret);
         if (list == undefined) return;
@@ -105,10 +102,6 @@
         });
     };
 
-    watch(() => [props.khglId, props.editMode], () => {
-        loadData();
-    }, { immediate: true });
-
     const updateItemData = (data: any) => {
         data["f_gtsj_s"] = eolib.datetime_2_short(data["f_gtsj"]);
         data["f_gtnr_s"] = data["f_gtnr"];
@@ -124,14 +117,14 @@
 
     const onButtonClick_Add_khgt = () => {
         const dt = new Date();
-        if (props.khglId <= 0) {
+        if (m_khgl_id.value <= 0) {
             eocore.show_info('请先选择客户');
             return;
         }
 
         const khgtData = {
             "f_khgt_id": 0,
-            "f_khgl_id": props.khglId,
+            "f_khgl_id": m_khgl_id.value,
             "f_gtsj": eolib.datetime_2_string(dt),
             "f_gtsc": 0,
             "f_gtfs": "",
@@ -185,6 +178,8 @@
         eocore.show_success('修改成功');
         cb(true);
     };
+
+    defineExpose({ loadData });
 </script>
 
 <style lang="scss" scoped>

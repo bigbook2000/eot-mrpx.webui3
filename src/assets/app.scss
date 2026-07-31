@@ -1,4 +1,35 @@
-.ap_topbar {
+
+
+.ap_button {
+    width: 100%;
+}
+
+/* 全屏对话框（无滚动条） */
+.ap_dialog {
+
+    &.el-dialog {
+        padding: 0;
+    }
+
+    &.el-dialog.is-fullscreen {
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+
+        .el-dialog__header {
+            flex: 0 0 auto;
+        }
+
+        .el-dialog__body {
+            flex: 1 1 auto;
+            overflow: hidden;
+        }
+    }
+}
+
+
+/* 弹出对话框 */
+.ap_dialog_head {
     height: 4rem;
     color: #fff;
     background: var(--eo_color_main);
@@ -27,65 +58,35 @@
     }
 }
 
-.ap_button {
-    width: 100%;
-}
-
-/* 全屏对话框（无滚动条） */
-.ap_dialog {
-    &.el-dialog.is-fullscreen {
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-
-        .el-dialog__header {
-            flex: 0 0 auto;
-        }
-
-        .el-dialog__body {
-            flex: 1 1 auto;
-            overflow: hidden;
-        }
-    }
-}
-
-
-/* 弹出对话框 */
-.ap_dialog_head {
-    display: flex;
-    flex-direction: row;
-
-    .title {
-        flex: 1 1 auto;
-        width: 0;
-        font-size: 1.2rem;
-        color: var(--eo_color_light2);
-    }
-
-    .close {
-        width: 3.6rem;
-        padding: 0.5rem 1rem;
-        box-sizing: border-box;
-
-        .icon {
-            width: 1.8rem;
-            height: 1.8rem;
-            background-size: 1.8rem 1.8rem;
-            background-image: url("./icon/close_color.png");
-        }
-    }
-}
 .ap_dialog_foot {
     display: flex;
     flex-direction: column;
     justify-content: center;
     
     .button {
-        padding: 1.8rem 0.9rem 0px 0.9rem;
+        padding: 0.5rem 0.9rem 0.5rem 0.9rem;
         width: 100%;
         box-sizing: border-box;
     }
 }
+
+.ap_dialog_body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+
+    .content {
+        flex: 1 1 0%;
+        overflow: hidden;
+    }
+    .foot {
+        flex: 0 0 auto;
+    }
+}
+
 
 /* tabs 内容区撑满剩余空间 */
 .ap_tabs {
@@ -198,6 +199,10 @@
                 .title {
                     font-weight: 600;
                     font-size: 1rem;
+                }
+
+                .right {
+                    text-align: right;
                 }
             }
         }

@@ -26,6 +26,7 @@
                     @item="onTableItem_menu"
                     @loading="onTableLoading_menu">
                     <el-table-column prop="f_status" label="状态" width="80" />
+                    <el-table-column prop="f_app" label="移动" width="80" />
                     <el-table-column prop="f_name" label="名称" width="160" />
                     <el-table-column prop="f_menu_pid_s" label="上级" width="160" />
                     <el-table-column prop="f_level" label="层级" width="80" />

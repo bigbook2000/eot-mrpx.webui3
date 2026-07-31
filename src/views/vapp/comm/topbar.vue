@@ -1,6 +1,6 @@
 <template>
     <!-- App顶部导航栏 -->
-    <div class="ap_topbar">
+    <div class="ap_dialog_head">
         <div class="back" @click="onButtonClick_back">
             <el-icon><ArrowLeft /></el-icon>
         </div>

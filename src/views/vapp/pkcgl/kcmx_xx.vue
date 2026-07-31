@@ -63,7 +63,7 @@
                 </div>
             </div>
 
-            <div class="cell eo_w2">
+            <div class="cell eo_w100">
                 <div class="label_n">仓库</div>
                 <div class="input">
                     <vdic style="width:100%" dic="产品仓库" :all="false" field="value"
@@ -86,25 +86,20 @@
                 </div>
             </div>
 
-            <div class="button">
-                <el-button class="ap_button" type="primary" @click="onSave">保存</el-button>
+            <div class="button" v-if="!props.readonly">
+                <el-button class="ap_button" type="primary" @click="onButtonClick_Upd">保存</el-button>
             </div>
-            <div class="button">
-                <el-button class="ap_button" @click="onSplit">拆分</el-button>
+            <div class="button" v-if="!(props.readonly || x_is_add)">
+                <el-button class="ap_button" @click="onButtonClick_kcmx_cf">拆分</el-button>
             </div>
-            <div class="button">
-                <el-button class="ap_button" @click="onTransfer">调拨</el-button>
-            </div>
-            <div class="button">
-                <el-button class="ap_button" type="danger" @click="onRemove">移除</el-button>
+            <div class="button" v-if="!(props.readonly || x_is_add)">
+                <el-button class="ap_button" type="danger" @click="onButtonClick_Del">移除</el-button>
             </div>
         </div>
     </div>
 
     <!-- 拆分对话框 -->
     <kcmx_cf ref="v_kcmx_cf" @close="onDialogClose_kcmx_cf" />
-    <!-- 调拨对话框 -->
-    <kcjy_xx ref="v_kcjy_xx" @close="onDialogClose_kcjy_xx" />
     <!-- 产品选择对话框 -->
     <cpdy_list ref="v_cpdy_list" @close="onDialogClose_cpdy_list" />
 </template>
@@ -122,27 +117,30 @@
     import TLogic from "@/logic/TLogic";
     import TGlobal from "@/logic/TGlobal";
 
-    import kcmx_cf from "@/views/vweb/ext/tkcgl/kcmx_cf.vue"
-    import kcjy_xx from "@/views/vweb/ext/tkcgl/kcjy_xx.vue"
+    import kcmx_cf from "./kcmx_cf.vue"
     import cpdy_list from "./cpdy_list.vue"
 
     const props = defineProps<{
         readonly?: boolean
     }>();
 
+    const emits = defineEmits<{
+        update: [cancel: boolean, data: any, cb: cfunc_boolean]
+    }>();
+
     const v_kcmx_cf = ref<InstanceType<typeof kcmx_cf>>();
-    const v_kcjy_xx = ref<InstanceType<typeof kcjy_xx>>();
     const v_cpdy_list = ref<InstanceType<typeof cpdy_list>>();
 
     // 表单数据
     const x_data_kcmx: any = reactive({});
-    let m_data_string = "";
+
+    const x_is_add = ref(false);
 
     /**
      * 加载数据
      */
     const loadData = (data: any) => {
-        m_data_string = JSON.stringify(data);
+
         // 格式化
         data["f_jyzt_s"] = eodic.get_dic_label("调拨状态", data["f_jyzt"]);
         data["f_rksj_s"] = eolib.datetime_2_short(data["f_rksj"], true);
@@ -151,6 +149,8 @@
         data["f_kcdj_s"] = eolib.fixed_num(data["f_kcdj"], 3);
         data["f_hwck_s"] = eodic.get_dic_label("产品仓库", data["f_hwck"]);
 
+        x_is_add.value = !eocore.check_id(data, "f_kcmx_id");
+
         Object.assign(x_data_kcmx, data);
     }
 
@@ -158,25 +158,9 @@
         return x_data_kcmx;
     }
 
-    const isNoChanged = (): boolean => {
-        const dataStr = JSON.stringify(x_data_kcmx);
-        return (dataStr == m_data_string);
-    }
 
-    // ==================== 保存 ====================
-    const onSave = async () => {
-        const ret = await eocore.show_confirm("确认保存当前库存信息？");
-        if (!ret) return;
+    const onButtonClick_Upd = async () => {
 
-        const dataList = await updateDataProc();
-        if (dataList) {
-            // 更新本地基准
-            m_data_string = JSON.stringify(x_data_kcmx);
-            eocore.show_success("保存成功");
-        }
-    }
-
-    const updateDataProc = async (): Promise<any[] | undefined> => {
         const data = x_data_kcmx;
 
         if (!eocore.check_id(data, "f_cpdy_id")) {
@@ -238,11 +222,15 @@
 
         // 回写新数据
         if (dataNew) Object.assign(x_data_kcmx, dataNew);
-        return dataListNew;
+
+        emits("update", false, x_data_kcmx, (result: boolean) => {
+        });
+
+        eocore.show_success("保存成功");
     }
 
     // ==================== 拆分 ====================
-    const onSplit = () => {
+    const onButtonClick_kcmx_cf = () => {
         const kcsl = eocore.to_int(x_data_kcmx["f_kcsl"]);
         if (kcsl <= 1) {
             eocore.show_info("单件数量不足，无法拆分");
@@ -269,14 +257,13 @@
 
         // 回写原记录（数量减少后）
         Object.assign(x_data_kcmx, retData.dataNew1);
-        m_data_string = JSON.stringify(x_data_kcmx);
 
         eocore.show_success("拆分成功，新批次：" + retData.dataNew2["f_kcbh"]);
         cb(true);
     }
 
     // ==================== 移除 ====================
-    const onRemove = async () => {
+    const onButtonClick_Del = async () => {
         const ret = await eocore.show_confirm(
             "是否移除库存货物 " + x_data_kcmx["f_kcbh"] + "？一旦操作将造成不可预知的错误");
         if (!ret) return;
@@ -298,22 +285,7 @@
         if (dataNew == undefined) return;
 
         Object.assign(x_data_kcmx, dataNew);
-        m_data_string = JSON.stringify(x_data_kcmx);
         eocore.show_success("已移除");
-    }
-
-    // ==================== 调拨 ====================
-    const onTransfer = () => {
-        v_kcjy_xx.value?.showDialog([x_data_kcmx], undefined);
-    }
-
-    const onDialogClose_kcjy_xx = async (cancel: boolean, data0: any, cb: cfunc_boolean) => {
-        if (cancel) { cb(true); return; }
-
-        // 重新加载以反映调拨状态变更
-        loadData(data0[0] ?? x_data_kcmx);
-        eocore.show_success("调拨成功");
-        cb(true);
     }
 
     // ==================== 产品选择 ====================
@@ -349,10 +321,8 @@
     }
 
     defineExpose({
-        isNoChanged,
         loadData,
         getData,
-        updateDataProc
     });
 </script>
 

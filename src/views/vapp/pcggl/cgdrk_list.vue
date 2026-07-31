@@ -1,36 +1,30 @@
 <template>
-    <!-- 销售查询 - 移动端 -->
-    <div class="eo_page" v-loading="x_show_loading">
+    <!-- 采购入库货物选择列表 -->
+    <vdialog ref="v_dialog"
+        width="480px" title="选择采购入库"
+        @close="onDialogClose"
+        @open="onDialogOpen">
         <div class="eo_col">
-            <topbar title="销售查询" :back="false" />
-            <div class="eo_col_d">
-                <!-- 简洁搜索栏 -->
-                <div class="div_search_bar">
-                    <el-date-picker style="flex:1;min-width:0;"
-                        v-model="x_query_cjsj"
-                        type="daterange"
-                        range-separator="至"
-                        start-placeholder="开始"
-                        end-placeholder="结束"
-                        value-format="YYYY-MM-DD"
-                        size="default">
-                    </el-date-picker>
-                </div>
-                <div class="div_search_bar">
-                    <el-input v-model="x_query_key" placeholder="关键字" clearable
-                        @keyup.enter="onSearch" />
-                    <el-button type="primary" @click="onSearch">搜索</el-button>
-                </div>
-                
+            <!-- 简洁搜索栏 -->
+            <div class="div_search_bar">
+                <el-input v-model="x_query_kcbh" placeholder="产品批次" clearable
+                    @keyup.enter="onSearch" />
+                <el-input v-model="x_query_cpmc" placeholder="产品名称" clearable
+                    @keyup.enter="onSearch" />
+                <el-button type="primary" @click="onSearch">搜索</el-button>
             </div>
+            
             <div class="eo_col_f">
                 <div class="eo_scroll_v">
-                    <!-- 销售记录卡片列表 -->
+                    <!-- 入库记录卡片列表 -->
                     <div class="ap_list">
                         <div v-if="x_data_list.length == 0" class="empty">
                             暂无数据
                         </div>
-                        <div v-for="item in x_data_list" :key="item.f_kcmx_id" class="item">
+                        <div v-for="item in x_data_list" :key="item.f_kcmx_id"
+                            class="item"
+                            :class="{ 'ap_sel': x_selected_id == item.f_kcmx_id }"
+                            @click="x_selected_id = item.f_kcmx_id">
                             <div class="body">
                                 <div class="row">
                                     <span class="value title">{{ item.f_kcbh }}</span>
@@ -40,22 +34,20 @@
                                     <span class="value">{{ item.f_cpmc }}</span>
                                 </div>
                                 <div class="row">
-                                    <span class="label">金额</span>
-                                    <span class="value">{{ item.f_xsje_s }}</span>
+                                    <span class="label">单价</span>
+                                    <span class="value">{{ item.f_cgdj_s }}</span>
                                     <span class="label">数量</span>
                                     <span class="value">{{ item.f_kcsl }}</span>
                                 </div>
                                 <div class="row">
-                                    <span class="label">客户</span>
-                                    <span class="value">{{ item.f_khgl_id_s || '-' }}</span>
-                                    <span class="label">时间</span>
-                                    <span class="value">{{ item.f_cjsj_s }}</span>
+                                    <span class="label">供应商</span>
+                                    <span class="value">{{ item.f_gysmc }}</span>
                                 </div>
                                 <div class="row">
-                                    <span class="label">订单号</span>
-                                    <span class="value">{{ item.f_xsdh }}</span>
-                                    <span class="label">销售员</span>
-                                    <span class="value">{{ item.f_xsy_id_s }}</span>
+                                    <span class="label">采购单号</span>
+                                    <span class="value">{{ item.f_cgdh }}</span>
+                                    <span class="label">时间</span>
+                                    <span class="value">{{ item.f_cjsj_s }}</span>
                                 </div>
                                 <div class="row">
                                     <span class="label">规格</span>
@@ -78,6 +70,7 @@
                     </div>
                 </div>
             </div>
+            
             <!-- 分页 -->
             <div class="eo_page_bar">
                 <el-pagination
@@ -91,61 +84,57 @@
                 </el-pagination>
             </div>
         </div>
-    </div>
+    </vdialog>
 </template>
 
 
-<script lang="ts">
-/** KeepAlive */
-export default { name: "app_xsgl_xscx" }
-</script>
-
 <script lang="ts" setup>
-    import { ref, onMounted, onActivated } from "vue"
+    import { ref } from "vue"
+    import type { cfunc_boolean } from "@/inc/eotypes";
 
     import eocore from "@/inc/eocore"
     import eolib from "@/inc/eolib";
+    import vdialog from "@/components/app/vdialog.vue"
 
-    import topbar from '@/views/vapp/comm/topbar.vue'
+    type t_dialog = InstanceType<typeof vdialog>;
+    const v_dialog = ref<t_dialog>();
 
-    import TGlobal from "@/logic/TGlobal";
-    import TLogic from "@/logic/TLogic";
+    // 定义组件事件
+    const emit = defineEmits<{
+        close: [cancel: boolean, data: any, cb: cfunc_boolean]
+    }>();
 
-    const x_query_key = ref("");
-    const x_query_cjsj = ref<[string, string] | undefined>(undefined);
+    // 查询条件
+    const x_query_kcbh = ref("");
+    const x_query_cpmc = ref("");
 
     // 列表数据
     const x_data_list = ref<any[]>([]);
+    const x_selected_id = ref(0);
 
     // 分页变量
     const x_page_index = ref(1);
     const x_page_row_count = ref(20);
     const x_row_total = ref(0);
 
-    // 加载状态
-    const x_show_loading = ref(false);
+    /**
+     * 显示对话框
+     */
+    const show_dialog = async (data: any) => {
+        x_selected_id.value = 0;
+        v_dialog.value!.show_dialog(undefined);
+    }
 
-    onMounted(() => {
-
-        let dt = new Date();
-        const jssj = eolib.date_end(dt);
-        dt.setMonth(dt.getMonth() - 1);
-        const kssj = eolib.date_start(dt);
-        x_query_cjsj.value = [kssj, jssj];
-
-        netLoad_xsdck_query(-1);
-    });
-
-    onActivated(() => {
-        netLoad_xsdck_query(x_page_index.value - 1)
-    })
+    const onDialogOpen = (data: any) => {
+        netLoad_cgdrk_query(-1);
+    }
 
     /**
      * 搜索
      */
     const onSearch = () => {
         x_page_index.value = 1;
-        netLoad_xsdck_query(-1);
+        netLoad_cgdrk_query(-1);
     }
 
     /**
@@ -153,37 +142,30 @@ export default { name: "app_xsgl_xscx" }
      */
     const onPageChange = (pageIndex: number) => {
         x_page_index.value = pageIndex;
-        netLoad_xsdck_query(pageIndex - 1);
+        netLoad_cgdrk_query(pageIndex - 1);
     }
 
     /**
-     * 查询产品数据
-     * @param pageIndex 页码索引，-1表示重置到第1页
+     * 查询入库数据
      */
-    const netLoad_xsdck_query = async (pageIndex: number = -1) => {
+    const netLoad_cgdrk_query = async (pageIndex: number = -1) => {
         let pageRowCount = x_page_row_count.value;
         let rowIndex = pageIndex * pageRowCount;
         if (pageIndex < 0) x_page_index.value = 1;
 
-        let cjsj1 = eolib.date_start(x_query_cjsj.value?.[0]);
-        let cjsj2 = eolib.date_end(x_query_cjsj.value?.[1]);
-
-        x_show_loading.value = true;
-        let ret = await eocore.proc("p_xsdck_query", {
-            "v_xsy_id": TGlobal.userData["f_user_id"],
-            "v_khgl_id": -1,
-            "v_khmc": x_query_key.value,
-            "v_xsdh": x_query_key.value,
-            "v_cjsj1": cjsj1,
-            "v_cjsj2": cjsj2,
-            "v_kcbh": x_query_key.value,
-            "v_cpmc": x_query_key.value,
-            "v_order_by": " ORDER BY f_xsdck_id DESC",
+        let ret = await eocore.proc("p_cgdrk_query", {
+            "v_gys_id": -1,
+            "v_gysmc": "",
+            "v_cgdh": "",
+            "v_cjsj1": "",
+            "v_cjsj2": "",
+            "v_kcbh": x_query_kcbh.value,
+            "v_cpmc": x_query_cpmc.value,
+            "v_order_by": " ORDER BY f_cgdrk_id DESC",
             "s_page_row_index": rowIndex,
             "s_page_row_count": pageRowCount
         });
         let list = eocore.check_net_array(ret);
-        x_show_loading.value = false;
         if (list == undefined) list = [];
 
         if (list.length > 0 && list[0]["s_total_count"] != undefined) {
@@ -201,12 +183,35 @@ export default { name: "app_xsgl_xscx" }
      */
     const formatItem = (data: any) => {
         data["f_cjsj_s"] = eolib.date_2_string(data["f_cjsj"]);
-        data["f_xsje_s"] =
-            eolib.fixed_num(eocore.to_float(data["f_xsdj"] * data["f_kcsl"]), 2);
-
-        TLogic.updateDicUserData(data, ["f_xsy_id"]);
+        data["f_cgdj_s"] =
+            eolib.fixed_num(eocore.to_float(data["f_cgdj"]), 3);
     }
 
+    /**
+     * 对话框关闭事件
+     */
+    const onDialogClose = (cancel: boolean, tag: any, cb: cfunc_boolean) => {
+        if (cancel) {
+            emit('close', true, {}, cb);
+            return;
+        }
+
+        // 获取选中的产品
+        let selectedData = x_data_list.value.find(
+            item => item.f_kcmx_id == x_selected_id.value
+        );
+        if (selectedData == undefined) {
+            eocore.show_info("请选择一条记录");
+            cb(false); return;
+        }
+
+        emit('close', false, selectedData, cb);
+    }
+
+    // 暴露方法给父组件使用
+    defineExpose({
+        show_dialog
+    });
 </script>
 
 <style lang="scss" scoped>
@@ -215,7 +220,7 @@ export default { name: "app_xsgl_xscx" }
         flex-direction: row;
         align-items: center;
         gap: 0.5rem;
-        padding: 0.35rem 0.8rem;
+        padding: 0.5rem 0.8rem;
         background: #fff;
         border-bottom: 1px solid var(--eo_color_grey_light3);
     }

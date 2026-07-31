@@ -1,11 +1,14 @@
 <template>
     <!-- 库存整理 - 已选择列表 -->
-    <el-dialog v-model="x_visible" title="已选择库存" fullscreen :z-index="2000">
+    <vdialog ref="v_dialog"
+        title="已选择库存"
+        @open="onDialogOpen"
+        @close="onDialogClose">
         <div class="ap_list">
-            <div v-if="list.length === 0" class="empty">
+            <div v-if="x_list.length === 0" class="empty">
                 暂无选择
             </div>
-            <div v-for="item in list" :key="item.f_kcmx_id"
+            <div v-for="item in x_list" :key="item.f_kcmx_id"
                 class="item">
                 <div class="body">
                     <div class="row">
@@ -34,37 +37,123 @@
                         <span class="value">{{ item.f_cpzl || '-' }}</span>
                     </div>
                 </div>
-                <div class="detail">
-                    <el-button class="detail_btn" size="small" type="primary" plain
-                        @click="$emit('detail', item)">详情</el-button>
-                </div>
             </div>
         </div>
-    </el-dialog>
+        <template #button>
+            <div class="button" v-if="x_list.length > 0">
+                <el-button class="ap_button" type="default" 
+                    @click="onButtonClick_Upd_kchb">合并</el-button>
+            </div>
+            <div class="button" v-if="x_list.length > 0">
+                <el-button class="ap_button" type="default" 
+                    @click="onButtonClick_Upd_kcjy">调拨</el-button>
+            </div>
+        </template>
+    </vdialog>
+    <kcmx_d ref="v_kcmx_d" @close="onDialogClose_kcmx_d" />
+    <kcjy_xx ref="v_kcjy_xx" @close="onDialogClose_kcjy_xx" />
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
+    import { ref } from "vue"
+    import type { cfunc_boolean } from "@/inc/eotypes";
 
-const props = defineProps<{
-    modelValue: boolean;
-    list: any[];
-}>();
+    import eocore from "@/inc/eocore"
+    import vdialog from "@/components/app/vdialog.vue"
 
-const emit = defineEmits<{
-    (e: 'update:modelValue', val: boolean): void;
-    (e: 'detail', item: any): void;
-}>();
+    import TGlobal from "@/logic/TGlobal";
+    import TLogic from "@/logic/TLogic";
 
-const x_visible = computed({
-    get: () => props.modelValue,
-    set: (val) => emit('update:modelValue', val),
-});
+    import kcmx_d from "./kcmx_d.vue"
+    import kcjy_xx from "./kcjy_xx.vue"
+
+    // 定义组件事件
+    const emits = defineEmits<{
+        close: [cancel: boolean, data: any, cb: cfunc_boolean]
+    }>();
+
+    type t_dialog = InstanceType<typeof vdialog>;
+    const v_dialog = ref<t_dialog>();
+
+    type t_kcmx_d = InstanceType<typeof kcmx_d>;
+    const v_kcmx_d = ref<t_kcmx_d>();
+
+    type t_kcjy_xx = InstanceType<typeof kcjy_xx>;
+    const v_kcjy_xx = ref<t_kcjy_xx>();
+
+    const x_list = ref<any[]>([]);
+
+    const showDialog = (list: any[]) => {
+        x_list.value = list;
+        v_dialog.value?.show_dialog(undefined);
+    }
+
+    const onDialogOpen = (data: any) => {
+        // 对话框打开时的操作
+    }
+
+    const onDialogClose = async (cancel: boolean, data0: any, cb: cfunc_boolean) => {
+        if (cancel) {
+            cb(true); return;
+        }
+
+        emits("close", cancel, x_list.value, (result: boolean) => {
+            cb(result);
+        });
+    }
+
+    /**
+     * 库存合并
+     */
+    const onButtonClick_Upd_kchb = async () => {
+        if (x_list.value.length <= 1) {
+            eocore.show_info("请选择至少两个库存进行合并");
+            return;
+        }
+
+        const data0 = x_list.value[0];
+        const ret = await eocore.show_confirm(
+            "确信要将 " + x_list.value.length + " 件 " + data0["f_cpmc"] + " 合并吗？"
+        );
+        if (!ret) return;
+
+        const kgyId = TGlobal.userData["f_user_id"];
+        const dataAdd = await TLogic.netLoad_kcmx_hb(kgyId, x_list.value);
+        if (dataAdd == undefined) return;
+
+        v_kcmx_d.value?.showDialog(dataAdd, true);
+    }
+
+    const onButtonClick_Upd_kcjy = () => {
+        v_kcjy_xx.value?.showDialog(x_list.value, undefined);
+    }
+
+    /**
+     * kcmx_d 对话框关闭
+     */
+    const onDialogClose_kcmx_d = (cancel: boolean, data: any, cb: cfunc_boolean) => {
+        cb(true);
+
+        v_dialog.value?.hide_dialog();
+    }
+
+    /**
+     * kcjy_xx 调拨对话框关闭
+     */
+    const onDialogClose_kcjy_xx = (cancel: boolean, data: any, cb: cfunc_boolean) => {
+        if (cancel) {
+            cb(true); return;
+        }
+
+        emits("close", cancel, x_list.value, (result: boolean) => {
+            cb(result);
+        });
+    }
+
+    defineExpose({ showDialog });
 </script>
 
 <style lang="scss" scoped>
-
-    /* 标签（主色调） */
     .div_tag {
         flex: 0 0 auto;
         font-size: 0.9rem;

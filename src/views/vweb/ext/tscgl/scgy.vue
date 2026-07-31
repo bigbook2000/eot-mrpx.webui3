@@ -23,7 +23,7 @@
                 <vtable ref="v_table_cpbj" 
                     name="生产工艺"
                     key="id"
-                    id-field="f_cpdy_id"
+                    id-field="rowId"
                     @loading="onTableLoading"
                     :on-item="onTableItem_cpdy"
                     @row-click="onTableRowClick_cpdy">                    

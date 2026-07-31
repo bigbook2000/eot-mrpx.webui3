@@ -1,26 +1,25 @@
 <template>
     <!-- 产品编辑对话框 - App端 -->
-    <el-dialog v-model="x_visible" title="产品定义" fullscreen class="ap_dialog">
-        <div class="div_dialog">
-            <el-tabs v-model="x_active_tab" class="ap_tabs_fill">
-                <!-- 产品信息 Tab -->
-                <el-tab-pane label="产品信息" name="info">
-                    <cpdy_xxxq
-                        :cpdy-data="x_cpdy_data"
-                        :cpdl-list="x_cpdl_list"
-                        :cpxl-list="x_cpxl_list"
-                        @select-cpdl="onSelectChange_cpdl"
-                        @confirm="onConfirm"
-                        @cancel="onCancel" />
-                </el-tab-pane>
+    <vdialog ref="v_dialog"
+        title="产品定义"
+        @open="onDialogOpen"
+        @close="onDialogClose">
+        <el-tabs v-model="x_active_tab" type="card" class="ap_tabs">
+            <!-- 产品信息 Tab -->
+            <el-tab-pane label="产品信息" name="info">
+                <cpdy_xxxq
+                    :cpdy-data="x_cpdy_data"
+                    :cpdl-list="x_cpdl_list"
+                    :cpxl-list="x_cpxl_list"
+                    @select-cpdl="onSelectChange_cpdl" />
+            </el-tab-pane>
 
-                <!-- 部件清单 Tab -->
-                <el-tab-pane label="部件清单" name="bom">
-                    <cpdy_xxbj :cpdy-id="x_cpdy_data['f_cpdy_id']" />
-                </el-tab-pane>
-            </el-tabs>
-        </div>
-    </el-dialog>
+            <!-- 部件清单 Tab -->
+            <el-tab-pane label="部件清单" name="bom">
+                <cpdy_xxbj :cpdy-id="x_cpdy_data['f_cpdy_id']" />
+            </el-tab-pane>
+        </el-tabs>
+    </vdialog>
 </template>
 
 <script lang="ts" setup>
@@ -28,28 +27,31 @@
     import type { cfunc_boolean } from "@/inc/eotypes";
 
     import eocore from "@/inc/eocore";
+    import vdialog from "@/components/app/vdialog.vue"
     import cpdy_xxbj from "./cpdy_xxbj.vue"
     import cpdy_xxxq from "./cpdy_xxxq.vue"
 
-    const emit = defineEmits<{
+    type t_dialog = InstanceType<typeof vdialog>;
+    const v_dialog = ref<t_dialog>();
+
+    const emits = defineEmits<{
         close: [cancel: boolean, data: any, cb: cfunc_boolean]
     }>();
 
-    const x_visible = ref(false);
     const x_active_tab = ref("info");
 
-    let x_cpdy_data: any = reactive({});
-    let m_cplb_list: any[] = [];
+    const x_cpdy_data: any = reactive({});
+    const x_cpdl_list = ref<any[]>([]);
+    const x_cpxl_list = ref<any[]>([]);
 
-    let x_cpdl_list = ref<any[]>([]);
-    let x_cpxl_list = ref<any[]>([]);
+    let m_cplb_list: any[] = [];
 
     /**
      * 显示对话框
      */
-    const show_dialog = (data: any, cplbList: any[]) => {
+    const showDialog = (data: any, cplbList: any[]) => {
         // 创建数据副本
-        x_cpdy_data = reactive(Object.assign({}, data));
+        Object.assign(x_cpdy_data, data);
         m_cplb_list = cplbList;
 
         // 大类列表
@@ -68,7 +70,11 @@
             x_cpxl_list.value = [];
         }
 
-        x_visible.value = true;
+        x_active_tab.value = "info";
+        v_dialog.value?.show_dialog(undefined);
+    }
+
+    const onDialogOpen = (data: any) => {
     }
 
     const onSelectChange_cpdl = (value: any) => {
@@ -81,32 +87,31 @@
         x_cpdy_data['f_cpxl_id'] = 0;
     }
 
-    const onCancel = () => {
-        x_visible.value = false;
-        emit('close', true, x_cpdy_data, (result: boolean) => {});
-    }
+    /**
+     * 对话框关闭事件
+     */
+    const onDialogClose = (cancel: boolean, data0: any, cb: cfunc_boolean) => {
+        if (cancel) {
+            emits("close", true, x_cpdy_data, (result: boolean) => {
+                cb(result);
+            });
+            return;
+        }
 
-    const onConfirm = () => {
         // 验证
         if (!x_cpdy_data["f_cpmc"]) {
             eocore.show_info("请输入产品名称");
-            return;
+            cb(false); return;
         }
         if (!x_cpdy_data["f_cpdl_id"] || !x_cpdy_data["f_cpxl_id"]) {
             eocore.show_info("请选择产品大类和小类");
-            return;
+            cb(false); return;
         }
 
-        x_visible.value = false;
-        emit('close', false, x_cpdy_data, (result: boolean) => {});
+        emits("close", false, x_cpdy_data, (result: boolean) => {
+            cb(result);
+        });
     }
 
-    defineExpose({ show_dialog });
+    defineExpose({ showDialog });
 </script>
-
-<style lang="scss" scoped>
-.div_dialog {
-    height: 100%;
-    overflow: hidden;
-}
-</style>

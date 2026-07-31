@@ -1,7 +1,7 @@
 <template>
     <!-- 采购入库产品明细编辑对话框 - App端 -->
     <vdialog ref="v_dialog"
-        width="1000px" title="产品明细"
+        title="产品明细"
         @open="onDialogOpen"
         @close="onDialogClose">
         <kcmx_xx ref="v_kcmx_xx" />
@@ -13,11 +13,11 @@
     import type { cfunc_boolean } from "@/inc/eotypes";
 
     import eocore from "@/inc/eocore"
-    import vdialog from "@/components/web/vdialog.vue"
+    import vdialog from "@/components/app/vdialog.vue"
 
     import TLogic from "@/logic/TLogic";
 
-    import kcmx_xx from "@/views/vweb/ext/tkcgl/kcmx_xx.vue"
+    import kcmx_xx from "@/views/vapp/pkcgl/kcmx_xx.vue"
 
     const v_kcmx_xx = ref<InstanceType<typeof kcmx_xx>>();
 

@@ -69,24 +69,24 @@
 </template>
 
 <script lang="ts" setup>
-    import { ref, watch } from "vue"
+    import { ref } from "vue"
 
     import eocore from "@/inc/eocore"
     import eolib from "@/inc/eolib"
 
     import TLogic from "@/logic/TLogic";
 
-    const props = defineProps<{
-        khglId: number
-    }>();
+    let m_khgl_id = ref(0);
 
     const x_data_list = ref<any[]>([]);
     const x_page_index = ref(1);
     const x_page_row_count = ref(20);
     const x_row_total = ref(0);
 
-    const loadData = async (pageIndex: number = -1) => {
-        if (props.khglId <= 0) {
+    const loadData = async (khglId: number, pageIndex: number = -1) => {
+        m_khgl_id.value = khglId;
+
+        if (khglId <= 0) {
             x_data_list.value = [];
             return;
         }
@@ -97,7 +97,7 @@
 
         const ret = await eocore.proc("p_xsdck_query", {
             "v_xsy_id": -1,
-            "v_khgl_id": props.khglId,
+            "v_khgl_id": khglId,
             "v_khmc": "",
             "v_xsdh": "",
             "v_cjsj1": "",
@@ -121,10 +121,6 @@
         x_data_list.value = list;
     };
 
-    watch(() => props.khglId, () => {
-        loadData(-1);
-    }, { immediate: true });
-
     const formatItem = (item: any) => {
         item["f_cjsj_s"] = eolib.datetime_2_short(item["f_cjsj"]);
         item["f_xsje_s"] = eolib.fixed_num(item["f_xsdj"] * item["f_kcsl"], 3);
@@ -133,6 +129,8 @@
 
     const onPageChange = (pageIndex: number) => {
         x_page_index.value = pageIndex;
-        loadData(pageIndex - 1);
+        loadData(m_khgl_id.value, pageIndex - 1);
     };
+
+    defineExpose({ loadData });
 </script>

@@ -57,6 +57,11 @@ const router = createRouter({
           component: () => import('@/views/vapp/pcggl/cgth.vue')
         },
         {
+          path: '/app/cggl/cgth_xx',
+          name: 'app_cggl_cgth_xx',
+          component: () => import('@/views/vapp/pcggl/cgth_xx.vue')
+        },
+        {
           path: '/app/cggl/cgcx',
           name: 'app_cggl_cgcx',
           component: () => import('@/views/vapp/pcggl/cgcx.vue')
@@ -87,9 +92,34 @@ const router = createRouter({
           component: () => import('@/views/vapp/pxsgl/xsd_xx.vue')
         },
         {
+          path: '/app/xsgl/xsth',
+          name: 'app_xsgl_xsth',
+          component: () => import('@/views/vapp/pxsgl/xsth.vue')
+        },
+        {
+          path: '/app/xsgl/xsth_xx',
+          name: 'app_xsgl_xsth_xx',
+          component: () => import('@/views/vapp/pxsgl/xsth_xx.vue')
+        },
+        {
+          path: '/app/xsgl/xscx',
+          name: 'app_xsgl_xscx',
+          component: () => import('@/views/vapp/pxsgl/xscx.vue')
+        },
+        {
           path: '/app/kcgl/kczl',
           name: 'app_kcgl_kczl',
           component: () => import('@/views/vapp/pkcgl/kczl.vue')
+        },
+        {
+          path: '/app/kcgl/kcbg',
+          name: 'app_kcgl_kcbg',
+          component: () => import('@/views/vapp/pkcgl/kcbg.vue')
+        },
+        {
+          path: '/app/kcgl/jygl',
+          name: 'app_kcgl_jygl',
+          component: () => import('@/views/vapp/pkcgl/jygl.vue')
         },
         {
           path: '/app/kcgl/kcmx',
@@ -100,6 +130,21 @@ const router = createRouter({
           path: '/app/kcgl/cpdy',
           name: 'app_kcgl_cpdy',
           component: () => import('@/views/vapp/pkcgl/cpdy.vue')
+        },
+        {
+          path: '/app/scgl/scgl',
+          name: 'app_scgl_scgl',
+          component: () => import('@/views/vapp/pscgl/scgl.vue')
+        },
+        {
+          path: '/app/scgl/scd_xx',
+          name: 'app_scgl_scd_xx',
+          component: () => import('@/views/vapp/pscgl/scd_xx.vue')
+        },
+        {
+          path: '/app/scgl/scwl',
+          name: 'app_scgl_scwl',
+          component: () => import('@/views/vapp/pscgl/scwl.vue')
         },
       ]
     },
